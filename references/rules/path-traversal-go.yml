@@ -1,0 +1,78 @@
+id: go-path-traversal
+language: go
+name: 路径穿越漏洞（Go）
+message: 检测到路径穿越漏洞：用户控制路径被用于文件读写删除
+description: |
+  Go项目中如果将用户输入直接传给os.Open、os.Create、os.Remove或filepath.Join，
+  攻击者可利用"../"访问目标目录外文件。
+
+  此规则检测：
+  - 任意文件读取: os.Open(userPath), os.ReadFile(userPath)
+  - 任意文件上传/覆盖: os.Create(uploadPath), os.WriteFile(uploadPath, ...)
+  - 任意文件删除: os.Remove(userPath)
+  - 路径拼接: filepath.Join(baseDir, userPath)
+  - 穿越序列: "../" 或 "..\\"
+
+  影响：
+  - 敏感配置泄露
+  - 文件篡改导致后门
+  - 关键文件被删除导致服务不可用
+severity: error
+cwe: CWE-22
+risk_level: 高危
+remediation: |
+  使用filepath.Clean和绝对路径前缀校验，确保目标路径仍在允许目录内：
+
+  ```go
+  package safe
+
+  import (
+      "fmt"
+      "os"
+      "path/filepath"
+      "strings"
+  )
+
+  // 不安全的代码 ❌
+  f, _ := os.Open(userPath)
+  os.WriteFile(uploadPath, content, 0644)
+
+  // 安全的代码 ✅
+  func safeJoin(baseDir, userPath string) (string, error) {
+      baseAbs, err := filepath.Abs(baseDir)
+      if err != nil {
+          return "", err
+      }
+      target := filepath.Clean(filepath.Join(baseAbs, userPath))
+      if target != baseAbs && !strings.HasPrefix(target, baseAbs+string(os.PathSeparator)) {
+          return "", fmt.Errorf("检测到路径穿越")
+      }
+      return target, nil
+  }
+  ```
+
+  安全措施：
+  - 始终先Clean/Abs再校验路径边界
+  - 拒绝../、绝对路径和符号链接逃逸
+  - 上传文件名采用服务端随机名
+  - 删除操作仅允许固定目录+白名单
+rule:
+  any:
+    - pattern: |
+        os.Open($USER_PATH)
+    - pattern: |
+        os.ReadFile($USER_PATH)
+    - pattern: |
+        os.Create($UPLOAD_PATH)
+    - pattern: |
+        os.WriteFile($UPLOAD_PATH, $CONTENT, $PERM)
+    - pattern: |
+        os.Remove($USER_PATH)
+    - pattern: |
+        filepath.Join($BASE_DIR, $USER_PATH)
+    - pattern: |
+        os.Open("../" + $USER_PATH)
+    - pattern: |
+        os.Remove("../" + $USER_PATH)
+    - pattern: |
+        filepath.Join($BASE_DIR, "../" + $USER_PATH)

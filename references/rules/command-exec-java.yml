@@ -1,0 +1,48 @@
+id: java-command-exec
+language: java
+name: 命令执行漏洞（Java）
+message: 检测到命令执行漏洞：执行外部可控系统命令
+description: |
+  Java 中的命令执行风险通常来自 Runtime.exec 与 ProcessBuilder。
+
+  此规则检测以下高风险调用：
+  - Runtime.getRuntime().exec(...) 执行动态命令
+  - ProcessBuilder(...) 构建并启动外部进程
+  - 使用 "sh -c" / "cmd /c" 间接执行拼接命令
+
+  风险：
+  - 攻击者可在服务器执行任意命令
+  - 读取或破坏系统文件
+  - 下载并运行恶意负载
+  - 借助应用权限进一步入侵内网
+severity: error
+risk_level: 严重
+cwe: CWE-78
+remediation: |
+  避免将外部输入直接传入命令执行 API，优先用业务 API 替代系统命令。
+
+  ```java
+  // 不安全的代码 ❌
+  Runtime.getRuntime().exec(userCmd);
+  new ProcessBuilder("sh", "-c", userCmd).start();
+
+  // 更安全的代码 ✅
+  List<String> allowed = Arrays.asList("date", "uptime");
+  if (allowed.contains(userCmd)) {
+      ProcessBuilder pb = new ProcessBuilder(userCmd);
+      pb.redirectErrorStream(true);
+      Process p = pb.start();
+  }
+  ```
+
+  安全措施：
+  - 禁止拼接 shell 命令字符串
+  - 对命令名称和参数做白名单校验
+  - 优先调用 Java 标准库完成同类操作
+  - 将运行账户权限降到最低
+rule:
+  any:
+    - pattern: Runtime.getRuntime().exec($CMD)
+    - pattern: new ProcessBuilder($$$ARGS).start()
+    - pattern: new ProcessBuilder("sh", "-c", $CMD).start()
+    - pattern: new ProcessBuilder("cmd", "/c", $CMD).start()

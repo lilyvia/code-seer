@@ -1,0 +1,60 @@
+id: csharp-auth-defects
+language: csharp
+name: 鉴权缺陷（C#）
+message: 检测到鉴权缺陷：ASP.NET Core接口缺少授权或越权校验
+description: |
+  ASP.NET Core 中常见鉴权问题包括：未添加 [Authorize]、
+  未限制角色以及缺少资源所有权校验。
+
+  此规则检测到以下问题：
+  - 未授权访问: 管理接口缺少 [Authorize]
+  - 垂直越权: 仅 [Authorize] 但未声明 Roles/Policy
+  - 水平越权: 直接按ID读取资源并返回
+severity: error
+risk_level: 高危
+cwe: CWE-287
+remediation: |
+  对敏感控制器和动作方法增加认证与授权策略：
+
+  ```csharp
+  [ApiController]
+  [Route("admin")]
+  public class AdminController : ControllerBase
+  {
+      [Authorize(Roles = "Admin")]
+      [HttpDelete("users/{id}")]
+      public IActionResult DeleteUser(int id)
+      {
+          _service.DeleteUser(id);
+          return NoContent();
+      }
+  }
+
+  [Authorize]
+  [HttpGet("orders/{id}")]
+  public IActionResult GetOrder(int id)
+  {
+      var order = _context.Orders.Find(id);
+      if (order == null || order.UserId != User.Identity!.Name) {
+          return Forbid();
+      }
+      return Ok(order);
+  }
+  ```
+
+  建议：
+  - 管理操作统一使用 Roles 或 Policy
+  - 查询接口必须验证资源归属
+  - 服务层保留权限校验，防止API层绕过
+rule:
+  any:
+    - pattern: |
+        app.MapGet("/admin", $HANDLER);
+    - pattern: |
+        app.MapPost("/admin", $HANDLER);
+    - pattern: |
+        if (User.Identity != null && User.Identity.IsAuthenticated) {
+            _context.Users.Remove($TARGET);
+        }
+    - pattern: |
+        return Ok(_context.Users.Find(id));

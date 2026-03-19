@@ -1,0 +1,60 @@
+id: php-ssrf
+language: php
+name: SSRF服务器端请求伪造（PHP）
+message: 检测到SSRF漏洞：使用用户输入发起远程资源请求
+description: |
+  PHP 中 file_get_contents/cURL 常用于远程请求，若URL来源不可信会导致SSRF。
+
+  此规则检测以下危险调用：
+  - file_get_contents($userUrl)
+  - curl_setopt($ch, CURLOPT_URL, $userUrl) + curl_exec($ch)
+  - fopen($userUrl, "r") 读取远程资源
+
+  典型高风险目标：
+  - localhost / 127.0.0.1
+  - 169.254.169.254（云元数据）
+  - 10.x.x.x、192.168.x.x、172.16-31.x.x 私网地址
+
+  风险：
+  - 内网接口和管理页面被探测
+  - 云环境凭据被窃取
+  - 造成服务端请求代理与攻击跳板
+  - 扩大攻击面到内部资产
+severity: error
+risk_level: 高危
+cwe: CWE-918
+remediation: |
+  避免直接请求用户给出的URL，优先通过固定后端服务转发并做白名单控制。
+
+  ```php
+  <?php
+  // 不安全的代码 ❌
+  $data = file_get_contents($userUrl);
+
+  // 安全的代码 ✅
+  $parts = parse_url($userUrl);
+  if ($parts !== false &&
+      ($parts['scheme'] ?? '') === 'https' &&
+      ($parts['host'] ?? '') === 'api.example.com') {
+      $data = file_get_contents($userUrl);
+  }
+  ?>
+  ```
+
+  安全措施：
+  - 限制协议为http/https并校验host白名单
+  - 拒绝localhost、内网IP和元数据地址
+  - 为cURL禁用危险协议与重定向
+  - 在网络层阻断对敏感地址的访问
+rule:
+  any:
+    - pattern: file_get_contents($USER_URL)
+    - pattern: fopen($USER_URL, "r")
+    - pattern: curl_setopt($CH, CURLOPT_URL, $USER_URL)
+    - pattern: curl_exec($CH)
+    - pattern: file_get_contents("http://localhost$$$REST")
+    - pattern: file_get_contents("http://127.0.0.1$$$REST")
+    - pattern: file_get_contents("http://169.254.169.254$$$REST")
+    - all:
+        - pattern: file_get_contents($URL)
+        - regex: 'file_get_contents\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)'

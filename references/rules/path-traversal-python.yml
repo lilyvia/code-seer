@@ -1,0 +1,82 @@
+id: python-path-traversal
+language: python
+name: 路径穿越漏洞（Python）
+message: 检测到路径穿越漏洞：用户控制的文件路径可能导致任意文件访问
+description: |
+  路径穿越漏洞允许攻击者访问或操作预期目录之外的文件。
+
+  此规则检测到以下危险的文件操作：
+  - 任意文件读取: open(user_path), file.read()
+  - 任意文件上传: open(upload_path, 'wb').write(content)
+  - 任意文件删除: os.remove(user_path), os.unlink(user_path)
+  - 路径拼接: os.path.join(base, user_path) 无验证
+  - 穿越序列: "../" 或 "..\\" 出现在路径中
+
+  攻击示例：
+  - 读取敏感文件: ../../../etc/passwd
+  - 覆盖系统文件: ../../../app/config.py
+  - 删除重要数据: ../../../database.sqlite
+severity: error
+cwe: CWE-22
+risk_level: 高危
+remediation: |
+  验证和净化用户输入的文件路径：
+
+  ```python
+  import os
+  from pathlib import Path
+
+  # 不安全的代码 ❌
+  with open(user_path, 'r') as f:
+      content = f.read()
+
+  # 安全的代码 ✅
+  def safe_open(base_dir, user_path):
+      full_path = os.path.realpath(os.path.join(base_dir, user_path))
+      base_real = os.path.realpath(base_dir)
+
+      if not full_path.startswith(base_real + os.sep):
+          raise ValueError("路径不在允许的目录内")
+
+      return open(full_path, 'r', encoding='utf-8')
+
+  def safe_write(base_dir, user_path, content):
+      target = safe_path(base_dir, user_path)
+      with open(target, 'wb') as f:
+          f.write(content)
+
+  # 或者使用pathlib
+  def safe_path(base_dir, user_path):
+      base = Path(base_dir).resolve()
+      target = (base / user_path).resolve()
+
+      if base != target and base not in target.parents:
+          raise ValueError("路径穿越检测")
+
+      return target
+  ```
+
+  安全措施：
+  - 使用realpath或resolve规范化路径
+  - 验证最终路径在允许的目录内
+  - 拒绝包含../、..\\、空字节的输入
+  - 使用白名单允许特定文件名
+  - 限制文件扩展名和上传目录权限
+rule:
+  any:
+    - pattern: |
+        open($USER_PATH, $MODE)
+    - pattern: |
+        open($UPLOAD_PATH, "wb").write($CONTENT)
+    - pattern: |
+        os.remove($USER_PATH)
+    - pattern: |
+        os.unlink($USER_PATH)
+    - pattern: |
+        os.path.join($BASE_DIR, $USER_PATH)
+    - pattern: |
+        open("../$$$REST", $MODE)
+    - pattern: |
+        os.remove("../$$$REST")
+    - pattern: |
+        os.path.join($BASE_DIR, "../$$$REST")

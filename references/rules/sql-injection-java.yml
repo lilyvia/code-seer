@@ -1,0 +1,49 @@
+id: java-sql-injection
+language: java
+name: SQL注入（Java）
+message: 检测到SQL注入漏洞：使用字符串拼接或格式化构建SQL查询
+description: |
+  SQL注入会在动态拼接SQL语句时发生。攻击者可构造恶意输入改变原始查询逻辑，
+  进而绕过鉴权、读取敏感数据或破坏数据库内容。
+
+  此规则重点检测Java中常见的不安全写法：
+  - 字符串拼接: "SELECT ..." + userInput
+  - String.format: String.format("SELECT ... %s", userInput)
+  - StringBuilder拼接后执行查询
+  - 直接将动态SQL传入Statement执行
+
+  风险：
+  - 数据泄露和批量导出
+  - 数据篡改与删除
+  - 业务逻辑绕过与权限提升
+severity: error
+risk_severity: 严重
+cwe: CWE-89
+remediation: |
+  使用参数化查询（PreparedStatement）替代动态字符串拼接：
+
+  ```java
+  // 不安全的代码 ❌
+  stmt.executeQuery("SELECT * FROM users WHERE id = " + userId);
+  stmt.executeQuery(String.format("SELECT * FROM users WHERE name = '%s'", name));
+
+  // 安全的代码 ✅
+  PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
+  ps.setString(1, userId);
+  ps.executeQuery();
+  ```
+
+  其他安全措施：
+  - 统一封装数据库访问层，禁止直接拼接SQL
+  - 对输入做白名单校验
+  - 使用最小权限数据库账号
+rule:
+  any:
+    - pattern: |
+        $STMT.executeQuery($SQL + $VAR)
+    - pattern: |
+        $STMT.execute($SQL + $VAR)
+    - pattern: |
+        $STMT.executeQuery(String.format($FMT, $$$ARGS))
+    - pattern: |
+        $STMT.executeQuery(new StringBuilder().append($A).append($VAR).toString())

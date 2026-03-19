@@ -1,0 +1,69 @@
+id: java-path-traversal
+language: java
+name: 路径穿越漏洞（Java）
+message: 检测到路径穿越漏洞：用户输入路径直接用于文件系统操作
+description: |
+  Java中如果将用户可控路径直接传入File、FileInputStream、FileOutputStream或删除操作，
+  攻击者可通过"../"跳出业务目录，读取、覆盖或删除任意文件。
+
+  此规则覆盖三类攻击向量：
+  - 任意文件读取: new FileInputStream(userPath)
+  - 任意文件上传/覆盖: new FileOutputStream(uploadPath)
+  - 任意文件删除: new File(userPath).delete()
+  - 不安全拼接: Paths.get(baseDir, userPath)
+  - 穿越序列: "../" 或 "..\\"
+
+  常见危害：
+  - 读取配置和密钥文件
+  - 覆盖日志、配置或可执行脚本
+  - 删除关键业务数据
+severity: error
+cwe: CWE-22
+risk_level: 高危
+remediation: |
+  在使用用户输入访问文件前，先做规范化并校验父目录：
+
+  ```java
+  import java.nio.file.Path;
+  import java.nio.file.Paths;
+
+  // 不安全的代码 ❌
+  FileInputStream fis = new FileInputStream(userPath);
+  FileOutputStream fos = new FileOutputStream(uploadPath);
+
+  // 安全的代码 ✅
+  Path base = Paths.get("/app/data").toRealPath();
+  Path target = base.resolve(userPath).normalize();
+
+  if (!target.startsWith(base)) {
+      throw new IllegalArgumentException("检测到路径穿越");
+  }
+
+  try (FileInputStream fis = new FileInputStream(target.toFile())) {
+      // 读取安全文件
+  }
+  ```
+
+  安全措施：
+  - 使用toRealPath/normalize后再校验
+  - 仅允许白名单文件名或固定扩展名
+  - 上传目录与执行目录隔离
+  - 拒绝包含../、..\\的路径片段
+rule:
+  any:
+    - pattern: |
+        new File($USER_PATH)
+    - pattern: |
+        new FileInputStream($USER_PATH)
+    - pattern: |
+        new FileOutputStream($UPLOAD_PATH)
+    - pattern: |
+        new File($USER_PATH).delete()
+    - pattern: |
+        Paths.get($BASE_DIR, $USER_PATH)
+    - pattern: |
+        new File("../$$$REST")
+    - pattern: |
+        new FileInputStream("../$$$REST")
+    - pattern: |
+        new FileOutputStream("../$$$REST")

@@ -1,0 +1,44 @@
+id: java-deserialization
+language: java
+name: 不安全的反序列化（Java）
+message: 检测到不安全的反序列化：ObjectInputStream.readObject 可能加载恶意对象
+description: |
+  Java 原生反序列化在处理不可信输入时存在高风险。
+
+  此规则检测以下危险调用：
+  - ObjectInputStream.readObject() 直接反序列化外部数据
+  - XMLDecoder.readObject() 反序列化 XML 对象图
+
+  风险：
+  - 远程代码执行（RCE）
+  - 反序列化链利用导致命令执行
+  - 业务对象污染与权限绕过
+severity: error
+risk_level: 严重
+cwe: CWE-502
+remediation: |
+  避免对不可信数据使用 Java 原生反序列化。
+
+  ```java
+  // 不安全的代码 ❌
+  ObjectInputStream ois = new ObjectInputStream(inputStream);
+  Object obj = ois.readObject();
+
+  // 更安全的代码 ✅
+  // 1) 使用 JSON 并绑定到受限的数据传输对象（DTO）
+  // 2) 对输入来源进行签名与完整性校验
+  // 3) 启用 JEP 290 反序列化过滤器
+  ObjectInputFilter filter = ObjectInputFilter.Config.createFilter("maxdepth=5;java.base/*;!*" );
+  ois.setObjectInputFilter(filter);
+  ```
+
+  建议：
+  - 优先改为 JSON / protobuf 等安全序列化格式
+  - 建立允许类白名单（ObjectInputFilter）
+  - 禁止反序列化来自网络和用户输入的字节流
+rule:
+  any:
+    - pattern: |
+        $OIS.readObject()
+    - pattern: |
+        $DECODER.readObject()

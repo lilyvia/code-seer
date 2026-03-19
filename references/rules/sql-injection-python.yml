@@ -1,0 +1,49 @@
+id: python-sql-injection
+language: python
+name: SQL注入（Python）
+message: 检测到SQL注入漏洞：使用字符串拼接或格式化构建SQL查询
+description: |
+  SQL注入是一种严重的安全漏洞，攻击者可以通过操控输入数据来执行恶意SQL语句。
+
+  此规则检测到以下不安全的SQL构建方式：
+  - f-string格式化: f"SELECT * FROM users WHERE id = {user_id}"
+  - %格式化: "SELECT * FROM users WHERE id = %s" % user_id
+  - format方法: "SELECT * FROM users WHERE id = {}".format(user_id)
+  - 字符串拼接: "SELECT * FROM users WHERE id = " + user_id
+
+  风险：
+  - 数据泄露：攻击者可以读取敏感数据
+  - 数据篡改：攻击者可以修改或删除数据
+  - 权限提升：攻击者可能获取管理员权限
+severity: error
+risk_severity: 严重
+cwe: CWE-89
+remediation: |
+  使用参数化查询（Prepared Statements）替代字符串拼接：
+
+  ```python
+  # 不安全的代码 ❌
+  cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")
+  cursor.execute("SELECT * FROM users WHERE id = %s" % user_id)
+
+  # 安全的代码 ✅
+  cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+  cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+  ```
+
+  其他安全措施：
+  - 使用ORM框架（如SQLAlchemy、Django ORM）
+  - 对用户输入进行严格的验证和过滤
+  - 遵循最小权限原则，限制数据库用户权限
+rule:
+  any:
+    - all:
+        - pattern: |
+            $CURSOR.execute($Q)
+        - regex: 'execute\(f\".*\{.*\}.*\"\)'
+    - pattern: |
+        $CURSOR.execute($SQL % $VAR)
+    - pattern: |
+        $CURSOR.execute($SQL.format($$$ARGS))
+    - pattern: |
+        $CURSOR.execute($SQL + $VAR)

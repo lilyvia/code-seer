@@ -1,0 +1,76 @@
+id: go-ssrf
+language: go
+name: SSRF服务器端请求伪造（Go）
+message: 检测到SSRF漏洞：使用用户可控URL执行HTTP请求
+description: |
+  Go 服务中若将外部输入直接用于 http.Get/http.Post 等请求，容易触发SSRF。
+
+  此规则检测以下危险场景：
+  - http.Get(userURL)
+  - http.Post(userURL, ...)
+  - http.NewRequest(method, userURL, body)
+  - client.Get(userURL)
+
+  典型高风险目标：
+  - localhost / 127.0.0.1
+  - 169.254.169.254（云元数据）
+  - 10.x.x.x、192.168.x.x、172.16-31.x.x 私网地址
+
+  风险：
+  - 探测内网并访问未公开服务
+  - 读取云元数据并泄露密钥
+  - 触发内部服务链路攻击
+  - 绕过网络边界控制
+severity: error
+risk_level: 高危
+cwe: CWE-918
+remediation: |
+  对目标URL进行协议、域名和IP范围校验，禁止访问内网和元数据地址。
+
+  ```go
+  // 不安全的代码 ❌
+  http.Get(userURL)
+
+  // 安全的代码 ✅
+  u, err := url.Parse(userURL)
+  if err != nil {
+      return
+  }
+
+  if u.Scheme != "https" || u.Hostname() != "api.example.com" {
+      return
+  }
+
+  resp, err := http.Get(userURL)
+  _ = resp
+  _ = err
+  ```
+
+  安全措施：
+  - 仅允许HTTPS和白名单主机
+  - 拒绝环回、私网、链路本地地址
+  - 限制出站网络访问范围
+  - 设置严格超时并禁用危险重定向
+rule:
+  any:
+    - all:
+        - pattern: $FN($USER_URL)
+        - regex: '(http\.Get\(|\w+\.Get\()'
+    - all:
+        - pattern: $FN($USER_URL, $CONTENT_TYPE, $BODY)
+        - regex: 'http\.Post\('
+    - all:
+        - pattern: $FN($METHOD, $USER_URL, $BODY)
+        - regex: 'http\.NewRequest\('
+    - all:
+        - pattern: $FN($URL)
+        - regex: 'http\.Get\("http://localhost'
+    - all:
+        - pattern: $FN($URL)
+        - regex: 'http\.Get\("http://127\.0\.0\.1'
+    - all:
+        - pattern: $FN($URL)
+        - regex: 'http\.Get\("http://169\.254\.169\.254'
+    - all:
+        - pattern: $FN($URL)
+        - regex: 'http\.Get\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)'

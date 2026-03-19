@@ -1,0 +1,52 @@
+id: csharp-sql-injection
+language: csharp
+name: SQL注入（C#）
+message: 检测到SQL注入漏洞：使用字符串拼接或格式化构建SQL查询
+description: |
+  C#中若通过字符串插值、String.Format或拼接生成SQL，再传入SqlCommand执行，
+  外部输入可能注入恶意SQL片段，导致严重数据库安全问题。
+
+  此规则检测以下不安全方式：
+  - 字符串插值: $"SELECT ... {userInput}"
+  - String.Format格式化
+  - 字符串拼接
+  - 直接以动态SQL初始化SqlCommand
+
+  风险：
+  - 机密数据泄露
+  - 数据篡改与删除
+  - 权限绕过与系统破坏
+severity: error
+risk_severity: 严重
+cwe: CWE-89
+remediation: |
+  使用参数化查询并显式绑定参数：
+
+  ```csharp
+  // 不安全的代码 ❌
+  command.CommandText = $"SELECT * FROM Users WHERE Id = {userId}";
+  command.CommandText = "SELECT * FROM Users WHERE Id = " + userId;
+
+  // 安全的代码 ✅
+  command.CommandText = "SELECT * FROM Users WHERE Id = @id";
+  command.Parameters.AddWithValue("@id", userId);
+  ```
+
+  其他安全措施：
+  - 在数据访问层统一封装参数化接口
+  - 对输入进行白名单和类型校验
+  - 最小权限原则配置数据库账号
+rule:
+  any:
+    - all:
+        - pattern: |
+            $CMD.CommandText = $SQL;
+        - regex: 'CommandText = \$\".*(SELECT|INSERT|UPDATE|DELETE).*'
+    - pattern: |
+        $CMD.CommandText = string.Format($FMT, $$$ARGS);
+    - pattern: |
+        $CMD.CommandText = $SQL + $VAR;
+    - all:
+        - pattern: |
+            new SqlCommand($SQL, $CONN)
+        - regex: 'SqlCommand\(\$\".*(SELECT|INSERT|UPDATE|DELETE).*'

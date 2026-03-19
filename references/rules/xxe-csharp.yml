@@ -1,0 +1,63 @@
+id: csharp-xxe
+language: csharp
+name: XXE XML外部实体注入（C#）
+message: 检测到XXE漏洞：XML解析器未正确关闭外部实体
+description: |
+  在 .NET 中解析不可信XML时，若未禁用DTD或外部解析器，可能触发XXE。
+
+  此规则检测以下不安全用法：
+  - XmlDocument.Load/LoadXml 直接解析外部输入
+  - XmlTextReader 默认配置读取不可信XML
+  - XmlReader.Create 未使用安全的 XmlReaderSettings
+  - 显式设置 DtdProcessing.Parse 或 XmlResolver 非空
+
+  风险：
+  - 本地文件泄露
+  - SSRF探测内网服务
+  - 实体扩展导致拒绝服务
+severity: error
+risk_severity: 严重
+cwe: CWE-611
+remediation: |
+  使用安全的 XmlReaderSettings 并禁用外部实体：
+
+  ```csharp
+  // 不安全的代码 ❌
+  var doc = new XmlDocument();
+  doc.LoadXml(userXml);
+
+  // 安全的代码 ✅
+  var settings = new XmlReaderSettings
+  {
+      DtdProcessing = DtdProcessing.Prohibit,
+      XmlResolver = null
+  };
+
+  using var reader = XmlReader.Create(new StringReader(userXml), settings);
+  var doc = new XmlDocument
+  {
+      XmlResolver = null
+  };
+  doc.Load(reader);
+  ```
+
+  安全措施：
+  - 始终将 XmlResolver 设为 null
+  - 将 DtdProcessing 设为 Prohibit 或 Ignore
+  - 避免对用户输入使用宽松解析器
+rule:
+  any:
+    - pattern: |
+        $DOC.LoadXml($XML)
+    - pattern: |
+        $DOC.Load($XML_SOURCE)
+    - pattern: |
+        new XmlTextReader($XML_SOURCE)
+    - pattern: |
+        XmlReader.Create($XML_SOURCE)
+    - pattern: |
+        $SETTINGS.DtdProcessing = DtdProcessing.Parse
+    - pattern: |
+        $SETTINGS.XmlResolver = new XmlUrlResolver()
+    - pattern: |
+        $DOC.XmlResolver = new XmlUrlResolver()
