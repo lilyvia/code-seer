@@ -56,14 +56,15 @@ class AstGrepWrapper:
         )
         return result.stdout.strip()
     
-    def scan(self, rule_file: str, target_path: str) -> List[AstGrepMatch]:
+    def scan(self, rule_file: str, target_path: str, timeout: Optional[int] = None) -> List[AstGrepMatch]:
         """
         使用指定规则文件扫描目标路径
-        
+
         参数:
             rule_file: YAML规则文件路径
             target_path: 要扫描的目录或文件路径
-        
+            timeout: 超时时间（秒），None表示无超时
+
         返回:
             匹配结果列表
         """
@@ -73,16 +74,20 @@ class AstGrepWrapper:
             '--json',
             target_path
         ]
-        
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True
-        )
-        
+
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout
+            )
+        except subprocess.TimeoutExpired:
+            raise RuntimeError(f"ast-grep扫描超时（{timeout}秒）: {rule_file} -> {target_path}")
+
         if result.returncode not in [0, 1]:  # 0=无匹配, 1=有匹配
             raise RuntimeError(f"ast-grep执行失败: {result.stderr}")
-        
+
         return self._parse_output(result.stdout)
     
     def _parse_output(self, json_output: str) -> List[AstGrepMatch]:
