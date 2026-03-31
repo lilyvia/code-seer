@@ -1,55 +1,28 @@
 id: php-path-traversal
 language: php
 name: 路径穿越漏洞（PHP）
-message: 检测到路径穿越漏洞：用户可控路径被用于文件读取、包含、写入或删除
-description: |
-  PHP应用中常见路径穿越点包括file_get_contents、include/require、unlink等。
-  当路径来自$_GET、$_POST、$_FILES或其他外部输入且未验证时，攻击者可通过"../"访问目录外资源。
-
-  本规则覆盖：
-  - 任意文件读取: file_get_contents($userPath)
-  - 任意文件上传/覆盖: file_put_contents($uploadPath, $content)
-  - 任意文件删除: unlink($userPath)
-  - 任意文件包含: include($userPath), require($userPath)
-  - 穿越序列: "../" 或 "..\\"
-
-  风险：
-  - 读取配置文件中的数据库口令
-  - 覆盖Web目录文件导致代码执行
-  - 删除应用关键文件导致中断
-severity: error
+description: PHP应用中常见路径穿越点包括file_get_contents、include/require、unlink等。
 cwe: CWE-22
-risk_level: 高危
 remediation: |
   使用realpath并校验目标路径必须位于允许目录内：
-
   ```php
   <?php
   // 不安全的代码 ❌
   $content = file_get_contents($_GET['file']);
   unlink($_POST['path']);
-
   // 安全的代码 ✅
   function safe_path(string $baseDir, string $userPath): string {
       $base = realpath($baseDir);
       $target = realpath($baseDir . DIRECTORY_SEPARATOR . $userPath);
-
       if ($base === false || $target === false || strpos($target, $base . DIRECTORY_SEPARATOR) !== 0) {
           throw new InvalidArgumentException('检测到路径穿越');
       }
       return $target;
   }
-
   $path = safe_path('/var/app/uploads', $_GET['file']);
   $content = file_get_contents($path);
   ?>
   ```
-
-  安全措施：
-  - 禁止直接include用户输入路径
-  - 对文件名执行白名单校验
-  - 上传文件重命名并限制目录权限
-  - 拒绝包含../、..\\、空字节的输入
 rule:
   any:
     - pattern: |

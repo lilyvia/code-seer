@@ -1,59 +1,30 @@
 id: csharp-path-traversal
 language: csharp
 name: 路径穿越漏洞（C#）
-message: 检测到路径穿越漏洞：用户控制路径直接用于文件系统敏感操作
-description: |
-  在C#/.NET应用中，将用户输入直接传给System.IO.File相关API会导致路径穿越风险。
-  攻击者可构造"../"实现目录逃逸，从而读取、覆盖或删除任意文件。
-
-  本规则关注：
-  - 任意文件读取: File.ReadAllText(userPath), File.ReadAllBytes(userPath)
-  - 任意文件上传/覆盖: File.WriteAllBytes(uploadPath, content), File.WriteAllText(uploadPath, content)
-  - 任意文件删除: File.Delete(userPath)
-  - 路径拼接: Path.Combine(baseDir, userPath)
-  - 穿越序列: "../" 或 "..\\"
-
-  风险：
-  - appsettings等配置泄露
-  - 上传点被利用写入恶意文件
-  - 关键文件被删除造成服务异常
-severity: error
+description: 在C#/ .NET 应用中，若直接将用户输入用于文件路径拼接，可能导致目录遍历攻击。.
 cwe: CWE-22
-risk_level: 高危
 remediation: |
   使用Path.GetFullPath规范化路径，并验证目标路径位于基准目录内：
-
   ```csharp
   using System;
   using System.IO;
-
   // 不安全的代码 ❌
   var text = File.ReadAllText(userPath);
   File.WriteAllBytes(uploadPath, content);
-
   // 安全的代码 ✅
   static string SafePath(string baseDir, string userPath)
   {
       var baseFull = Path.GetFullPath(baseDir);
       var targetFull = Path.GetFullPath(Path.Combine(baseFull, userPath));
-
       if (!targetFull.StartsWith(baseFull + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
       {
           throw new InvalidOperationException("检测到路径穿越");
       }
-
       return targetFull;
   }
-
   var safeFile = SafePath("C:/app/uploads", userPath);
   var text2 = File.ReadAllText(safeFile);
   ```
-
-  安全措施：
-  - 统一封装文件访问函数并进行路径边界校验
-  - 拒绝绝对路径、UNC路径和../序列
-  - 采用白名单扩展名和固定上传目录
-  - 删除操作引入二次确认和审计日志
 rule:
   any:
     - pattern: |

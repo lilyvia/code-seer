@@ -164,15 +164,12 @@ class SecurityFinding:
     """安全漏洞发现记录"""
     rule_id: str
     name: str
-    severity: str  # 严重, 高危, 中危, 低危
     cwe: Optional[str]
     file_path: str
     line_number: int
     column_offset: int
     code_snippet: str
     description: str
-    remediation: str
-    confidence: float
     call_chain: Optional[List[CallChainNode]] = None
 
 
@@ -263,7 +260,7 @@ class SARIFFormatter:
         result: Dict[str, Any] = {
             "ruleId": finding.rule_id,
             "ruleIndex": list(self.rules.keys()).index(finding.rule_id),
-            "level": SEVERITY_MAPPING.get(finding.severity, "warning"),
+            "level": SEVERITY_MAPPING.get("", "warning"),
             "message": {
                 "text": finding.description,
             },
@@ -288,9 +285,8 @@ class SARIFFormatter:
                 "primary": self._generate_fingerprint(finding),
             },
             "properties": {
-                "confidence": finding.confidence,
-                "severity": finding.severity,
-                "remediation": finding.remediation,
+                "cwe": finding.cwe,
+                "rule_id": finding.rule_id,
             },
         }
         
@@ -474,15 +470,12 @@ def _demo_findings() -> List[SecurityFinding]:
         SecurityFinding(
             rule_id="sql-injection-python",
             name="SQL注入漏洞",
-            severity="高危",
             cwe="CWE-89",
             file_path="app/database.py",
             line_number=42,
             column_offset=12,
             code_snippet="cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\")",
             description="检测到SQL注入漏洞，用户输入直接拼接到SQL语句中",
-            remediation="使用参数化查询替代字符串拼接",
-            confidence=0.95,
             call_chain=[
                 CallChainNode(
                     function_name="get_user_input",
@@ -509,28 +502,22 @@ def _demo_findings() -> List[SecurityFinding]:
         SecurityFinding(
             rule_id="command-exec-python",
             name="命令执行漏洞",
-            severity="严重",
             cwe="CWE-78",
             file_path="app/utils.py",
             line_number=23,
             column_offset=8,
             code_snippet="os.system(user_cmd)",
             description="检测到命令执行漏洞，用户输入直接传递给系统命令",
-            remediation="使用subprocess.run配合参数列表，避免shell=True",
-            confidence=0.88,
         ),
         SecurityFinding(
             rule_id="xss-python",
             name="跨站脚本攻击",
-            severity="中危",
             cwe="CWE-79",
             file_path="app/templates.py",
             line_number=56,
             column_offset=20,
             code_snippet="return f\"<div>{user_content}</div>\"",
             description="检测到XSS漏洞，用户内容未转义直接输出",
-            remediation="使用模板引擎的自动转义功能或html.escape()",
-            confidence=0.92,
         ),
     ]
 
@@ -551,7 +538,7 @@ def main() -> int:
     for i, finding in enumerate(findings, 1):
         print(f"[{i}] {finding.name}")
         print(f"    文件: {finding.file_path}:{finding.line_number}")
-        print(f"    等级: {finding.severity}")
+        print(f"    等级: {""}")
         print(f"    描述: {finding.description}")
         if finding.call_chain:
             print(f"    调用链: {len(finding.call_chain)} 个节点")

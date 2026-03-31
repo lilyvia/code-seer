@@ -1,40 +1,26 @@
 id: python-auth-defects
 language: python
 name: 鉴权缺陷（Python）
-message: 检测到鉴权缺陷：缺少身份验证或授权检查
-description: |
-  鉴权缺陷允许未授权用户访问敏感资源或执行特权操作。
-
-  此规则检测到以下问题：
-  - 未授权访问: Flask/Django敏感接口缺少登录保护
-  - 垂直越权: 仅校验登录态，未校验管理员角色
-  - 水平越权: 根据用户可控ID直接查询资源，缺少所有权验证
-severity: error
-risk_level: 高危
+description: 鉴权缺陷允许未授权用户访问敏感资源或执行特权操作。
 cwe: CWE-287
 remediation: |
   实施适当的身份验证和授权：
-
   ```python
   # Flask示例
   from flask_login import login_required, current_user
   from flask import abort
-
   @app.route('/admin')
   @login_required
   def admin():
       if not current_user.is_admin:
           abort(403)
       return render_template('admin.html')
-
   # Django示例
   from django.contrib.auth.decorators import login_required, permission_required
-
   @login_required
   @permission_required('user.can_view_admin')
   def admin_view(request):
       pass
-
   # 水平越权防护
   def view_order(request, order_id):
       order = get_object_or_404(Order, id=order_id)

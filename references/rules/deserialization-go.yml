@@ -1,27 +1,10 @@
 id: go-deserialization
 language: go
 name: 反序列化风险（Go）
-message: Go 默认 JSON 反序列化通常较安全；仅提示历史或高风险反序列化接口
-description: |
-  Go 语言常用的 encoding/json 在默认场景下通常不会触发代码执行。
-
-  本规则为最小化提示规则，关注可能带来反序列化风险的旧式或复杂接口：
-  - encoding/gob 解码不可信数据
-  - yaml.v2/yaml.v3 反序列化不可信输入（业务层风险）
-
-  风险：
-  - 对象状态污染
-  - 业务逻辑绕过
-  - 资源消耗型攻击
-
-  说明：
-  - 与 Java/PHP/Python/C# 不同，Go 反序列化默认更偏向业务风险而非直接 RCE。
-severity: warning
-risk_level: 中危
+description: Go 语言常用的 encoding/json 在默认场景下通常不会触发代码执行。
 cwe: CWE-502
 remediation: |
   建议优先使用 encoding/json，并对输入做结构与大小校验。
-
   ```go
   // 相对安全的代码 ✅
   var req Request
@@ -29,7 +12,6 @@ remediation: |
       return err
   }
   ```
-
   建议：
   - 对不可信输入增加长度限制与字段白名单
   - 避免在边界层直接使用 gob 解码外部数据

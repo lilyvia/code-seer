@@ -1,33 +1,15 @@
 id: php-command-exec
 language: php
 name: 命令执行漏洞（PHP）
-message: 检测到命令执行漏洞：调用危险系统命令函数
-description: |
-  PHP 提供了多个可直接调用系统命令的函数，若参数可控将导致命令注入。
-
-  此规则检测以下危险函数：
-  - exec()
-  - system()
-  - shell_exec()
-  - passthru()
-
-  风险：
-  - Web 服务器被远程命令控制
-  - 敏感配置与数据泄露
-  - 上传并执行恶意脚本
-  - 扩大攻击面到数据库和内网资产
-severity: error
-risk_level: 严重
+description: PHP 提供了多个可直接调用系统命令的函数，若参数可控将导致命令注入。
 cwe: CWE-78
 remediation: |
   尽量避免使用命令执行函数；必须使用时采用白名单并严格约束参数。
-
   ```php
   <?php
   // 不安全的代码 ❌
   system($userCmd);
   echo shell_exec($userInput);
-
   // 更安全的代码 ✅
   $allowed = ['whoami', 'date'];
   if (in_array($userCmd, $allowed, true)) {
@@ -36,12 +18,6 @@ remediation: |
   }
   ?>
   ```
-
-  安全措施：
-  - 关闭不必要的命令执行函数
-  - 对命令输入做白名单和字符集限制
-  - 不拼接 shell 字符（如 ; && |）
-  - 在容器或沙箱内运行高风险功能
 rule:
   any:
     - pattern: exec($CMD)

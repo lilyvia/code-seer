@@ -1,32 +1,14 @@
 id: csharp-command-exec
 language: csharp
 name: 命令执行漏洞（C#）
-message: 检测到命令执行漏洞：使用 Process API 执行外部可控命令
-description: |
-  在 .NET 中，System.Diagnostics.Process 可用于启动系统进程。
-  若命令或参数来自用户输入，容易触发命令执行漏洞。
-
-  此规则检测以下危险调用：
-  - Process.Start(command)
-  - Process.Start(fileName, arguments)
-  - 通过 ProcessStartInfo 启动外部进程
-
-  风险：
-  - 攻击者可执行系统级命令
-  - 访问或破坏主机文件系统
-  - 下载并运行恶意程序
-  - 横向攻击其他服务与主机
-severity: error
-risk_level: 严重
+description: 在 .NET 中，Process.Start 若使用字符串命令或拼接参数，容易被注入恶意指令。
 cwe: CWE-78
 remediation: |
   优先使用托管 API 实现业务功能，避免调用系统 shell。
-
   ```csharp
   // 不安全的代码 ❌
   Process.Start(userCmd);
   Process.Start("cmd.exe", "/c " + userInput);
-
   // 更安全的代码 ✅
   var allowed = new HashSet<string> { "whoami", "hostname" };
   if (allowed.Contains(userCmd))
@@ -40,12 +22,6 @@ remediation: |
       Process.Start(startInfo);
   }
   ```
-
-  安全措施：
-  - 禁止将用户输入直接传给 Process.Start
-  - 禁止使用 cmd.exe /c 执行拼接命令
-  - 使用白名单限制可执行程序
-  - 以低权限账户运行应用
 rule:
   any:
     - pattern: Process.Start($CMD)

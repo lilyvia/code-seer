@@ -1,41 +1,19 @@
 id: javascript-xss
 language: javascript
 name: XSS跨站脚本攻击（JavaScript）
-message: 检测到XSS漏洞：未过滤的用户输入直接输出到页面
-description: |
-  XSS（跨站脚本攻击）允许攻击者在用户浏览器中执行恶意脚本。
-
-  此规则检测到以下危险的DOM操作：
-  - innerHTML 赋值用户输入
-  - document.write() 写入用户输入
-  - outerHTML 赋值
-  - insertAdjacentHTML 使用用户输入
-  - React dangerouslySetInnerHTML 使用未过滤输入
-  - eval() 执行用户输入
-  - setTimeout/setInterval 使用字符串参数
-
-  风险：
-  - 窃取用户会话Cookie
-  - 伪造用户操作
-  - 钓鱼攻击
-  - 恶意软件分发
-
-severity: error
+description: XSS（跨站脚本攻击）允许攻击者在用户浏览器中执行恶意脚本。
 cwe: CWE-79
 
 remediation: |
   对用户输入进行HTML转义后再输出：
-
   ```javascript
   // 不安全的代码 ❌
   element.innerHTML = userInput;
   document.write(userInput);
   eval(userCode);
-
   // 安全的代码 ✅
   // 使用textContent代替innerHTML
   element.textContent = userInput;
-
   // 或者进行HTML转义
   function escapeHtml(text) {
     const div = document.createElement('div');
@@ -43,26 +21,46 @@ remediation: |
     return div.innerHTML;
   }
   element.innerHTML = escapeHtml(userInput);
-
   // React中使用JSX自动转义
   <div>{userInput}</div>
-
   // 如果必须使用dangerouslySetInnerHTML，确保内容已净化
   <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(userInput)}} />
   ```
-
   推荐措施：
   - 使用DOMPurify等库净化HTML
   - 使用CSP（内容安全策略）
   - 避免使用eval和document.write
-
 rule:
   any:
     - pattern: |
         $ELEMENT.innerHTML = $USER_INPUT
     - pattern: |
+        $ELEMENT.outerHTML = $USER_INPUT
+    - pattern: |
+        $ELEMENT.insertAdjacentHTML($POS, $USER_INPUT)
+    - pattern: |
         document.write($USER_INPUT)
+    - pattern: |
+        document.writeln($USER_INPUT)
     - pattern: |
         <div dangerouslySetInnerHTML={{__html: $USER_INPUT}} />
     - pattern: |
         eval($USER_INPUT)
+    - pattern: |
+        setTimeout($USER_INPUT, $DELAY)
+    - pattern: |
+        setInterval($USER_INPUT, $DELAY)
+    - pattern: |
+        new Function($USER_INPUT)
+    - pattern: |
+        location.href = $USER_INPUT
+    - pattern: |
+        location.replace($USER_INPUT)
+    - pattern: |
+        document.location = $USER_INPUT
+    - pattern: |
+        window.location = $USER_INPUT
+    - pattern: |
+        <div v-html="$USER_INPUT">
+    - pattern: |
+        $ELEMENT.html($USER_INPUT)

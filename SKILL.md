@@ -21,13 +21,13 @@ metadata:
 - 需要生成结构化、中文化的审计报告，以便人工复核与修复落地。
 
 ## 如何工作
-1. **执行Python扫描**：调用 `python3 scripts/security_scanner.py <目标路径> --format markdown > /tmp/security_scan_report.md`，**必须先将扫描结果落地到 /tmp/ 目录**，然后再读取分析。
+1. **执行Python扫描**：调用 `python3 scripts/security_scanner.py <目标路径> --format markdown -o /tmp/security_scan_report.md`，**必须先将扫描结果落地到 /tmp/ 目录**，然后再读取分析。
 2. **AI深度分析**：AI基于Markdown扫描报告，结合源代码审查、规则库、污点追踪进行综合分析。
 3. **生成AI审计报告**：AI基于多源证据生成带日期的最终审计报告（`security_audit_report_YYYYMMDD.md`）。
 
 ## 审计流程
 1. **目标识别**：确定分析对象、范围与关键文件。
-2. **执行Python扫描**：`python3 scripts/security_scanner.py <目标路径> --format markdown > /tmp/security_scan_report.md`，扫描结果落地到 `/tmp/` 后读取分析。
+2. **执行Python扫描**：`python3 scripts/security_scanner.py <目标路径> --format markdown -o /tmp/security_scan_report.md`，扫描结果落地到 `/tmp/` 后读取分析。
 3. **AI深度分析**：基于Markdown扫描报告验证候选漏洞，补充代码上下文分析，识别遗漏漏洞，评估漏洞真实性和风险等级。
 4. **规则对照**：基于 9 类漏洞、5 种语言的规则集进行交叉验证。
 5. **佐证与复现**：按需执行 python3、ast-grep (sg)、ripgrep (rg)、grep 等工具获取多源证据。
@@ -38,23 +38,23 @@ metadata:
 
 ### Bash 超时配置
 ```bash
-# 所有 bash 命令必须使用 10 分钟超时，通过重定向将报告落地到 /tmp/
-bash(command="python3 scripts/security_scanner.py /path/to/project --format markdown > /tmp/security_scan_report.md", timeout=600000)
+# 所有 bash 命令必须使用 10 分钟超时，使用 -o 参数将报告落地到 /tmp/
+bash(command="python3 scripts/security_scanner.py /path/to/project --format markdown -o /tmp/security_scan_report.md", timeout=600000)
 ```
 
 ### 主扫描命令（必须落地 /tmp/ 目录）
 ```bash
 # 综合扫描模式（落地 Markdown 报告到 /tmp/ 供AI读取分析）
-python3 scripts/security_scanner.py <目标路径> --mode comprehensive --format markdown > /tmp/security_scan_report.md
+python3 scripts/security_scanner.py <目标路径> --mode comprehensive --format markdown -o /tmp/security_scan_report.md
 
 # 污点追踪分析（落地到 /tmp/）
-python3 scripts/taint_tracker.py --target <文件> --entry <入口函数> > /tmp/taint_analysis.md
+python3 scripts/taint_tracker.py --target <文件> --entry <入口函数> -o /tmp/taint_analysis.md
 
 # 调用链追踪（落地到 /tmp/）
-python3 scripts/call_chain_tracer.py --target <文件> --start <起始行> > /tmp/call_chain.md
+python3 scripts/call_chain_tracer.py --target <文件> --start <起始行> -o /tmp/call_chain.md
 
 # 误报过滤分析（落地到 /tmp/）
-python3 scripts/fp_filter.py --findings /tmp/security_scan_report.md > /tmp/fp_analysis.md
+python3 scripts/fp_filter.py --findings /tmp/security_scan_report.md -o /tmp/fp_analysis.md
 ```
 
 ### 脚本列表
@@ -122,22 +122,22 @@ username=admin' OR '1'='1'--&password=test
 ## 使用示例
 
 ```bash
-# 1. 执行Python安全扫描（必须落地到 /tmp/ 目录）
-python3 scripts/security_scanner.py /path/to/project --mode comprehensive --format markdown > /tmp/security_scan_report.md
+# 1. 执行Python安全扫描（必须落地到 /tmp/ 目录，使用 -o 参数避免进度信息混入报告）
+python3 scripts/security_scanner.py /path/to/project --mode comprehensive --format markdown -o /tmp/security_scan_report.md
 
 # 2. 从 /tmp/ 读取扫描报告，AI基于报告内容 + 源代码深度分析，生成最终审计报告
 
 # 3. 如需对特定文件深度分析（落地到 /tmp/）
-python3 scripts/taint_tracker.py --target /path/to/project/app.py --entry process_user_input > /tmp/taint_analysis.md
+python3 scripts/taint_tracker.py --target /path/to/project/app.py --entry process_user_input -o /tmp/taint_analysis.md
 
 # 4. 验证疑似误报（落地到 /tmp/）
-python3 scripts/fp_filter.py --findings /tmp/security_scan_report.md --deep-analysis > /tmp/fp_analysis.md
+python3 scripts/fp_filter.py --findings /tmp/security_scan_report.md --deep-analysis -o /tmp/fp_analysis.md
 ```
 
 ### 报告输出位置
 - **AI最终审计报告**：`security_audit_report_YYYYMMDD.md`，保存于当前工作目录
-- **Python扫描报告**：必须落地到 `/tmp/` 目录，生成 Markdown 格式供AI读取分析（禁止直接处理stdout）
+- **Python扫描报告**：必须落地到 `/tmp/` 目录，使用 `-o` 参数输出，避免进度信息混入报告
   ```bash
-  python3 scripts/security_scanner.py /path/to/project --format markdown > /tmp/security_scan_report.md
+  python3 scripts/security_scanner.py /path/to/project --format markdown -o /tmp/security_scan_report.md
   cat /tmp/security_scan_report.md
   ```

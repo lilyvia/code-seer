@@ -1,27 +1,15 @@
 id: go-auth-defects
 language: go
 name: 鉴权缺陷（Go）
-message: 检测到鉴权缺陷：Go服务缺少认证中间件或权限校验
-description: |
-  Go Web 服务常通过路由和中间件控制访问权限。
-  如果敏感路由未接入鉴权，或仅校验登录态不校验角色，容易产生越权问题。
-
-  此规则检测到以下问题：
-  - 未授权访问: /admin 路由未接入鉴权中间件
-  - 垂直越权: 仅检查用户已登录，未检查管理员角色
-  - 水平越权: 使用请求参数ID直接读取资源并返回
-severity: error
-risk_level: 高危
+description: Go Web 服务常通过路由和中间件控制访问权限。
 cwe: CWE-287
 remediation: |
   对路由与处理函数同时加强鉴权：
-
   ```go
   // Gin 路由示例
   admin := r.Group("/admin")
   admin.Use(AuthMiddleware(), RequireRole("admin"))
   admin.DELETE("/users/:id", deleteUser)
-
   func getOrder(c *gin.Context) {
       orderID := c.Param("id")
       order := repo.GetOrderByID(orderID)
@@ -33,7 +21,6 @@ remediation: |
       c.JSON(http.StatusOK, order)
   }
   ```
-
   建议：
   - 敏感路由必须绑定认证+角色中间件
   - 所有按ID读取的业务都校验资源归属

@@ -1,52 +1,23 @@
 id: java-ssrf
 language: java
 name: SSRF服务器端请求伪造（Java）
-message: 检测到SSRF漏洞：使用外部输入构造URL并发起请求
-description: |
-  SSRF会让攻击者借助服务端网络能力访问内网或云环境敏感接口。
-
-  此规则检测以下危险调用：
-  - new URL(userUrl).openConnection()
-  - HttpURLConnection 对外部URL发起请求
-  - HttpClient + URI.create(userUrl) 发送请求
-
-  典型高风险目标：
-  - localhost / 127.0.0.1
-  - 169.254.169.254（云元数据）
-  - 10.x.x.x、192.168.x.x、172.16-31.x.x 私网地址
-
-  风险：
-  - 访问内部管理端点和数据库服务
-  - 获取云实例临时凭据
-  - 构造内网扫描与横向攻击路径
-  - 触发二次攻击（如请求走私链路）
-severity: error
-risk_level: 高危
+description: SSRF会让攻击者借助服务端网络能力访问内网或云环境敏感接口。
 cwe: CWE-918
 remediation: |
   不要直接使用外部输入构造请求目标，建议固定目标域名并做强校验。
-
   ```java
   // 不安全的代码 ❌
   URL url = new URL(userUrl);
   URLConnection conn = url.openConnection();
-
   // 安全的代码 ✅
   URI uri = URI.create(userUrl);
   String host = uri.getHost();
   String scheme = uri.getScheme();
-
   if ("https".equalsIgnoreCase(scheme) && "api.example.com".equalsIgnoreCase(host)) {
       HttpRequest req = HttpRequest.newBuilder(uri).GET().build();
       HttpClient.newHttpClient().send(req, HttpResponse.BodyHandlers.ofString());
   }
   ```
-
-  安全措施：
-  - 仅允许白名单域名与固定端口
-  - 拒绝私网、环回和链路本地IP
-  - 禁止自动重定向到未知目标
-  - 通过网络策略限制服务的出站访问
 rule:
   any:
     - pattern: new URL($USER_URL).openConnection()

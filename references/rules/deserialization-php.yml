@@ -1,36 +1,20 @@
 id: php-deserialization
 language: php
 name: 不安全的反序列化（PHP）
-message: 检测到不安全的反序列化：unserialize 可能触发魔术方法利用链
 description: |
   PHP 的 unserialize 在处理不可信数据时风险极高，可能触发 __wakeup/__destruct 等魔术方法。
-
-  此规则检测以下危险反序列化方式：
-  - unserialize($data)
-  - unserialize($data, ['allowed_classes' => true])
-
-  风险：
-  - 远程代码执行（RCE）
-  - 文件删除与任意文件写入
-  - 对象注入导致业务逻辑绕过
-severity: error
-risk_level: 严重
 cwe: CWE-502
 remediation: |
   优先使用 JSON 处理外部输入，避免反序列化对象。
-
   ```php
   // 不安全的代码 ❌
   $obj = unserialize($userInput);
-
   // 更安全的代码 ✅
   $data = json_decode($userInput, true, 512, JSON_THROW_ON_ERROR);
-
   // 若历史兼容必须使用 unserialize：
   // 严格限制可反序列化类
   $obj = unserialize($trustedData, ['allowed_classes' => ['SafeDto']]);
   ```
-
   建议：
   - 不对用户可控输入调用 unserialize
   - 将 allowed_classes 设为严格白名单

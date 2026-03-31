@@ -1,45 +1,22 @@
 id: php-xxe
 language: php
 name: XXE XML外部实体注入（PHP）
-message: 检测到XXE漏洞：XML解析过程允许外部实体或DTD加载
-description: |
-  PHP处理XML时，如果启用了实体替换或外部DTD，攻击者可构造恶意XML触发XXE。
-
-  此规则覆盖以下高风险用法：
-  - DOMDocument::loadXML/load 未关闭外部实体
-  - simplexml_load_string 使用 LIBXML_NOENT 或 DTD 相关标志
-  - XMLReader::open/XMLReader::XML 直接解析不可信XML
-  - 显式开启 libxml 实体加载
-
-  风险：
-  - 读取服务器本地敏感文件
-  - SSRF访问内网系统
-  - 实体扩展导致资源耗尽
-severity: error
-risk_severity: 严重
+description: PHP处理XML时，如果启用了实体替换或外部DTD，攻击者可构造恶意XML触发XXE。
 cwe: CWE-611
 remediation: |
   使用安全的XML解析参数，避免启用实体替换：
-
   ```php
   // 不安全的代码 ❌
   $doc = new DOMDocument();
   $doc->loadXML($xml, LIBXML_NOENT | LIBXML_DTDLOAD);
-
   // 安全的代码 ✅
   $doc = new DOMDocument();
   $doc->resolveExternals = false;
   $doc->substituteEntities = false;
   $doc->loadXML($xml, LIBXML_NONET);
-
   // 对simplexml同样避免 NOENT/DTD 相关选项
   $obj = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NONET);
   ```
-
-  安全措施：
-  - 禁用LIBXML_NOENT、LIBXML_DTDLOAD、LIBXML_DTDATTR
-  - 优先使用LIBXML_NONET阻止网络访问
-  - 对XML输入做大小和结构限制
 rule:
   any:
     - pattern: |

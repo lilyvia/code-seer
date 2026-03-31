@@ -1,27 +1,15 @@
 id: php-auth-defects
 language: php
 name: 鉴权缺陷（PHP）
-message: 检测到鉴权缺陷：缺少Laravel认证中间件或权限校验
-description: |
-  PHP/Laravel 项目若缺少中间件、角色检查和资源归属校验，
-  容易造成未授权访问与越权漏洞。
-
-  此规则检测到以下问题：
-  - 未授权访问: 管理路由未使用 auth 中间件
-  - 垂直越权: 仅调用 Auth::check()，未验证管理员角色
-  - 水平越权: 直接根据请求中的 user_id / order_id 查询资源
-severity: error
-risk_level: 高危
+description: PHP/Laravel 项目若缺少中间件、角色检查和资源归属校验，
 cwe: CWE-287
 remediation: |
   在路由和控制器双层实施鉴权：
-
   ```php
   // 路由层
   Route::middleware(['auth', 'can:admin'])->group(function () {
       Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
   });
-
   // 控制器层
   public function showOrder(Request $request, int $id)
   {
@@ -32,7 +20,6 @@ remediation: |
       return response()->json($order);
   }
   ```
-
   建议：
   - 管理功能强制使用 auth + 角色/策略中间件
   - 控制器中校验资源归属

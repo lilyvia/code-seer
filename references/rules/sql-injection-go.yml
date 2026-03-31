@@ -1,40 +1,18 @@
 id: go-sql-injection
 language: go
 name: SQL注入（Go）
-message: 检测到SQL注入漏洞：使用字符串拼接或格式化构建SQL查询
-description: |
-  在Go代码中，如果通过字符串拼接或fmt.Sprintf动态构造SQL，再交给Query/Exec执行，
-  用户输入将可能直接影响SQL语义，导致SQL注入。
-
-  此规则检测的典型风险模式：
-  - fmt.Sprintf构造SQL后执行
-  - 字符串拼接构造SQL后执行
-  - 直接将动态SQL传给db.Query/db.Exec
-
-  风险：
-  - 未授权读取敏感数据
-  - 任意修改或删除数据
-  - 破坏业务完整性
-severity: error
-risk_severity: 严重
+description: 在Go代码中，如果通过字符串拼接或 fmt.Sprintf 动态构造 SQL，攻击者可注入恶意 SQL 代码。
 cwe: CWE-89
 remediation: |
   使用参数化查询替代动态SQL拼接：
-
   ```go
   // 不安全的代码 ❌
   db.Query(fmt.Sprintf("SELECT * FROM users WHERE id = %s", userID))
   db.Exec("DELETE FROM users WHERE id = " + userID)
-
   // 安全的代码 ✅
   db.Query("SELECT * FROM users WHERE id = ?", userID)
   db.Exec("DELETE FROM users WHERE id = ?", userID)
   ```
-
-  其他安全措施：
-  - 封装统一DAO层
-  - 对外部输入进行严格校验
-  - 限制数据库账号权限
 rule:
   any:
     - all:

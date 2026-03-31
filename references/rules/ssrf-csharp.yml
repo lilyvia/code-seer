@@ -1,35 +1,13 @@
 id: csharp-ssrf
 language: csharp
 name: SSRF服务器端请求伪造（C#）
-message: 检测到SSRF漏洞：通过用户可控URL发起HTTP请求
-description: |
-  在 .NET 中使用 HttpClient、WebRequest 访问外部URL时，若URL来自用户输入可能触发SSRF。
-
-  此规则检测以下危险调用：
-  - HttpClient.GetAsync(userUrl) / PostAsync(userUrl, ...)
-  - WebRequest.Create(userUrl)
-  - HttpWebRequest.Create(userUrl)
-
-  典型高风险目标：
-  - localhost / 127.0.0.1
-  - 169.254.169.254（云元数据）
-  - 10.x.x.x、192.168.x.x、172.16-31.x.x 私网地址
-
-  风险：
-  - 绕过访问控制读取内部服务数据
-  - 获取云环境元数据和访问凭据
-  - 发起内网端口探测和横向渗透
-  - 引发业务侧信任边界失效
-severity: error
-risk_level: 高危
+description: 在 .NET 中使用 HttpClient、WebRequest 访问外部 URL 时，若 URL 来自用户输入可能触发 SSRF 攻击。
 cwe: CWE-918
 remediation: |
   不要信任外部输入的URL，使用白名单域名并限制可访问网络范围。
-
   ```csharp
   // 不安全的代码 ❌
   await client.GetAsync(userUrl);
-
   // 安全的代码 ✅
   var uri = new Uri(userUrl);
   if (uri.Scheme == Uri.UriSchemeHttps && uri.Host == "api.example.com")
@@ -37,12 +15,6 @@ remediation: |
       await client.GetAsync(uri);
   }
   ```
-
-  安全措施：
-  - 仅允许HTTPS和受信任域名
-  - 拒绝私网、环回、链路本地目标
-  - 禁止自动重定向到未知地址
-  - 通过防火墙限制应用出站能力
 rule:
   any:
     - pattern: $CLIENT.GetAsync($USER_URL)

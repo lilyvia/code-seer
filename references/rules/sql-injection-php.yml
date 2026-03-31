@@ -1,40 +1,18 @@
 id: php-sql-injection
 language: php
 name: SQL注入（PHP）
-message: 检测到SQL注入漏洞：使用字符串拼接或格式化构建SQL查询
-description: |
-  PHP中常见的SQL注入问题通常来自动态拼接SQL语句。
-  当用户输入未经参数化直接进入query或mysqli_query时，攻击者可注入恶意条件。
-
-  此规则检测以下高风险场景：
-  - 使用`.`拼接SQL字符串
-  - 使用sprintf拼接SQL字符串
-  - 将动态SQL直接传入query/mysqli_query执行
-
-  风险：
-  - 敏感信息泄露
-  - 数据被批量篡改或删除
-  - 登录绕过与权限提升
-severity: error
-risk_severity: 严重
+description: PHP中常见的SQL注入问题通常来自动态拼接SQL语句。
 cwe: CWE-89
 remediation: |
   使用参数化查询（Prepared Statements）避免拼接SQL：
-
   ```php
   // 不安全的代码 ❌
   $db->query("SELECT * FROM users WHERE id = " . $id);
   mysqli_query($conn, sprintf("SELECT * FROM users WHERE name = '%s'", $name));
-
   // 安全的代码 ✅
   $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
   $stmt->execute([$id]);
   ```
-
-  其他安全措施：
-  - 使用PDO并禁用模拟预处理
-  - 对输入进行类型与长度校验
-  - 最小化数据库账号权限
 rule:
   any:
     - pattern: |

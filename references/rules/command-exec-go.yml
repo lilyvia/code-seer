@@ -1,31 +1,14 @@
 id: go-command-exec
 language: go
 name: 命令执行漏洞（Go）
-message: 检测到命令执行漏洞：调用 os/exec 执行外部可控命令
-description: |
-  Go 中命令执行风险主要来自 os/exec 包。
-
-  此规则检测以下危险场景：
-  - exec.Command(...) 直接执行动态命令
-  - exec.CommandContext(...) 执行外部可控命令
-  - 通过 "sh -c" / "cmd /c" 执行拼接字符串
-
-  风险：
-  - 可执行任意系统命令
-  - 导致数据泄露、文件破坏
-  - 形成远程命令注入链路
-  - 提升为主机级安全事件
-severity: error
-risk_level: 严重
+description: Go 中命令执行风险主要来自 os/exec 包。
 cwe: CWE-78
 remediation: |
   避免使用 shell 包装命令，禁止将用户输入直接作为命令或参数。
-
   ```go
   // 不安全的代码 ❌
   exec.Command("sh", "-c", userCmd).Run()
   exec.Command(userCmd).Run()
-
   // 更安全的代码 ✅
   allowed := map[string]bool{"date": true, "whoami": true}
   if allowed[userCmd] {
@@ -35,12 +18,6 @@ remediation: |
       _ = err
   }
   ```
-
-  安全措施：
-  - 不使用 "sh -c" 或 "cmd /c"
-  - 对命令和参数进行白名单验证
-  - 优先采用 Go 内置库替代系统调用
-  - 限制进程执行权限与可访问资源
 rule:
   any:
     - pattern: exec.Command($CMD).Run()

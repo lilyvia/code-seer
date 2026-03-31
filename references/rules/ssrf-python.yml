@@ -1,51 +1,24 @@
 id: python-ssrf
 language: python
 name: SSRF服务器端请求伪造（Python）
-message: 检测到SSRF漏洞：使用用户控制的URL发起HTTP请求
-description: |
-  SSRF允许攻击者利用服务器发起恶意请求，访问内部网络或敏感资源。
-
-  此规则检测到以下危险的HTTP请求：
-  - requests.get(user_url) / requests.post(user_url)
-  - urllib.request.urlopen(user_url)
-  - httpx.get(user_url) / httpx.post(user_url)
-
-  典型高风险目标：
-  - 本地环回地址（localhost, 127.0.0.1）
-  - 云元数据服务（169.254.169.254）
-  - 私有网段（10.x.x.x, 192.168.x.x, 172.16.x.x-172.31.x.x）
-  - 本地文件协议（file://）
-
-  风险：
-  - 访问内部网络服务和管理接口
-  - 窃取云实例凭据与元数据
-  - 对内网发起端口探测和横向移动
-  - 绕过边界访问原本不可达资源
-severity: error
-risk_level: 高危
+description: SSRF允许攻击者利用服务器发起恶意请求，访问内部网络或敏感资源。
 cwe: CWE-918
 remediation: |
   验证并限制用户提供的URL，仅允许可信目标与协议。
-
   ```python
   # 不安全的代码 ❌
   requests.get(user_url)
-
   # 安全的代码 ✅
   from urllib.parse import urlparse
   import ipaddress
-
   def is_safe_url(url: str) -> bool:
       parsed = urlparse(url)
-
       # 只允许 http/https
       if parsed.scheme not in ["http", "https"]:
           return False
-
       host = parsed.hostname
       if not host:
           return False
-
       # 拒绝环回、私有网段和链路本地地址
       try:
           ip = ipaddress.ip_address(host)
@@ -53,29 +26,23 @@ remediation: |
               return False
       except ValueError:
           pass
-
       # 显式拦截云元数据地址
       if host == "169.254.169.254":
           return False
-
       return True
-
   if is_safe_url(user_url):
       requests.get(user_url, timeout=3)
   ```
-
-  安全措施：
-  - 使用URL白名单或固定上游服务
-  - 禁止 file://、gopher:// 等危险协议
-  - 禁止跟随重定向到内网地址
-  - 为出站请求设置超时与网络隔离策略
 rule:
   any:
     - pattern: requests.get($USER_URL)
     - pattern: requests.post($USER_URL, $$$ARGS)
     - pattern: urllib.request.urlopen($USER_URL)
+    - pattern: urllib.request.urlopen("http://$$$URL")
     - pattern: httpx.get($USER_URL)
     - pattern: httpx.post($USER_URL, $$$ARGS)
+    - pattern: aiohttp.ClientSession().get($USER_URL)
+    - pattern: aiohttp.ClientSession().post($USER_URL, $$$ARGS)
     - pattern: requests.get("http://localhost$$$REST")
     - pattern: requests.get("http://127.0.0.1$$$REST")
     - pattern: requests.get("http://169.254.169.254$$$REST")
