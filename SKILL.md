@@ -29,7 +29,7 @@ metadata:
 3. **LLM主动代码审查**：AI主动阅读源代码，基于安全知识挖掘漏洞，不依赖ast-grep结果
 4. **漏洞验证**：对可疑代码进行数据流分析、调用链追踪、上下文验证，确认漏洞真实性和可达性
 5. **误报自动确认**：对疑似误报进行深度复核，自动分析代码上下文和数据流
-6. **生成AI审计报告**：输出 `security_audit_report_YYYYMMDD.md`，包含6个必需字段。报告需先列出**确认的真实漏洞**，再单独列出**疑似误报项**，两者不得混排
+6. **生成AI审计报告**：输出 `security_audit_report_YYYYMMDD.md`，包含6个必需字段。报告需先列出**确认的真实漏洞**，再单独列出**疑似误报项**，两者不得混排。如果目标项目是git仓库，报告中必须写明分析的git commit hash
 
 ## LLM主动安全审计方法论
 
@@ -144,6 +144,7 @@ ast-grep scan -r references/rules/sql-injection-csharp.yml /path/to/project --js
 
 - **输出语言**：中文
 - **报告文件**：`security_audit_report_YYYYMMDD.md`
+- **Git信息**：如果目标项目是git仓库，报告头部必须包含 `Git Commit Hash: <hash>`
 - **报告结构**：
   1. **确认的真实漏洞**：按风险等级排序，逐项列出经AI验证的漏洞
   2. **疑似误报项**：单独成章，列出经复核后认为可能为误报的项，不得与真实漏洞混排
@@ -191,6 +192,9 @@ cd /path/to/project && ast-grep scan --json > /tmp/scan_results.json
 
 # 辅助验证
 rg -n "execute|query|raw" --type cs /path/to/project
+
+# 获取git commit hash（如果是git仓库）
+cd /path/to/project && git rev-parse HEAD
 ```
 
-**报告输出**：AI最终审计报告保存为 `security_audit_report_YYYYMMDD.md`，ast-grep扫描结果输出到 `/tmp/scan_results.json`
+**报告输出**：AI最终审计报告保存为 `security_audit_report_YYYYMMDD.md`，ast-grep扫描结果输出到 `/tmp/scan_results.json`。如果目标项目是git仓库，报告头部必须包含 `Git Commit Hash: <hash>`。
