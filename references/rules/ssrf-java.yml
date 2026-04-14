@@ -11,25 +11,24 @@ remediation: "不要直接使用外部输入构造请求目标，建议固定目
   \ {\n    HttpRequest req = HttpRequest.newBuilder(uri).GET().build();\n    HttpClient.newHttpClient().send(req,\
   \ HttpResponse.BodyHandlers.ofString());\n}\n```\n"
 rule:
-  kind: object_creation_expression
   any:
-  - pattern: new URL($USER_URL).openConnection()
-    kind: object_creation_expression
-  - pattern: $URL.openConnection()
-    kind: object_creation_expression
-  - pattern: HttpRequest.newBuilder(URI.create($USER_URL)).build()
-    kind: object_creation_expression
-  - pattern: HttpClient.newHttpClient().send($REQ, $HANDLER)
-    kind: object_creation_expression
-  - pattern: HttpClient.newHttpClient().sendAsync($REQ, $HANDLER)
-    kind: object_creation_expression
-  - pattern: new URL("http://localhost$$$REST").openConnection()
-    kind: object_creation_expression
-  - pattern: new URL("http://127.0.0.1$$$REST").openConnection()
-    kind: object_creation_expression
-  - pattern: new URL("http://169.254.169.254$$$REST").openConnection()
-    kind: object_creation_expression
+  - kind: method_invocation
+    pattern: 'new URL($USER_URL).openConnection()'
+  - kind: method_invocation
+    pattern: '$URL.openConnection()'
+  - kind: method_invocation
+    pattern: 'HttpRequest.newBuilder(URI.create($USER_URL)).build()'
+  - kind: method_invocation
+    pattern: 'HttpClient.newHttpClient().send($REQ, $HANDLER)'
+  - kind: method_invocation
+    pattern: 'HttpClient.newHttpClient().sendAsync($REQ, $HANDLER)'
+  - kind: method_invocation
+    pattern: 'new URL("http://localhost$$$REST").openConnection()'
+  - kind: method_invocation
+    pattern: 'new URL("http://127.0.0.1$$$REST").openConnection()'
+  - kind: method_invocation
+    pattern: 'new URL("http://169.254.169.254$$$REST").openConnection()'
   - all:
-    - pattern: URI.create($URL)
-      kind: object_creation_expression
+    - kind: object_creation_expression
+      pattern: 'URI.create($URL)'
     - regex: URI\.create\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)

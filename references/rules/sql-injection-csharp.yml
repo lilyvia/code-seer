@@ -25,21 +25,16 @@ remediation: '使用参数化查询并显式绑定参数：
 
   '
 rule:
-  kind: invocation_expression
   any:
   - all:
-    - pattern: '$CMD.CommandText = $SQL;
-
-        '
-    - regex: CommandText = \$\".*(SELECT|INSERT|UPDATE|DELETE).*
-  - pattern: '$CMD.CommandText = string.Format($FMT, $$$ARGS);
-
-      '
-  - pattern: '$CMD.CommandText = $SQL + $VAR;
-
-      '
+    - kind: assignment_expression
+      pattern: '$CMD.CommandText = $SQL'
+    - regex: CommandText\s*=\s*\$".*(SELECT|INSERT|UPDATE|DELETE).*
+  - kind: assignment_expression
+    pattern: '$CMD.CommandText = string.Format($FMT, $$$ARGS)'
+  - kind: assignment_expression
+    pattern: '$CMD.CommandText = $SQL + $VAR'
   - all:
-    - pattern: 'new SqlCommand($SQL, $CONN)
-
-        '
-    - regex: SqlCommand\(\$\".*(SELECT|INSERT|UPDATE|DELETE).*
+    - kind: object_creation_expression
+      pattern: 'new SqlCommand($SQL, $CONN)'
+    - regex: SqlCommand\(\$".*(SELECT|INSERT|UPDATE|DELETE).*
