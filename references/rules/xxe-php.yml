@@ -33,32 +33,22 @@ remediation: '使用安全的XML解析参数，避免启用实体替换：
 
   '
 rule:
-  kind: function_call_expression
   any:
-  - pattern: 'libxml_disable_entity_loader(false)
-
-      '
-  - pattern: '$DOC->loadXML($XML, LIBXML_NOENT)
-
-      '
-  - pattern: '$DOC->loadXML($XML, LIBXML_DTDLOAD)
-
-      '
-  - pattern: '$DOC->loadXML($XML, LIBXML_DTDATTR)
-
-      '
-  - pattern: 'simplexml_load_string($XML, $CLASS, LIBXML_NOENT)
-
-      '
-  - pattern: 'simplexml_load_string($XML, $CLASS, LIBXML_DTDLOAD)
-
-      '
-  - pattern: 'simplexml_load_file($XML_FILE, $CLASS, LIBXML_NOENT)
-
-      '
-  - pattern: '$READER->XML($XML)
-
-      '
-  - pattern: '$READER->open($XML_PATH)
-
-      '
+  - kind: function_call_expression
+    pattern: 'libxml_disable_entity_loader(false)'
+  - kind: member_call_expression
+    pattern: '$DOC->loadXML($XML, LIBXML_NOENT)'
+  - kind: member_call_expression
+    pattern: '$DOC->loadXML($XML, LIBXML_DTDLOAD)'
+  - kind: member_call_expression
+    pattern: '$DOC->loadXML($XML, LIBXML_DTDATTR)'
+  - kind: function_call_expression
+    pattern: 'simplexml_load_string($XML, $CLASS, LIBXML_NOENT)'
+  - kind: function_call_expression
+    pattern: 'simplexml_load_string($XML, $CLASS, LIBXML_DTDLOAD)'
+  - kind: function_call_expression
+    pattern: 'simplexml_load_file($XML_FILE, $CLASS, LIBXML_NOENT)'
+  - kind: member_call_expression
+    pattern: '$READER->XML($XML)'
+  - kind: member_call_expression
+    pattern: '$READER->open($XML_PATH)'

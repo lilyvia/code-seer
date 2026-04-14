@@ -33,9 +33,16 @@ remediation: |
 rule:
   any:
     - pattern: $VAR = $MODEL.objects.get($$$ARGS)
+      regex: request|args|kwargs|GET|POST|input
     - pattern: $VAR = $MODEL.query.get($$$ARGS)
+      regex: request|args|kwargs|GET|POST|input
     - pattern: $VAR = db.session.query($MODEL).get($$$ARGS)
+      regex: request|args|kwargs|GET|POST|input
     - pattern: $VAR = $MODEL.objects.filter($$$ARGS).first()
+      regex: request|args|kwargs|GET|POST|input
     - pattern: $VAR = $MODEL.query.filter_by($$$ARGS).first()
+      regex: request|args|kwargs|GET|POST|input
     - pattern: $MODEL.objects.filter($$$ARGS).delete()
+      regex: request|args|kwargs|GET|POST|input
     - pattern: $MODEL.query.filter_by($$$ARGS).delete()
+      regex: request|args|kwargs|GET|POST|input

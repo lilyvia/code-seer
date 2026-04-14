@@ -10,26 +10,18 @@ remediation: "使用安全的 XmlReaderSettings 并禁用外部实体：\n```csh
   \    XmlResolver = null\n};\nusing var reader = XmlReader.Create(new StringReader(userXml), settings);\n\
   var doc = new XmlDocument\n{\n    XmlResolver = null\n};\ndoc.Load(reader);\n```\n"
 rule:
-  kind: invocation_expression
   any:
-  - pattern: '$DOC.LoadXml($XML)
-
-      '
-  - pattern: '$DOC.Load($XML_SOURCE)
-
-      '
-  - pattern: 'new XmlTextReader($XML_SOURCE)
-
-      '
-  - pattern: 'XmlReader.Create($XML_SOURCE)
-
-      '
-  - pattern: '$SETTINGS.DtdProcessing = DtdProcessing.Parse
-
-      '
-  - pattern: '$SETTINGS.XmlResolver = new XmlUrlResolver()
-
-      '
-  - pattern: '$DOC.XmlResolver = new XmlUrlResolver()
-
-      '
+  - kind: invocation_expression
+    pattern: '$DOC.LoadXml($XML)'
+  - kind: invocation_expression
+    pattern: '$DOC.Load($XML_SOURCE)'
+  - kind: object_creation_expression
+    pattern: 'new XmlTextReader($XML_SOURCE)'
+  - kind: invocation_expression
+    pattern: 'XmlReader.Create($XML_SOURCE)'
+  - kind: assignment_expression
+    pattern: '$SETTINGS.DtdProcessing = DtdProcessing.Parse'
+  - kind: assignment_expression
+    pattern: '$SETTINGS.XmlResolver = new XmlUrlResolver()'
+  - kind: assignment_expression
+    pattern: '$DOC.XmlResolver = new XmlUrlResolver()'
