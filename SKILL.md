@@ -106,7 +106,7 @@ find /path/to/project -name "*Controller*.cs" -o -name "*Service*.cs" | \
 - `auth-defects-{lang}.yml` - 鉴权缺陷
 - `hardcoded-secrets-{lang}.yml` - 硬编码密钥
 
-支持语言：python, java, go, php, csharp, javascript
+支持语言：python, java, go, php, csharp, javascript, typescript
 
 ## 输出要求
 

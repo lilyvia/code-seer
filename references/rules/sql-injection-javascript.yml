@@ -42,21 +42,21 @@ remediation: '使用参数化查询替代字符串拼接：
   '
 rule:
   any:
-  - pattern: '$QUERY = `$SQL ${$VAR}$REST`
-
-      '
-  - pattern: '$QUERY = "$SQL" + $VAR
-
-      '
-  - pattern: '$CONN.query($SQL + $VAR)
-
-      '
-  - pattern: '$CONN.query(`$SQL ${$VAR}`)
-
-      '
-  - pattern: '$DB.query($SQL + $VAR)
-
-      '
-  - pattern: '$DB.query(`$SQL ${$VAR}`)
-
-      '
+  - kind: assignment_expression
+    pattern: '$QUERY = `$SQL ${$VAR}$REST`'
+  - kind: assignment_expression
+    pattern: '$QUERY = "$SQL" + $VAR'
+  - kind: call_expression
+    pattern: '$CONN.query($SQL + $VAR)'
+  - kind: call_expression
+    pattern: '$CONN.query(`$SQL ${$VAR}`)'
+  - kind: call_expression
+    pattern: '$DB.query($SQL + $VAR)'
+  - kind: call_expression
+    pattern: '$DB.query(`$SQL ${$VAR}`)'
+  - kind: call_expression
+    pattern: '$CONN.query($QUERY)'
+    regex: 'query\(query\)'
+  - kind: call_expression
+    pattern: '$DB.query($QUERY)'
+    regex: 'query\(query\)'
