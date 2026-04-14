@@ -1,0 +1,54 @@
+id: javascript-path-traversal
+language: javascript
+severity: warning
+message: '路径穿越漏洞（JavaScript） (CWE-22)'
+name: 路径穿越漏洞（JavaScript）
+description: |
+  Node.js 应用中将用户输入直接用于文件路径操作，可能导致路径穿越攻击，
+  攻击者可访问或操作预期目录之外的文件。
+cwe: CWE-22
+remediation: |
+  对用户输入的文件路径进行校验和规范化：
+  ```javascript
+  const path = require('path');
+  const fs = require('fs');
+
+  // 不安全的代码 ❌
+  fs.readFile(userPath, (err, data) => { ... });
+
+  // 安全的代码 ✅
+  function safeRead(baseDir, userPath) {
+    const target = path.resolve(baseDir, userPath);
+    const base = path.resolve(baseDir);
+    if (!target.startsWith(base + path.sep)) {
+      throw new Error('路径穿越检测');
+    }
+    return fs.readFileSync(target);
+  }
+  ```
+rule:
+  any:
+  - kind: call_expression
+    pattern: 'fs.readFile($USER_PATH, $$$)'
+  - kind: call_expression
+    pattern: 'fs.readFileSync($USER_PATH, $$$)'
+  - kind: call_expression
+    pattern: 'fs.writeFile($UPLOAD_PATH, $CONTENT, $$$)'
+  - kind: call_expression
+    pattern: 'fs.writeFileSync($UPLOAD_PATH, $CONTENT, $$$)'
+  - kind: call_expression
+    pattern: 'fs.createReadStream($USER_PATH, $$$)'
+  - kind: call_expression
+    pattern: 'fs.createWriteStream($UPLOAD_PATH, $$$)'
+  - kind: call_expression
+    pattern: 'fs.unlink($USER_PATH, $$$)'
+  - kind: call_expression
+    pattern: 'fs.unlinkSync($USER_PATH)'
+  - kind: call_expression
+    pattern: 'fs.open($USER_PATH, $$$)'
+  - kind: call_expression
+    pattern: 'fs.openSync($USER_PATH, $$$)'
+  - kind: call_expression
+    pattern: 'path.join($BASE_DIR, $USER_PATH)'
+  - kind: call_expression
+    pattern: 'path.resolve($BASE_DIR, $USER_PATH)'

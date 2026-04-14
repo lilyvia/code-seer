@@ -1,0 +1,47 @@
+id: javascript-ssrf
+language: javascript
+severity: warning
+message: 'SSRF服务器端请求伪造（JavaScript） (CWE-918)'
+name: SSRF服务器端请求伪造（JavaScript）
+description: |
+  Node.js 应用中将用户输入直接用于 HTTP 请求，可能导致 SSRF 攻击，
+  攻击者可能利用服务器访问内部网络或云元数据服务。
+cwe: CWE-918
+remediation: |
+  对用户提供的 URL 进行协议、域名和 IP 范围校验：
+  ```javascript
+  const { URL } = require('url');
+
+  // 不安全的代码 ❌
+  axios.get(userUrl);
+  fetch(userUrl);
+
+  // 安全的代码 ✅
+  function isSafeUrl(url) {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:') return false;
+    const blockedHosts = ['localhost', '127.0.0.1', '169.254.169.254'];
+    if (blockedHosts.includes(parsed.hostname)) return false;
+    return true;
+  }
+  ```
+rule:
+  any:
+  - kind: call_expression
+    pattern: 'axios.get($USER_URL)'
+  - kind: call_expression
+    pattern: 'axios.post($USER_URL, $$$)'
+  - kind: call_expression
+    pattern: 'fetch($USER_URL)'
+  - kind: call_expression
+    pattern: 'request($USER_URL, $$$)'
+  - kind: call_expression
+    pattern: 'http.get($USER_URL)'
+  - kind: call_expression
+    pattern: 'https.get($USER_URL)'
+  - kind: call_expression
+    pattern: 'http.request($USER_URL, $$$)'
+  - kind: call_expression
+    pattern: 'https.request($USER_URL, $$$)'
+  - kind: call_expression
+    pattern: 'nodeFetch($USER_URL)'

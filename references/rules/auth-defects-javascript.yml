@@ -1,0 +1,59 @@
+id: javascript-auth-defects
+language: javascript
+severity: warning
+message: '鉴权缺陷（JavaScript） (CWE-287)'
+name: 鉴权缺陷（JavaScript）
+description: |
+  Node.js / Express 等框架中，敏感路由缺少身份验证或授权校验，
+  可能导致未授权访问。
+cwe: CWE-287
+remediation: |
+  对敏感路由实施认证和授权中间件：
+  ```javascript
+  // 不安全的代码 ❌
+  app.get('/admin', (req, res) => {
+    res.render('admin');
+  });
+
+  // 安全的代码 ✅
+  const { isAuthenticated, hasRole } = require('./auth');
+
+  app.get('/admin', isAuthenticated, hasRole('admin'), (req, res) => {
+    res.render('admin');
+  });
+
+  // 资源归属校验
+  app.get('/orders/:id', isAuthenticated, async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (order.userId !== req.user.id) {
+      return res.status(403).send('禁止访问');
+    }
+    res.json(order);
+  });
+  ```
+rule:
+  any:
+  - kind: call_expression
+    pattern: 'app.get($PATH, $HANDLER)'
+    regex: 'app\.get\(["'']/admin'
+  - kind: call_expression
+    pattern: 'app.post($PATH, $HANDLER)'
+    regex: 'app\.post\(["'']/admin'
+  - kind: call_expression
+    pattern: 'app.delete($PATH, $HANDLER)'
+    regex: 'app\.delete\(["'']/admin'
+  - kind: call_expression
+    pattern: 'app.put($PATH, $HANDLER)'
+    regex: 'app\.put\(["'']/admin'
+  - kind: call_expression
+    pattern: 'router.get($PATH, $HANDLER)'
+    regex: 'router\.get\(["'']/admin'
+  - kind: call_expression
+    pattern: 'router.post($PATH, $HANDLER)'
+    regex: 'router\.post\(["'']/admin'
+  - kind: call_expression
+    pattern: 'router.delete($PATH, $HANDLER)'
+    regex: 'router\.delete\(["'']/admin'
+  - kind: call_expression
+    pattern: 'router.put($PATH, $HANDLER)'
+    regex: 'router\.put\(["'']/admin'

@@ -1,0 +1,30 @@
+id: javascript-deserialization
+language: javascript
+severity: error
+message: '不安全的反序列化（JavaScript） (CWE-502)'
+name: 不安全的反序列化（JavaScript）
+description: |
+  Node.js 中使用 eval、new Function 或某些不安全的反序列化库处理不可信数据时，
+  可能导致任意代码执行。
+cwe: CWE-502
+remediation: |
+  避免使用 eval 和 new Function 处理外部输入，优先使用 JSON.parse：
+  ```javascript
+  // 不安全的代码 ❌
+  const obj = eval(userInput);
+  const fn = new Function(userInput);
+  const data = serialize.unserialize(userInput);
+
+  // 安全的代码 ✅
+  const obj = JSON.parse(userInput);
+  ```
+rule:
+  any:
+  - kind: call_expression
+    pattern: 'eval($USER_DATA)'
+  - kind: new_expression
+    pattern: 'new Function($USER_DATA)'
+  - kind: call_expression
+    pattern: 'serialize.unserialize($USER_DATA)'
+  - kind: call_expression
+    pattern: 'nodeSerialize.unserialize($USER_DATA)'

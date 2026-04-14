@@ -1,0 +1,38 @@
+id: javascript-xxe
+language: javascript
+severity: warning
+message: 'XXE XML外部实体注入（JavaScript） (CWE-611)'
+name: XXE XML外部实体注入（JavaScript）
+description: |
+  Node.js 中使用不安全的 XML 解析器配置处理不可信 XML 输入时，
+  可能受到 XXE 攻击，导致文件读取或 SSRF。
+cwe: CWE-611
+remediation: |
+  禁用外部实体和 DTD 解析：
+  ```javascript
+  const libxmljs = require('libxmljs');
+
+  // 不安全的代码 ❌
+  const doc = libxmljs.parseXml(xmlString);
+
+  // 安全的代码 ✅
+  const doc = libxmljs.parseXml(xmlString, {
+    noent: false,
+    dtdvalid: false,
+    nonet: true
+  });
+  ```
+rule:
+  any:
+  - kind: call_expression
+    pattern: 'libxmljs.parseXml($XML)'
+  - kind: call_expression
+    pattern: 'libxmljs.parseXmlString($XML)'
+  - kind: call_expression
+    pattern: 'xml2js.parseString($XML, $$$)'
+  - kind: call_expression
+    pattern: 'new xml2js.Parser($$$).parseString($XML, $$$)'
+  - kind: call_expression
+    pattern: 'DOMParser().parseFromString($XML, $$$)'
+  - kind: new_expression
+    pattern: 'new DOMParser()'
