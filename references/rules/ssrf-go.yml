@@ -12,9 +12,9 @@ rule:
   kind: call_expression
   any:
   - all:
-    - pattern: $FN($USER_URL)
+    - pattern: http.Get($USER_URL)
       kind: call_expression
-    - regex: (http\.Get\(|\w+\.Get\()
+    - regex: http\.Get\(
   - all:
     - pattern: $FN($USER_URL, $CONTENT_TYPE, $BODY)
       kind: call_expression

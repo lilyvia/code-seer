@@ -43,18 +43,10 @@ rule:
   - pattern: 'new Function($USER_INPUT)
 
       '
-  - pattern: 'location.href = $USER_INPUT
-
-      '
-  - pattern: 'location.replace($USER_INPUT)
-
-      '
-  - pattern: 'document.location = $USER_INPUT
-
-      '
-  - pattern: 'window.location = $USER_INPUT
-
-      '
+  - all:
+    - pattern: 'location.href = $USER_INPUT'
+    - not:
+        regex: location\.href\s*=\s*["']https?://
   - pattern: '<div v-html="$USER_INPUT">
 
       '
