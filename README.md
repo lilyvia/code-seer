@@ -1,186 +1,74 @@
-# 安全审计技能
+# 源码安全审计
 
-OpenCode 安全审计技能，用于检测代码中的9类安全漏洞，支持5种编程语言。
+OpenCode 安全审计技能，基于 AST-grep 规则库进行自动化安全漏洞检测与分析，支持 5 种编程语言，覆盖 9 类常见漏洞类型。
 
-## 项目介绍
+> ⚠️ **注意**：此工具专为 AI 助手设计，用于自动化代码安全审计。终端用户请勿直接使用，应通过 OpenCode 等 AI 工具调用。
 
-本安全审计技能基于 AST-grep 静态分析引擎，提供深度安全漏洞检测能力。支持完整的调用链追踪、误报过滤和中文报告生成。
+## 功能特性
 
-### 支持的漏洞类型 (9类)
+### 支持的漏洞类型
 
-| 漏洞类型 | CWE ID | 风险等级 | 说明 |
-|---------|--------|---------|------|
-| SQL注入 | CWE-89 | 严重 | 用户输入直接拼接到SQL查询中 |
-| XSS跨站脚本 | CWE-79 | 高危 | 未过滤的用户输入输出到页面 |
-| 命令执行 | CWE-78 | 严重 | 执行用户控制的系统命令 |
-| 反序列化漏洞 | CWE-502 | 严重 | 不安全的反序列化操作 |
-| 路径穿越 | CWE-22 | 高危 | 任意文件读取/上传/删除 |
-| SSRF | CWE-918 | 高危 | 服务器端请求伪造 |
-| XXE | CWE-611 | 中危 | XML外部实体注入 |
-| 鉴权缺陷 | CWE-287/306 | 中危 | 未授权访问、水平/垂直越权 |
-| 硬编码密钥 | CWE-798 | 高危 | API密钥、密码等敏感信息硬编码 |
+| 漏洞类型 | CWE ID | 风险等级 | 检测规则文件 |
+|---------|--------|---------|-------------|
+| SQL注入 | CWE-89 | 严重 | `sql-injection-{lang}.yml` |
+| XSS跨站脚本 | CWE-79 | 高危 | `xss-{lang}.yml` |
+| 命令执行 | CWE-78 | 严重 | `command-exec-{lang}.yml` |
+| 反序列化漏洞 | CWE-502 | 严重 | `deserialization-{lang}.yml` |
+| 路径穿越 | CWE-22 | 高危 | `path-traversal-{lang}.yml` |
+| SSRF | CWE-918 | 高危 | `ssrf-{lang}.yml` |
+| XXE | CWE-611 | 中危 | `xxe-{lang}.yml` |
+| 鉴权缺陷 | CWE-287/306 | 中危 | `auth-defects-{lang}.yml` |
+| 硬编码密钥 | CWE-798 | 高危 | `hardcoded-secrets-{lang}.yml` |
 
-### 支持的语言 (5种)
+### 支持的语言
 
-- **Java** - 完整的Java安全规则集
-- **Go** - Go语言特定API检测
-- **Python** - Python框架和库支持
-- **PHP** - PHP常见漏洞模式
-- **C#** - .NET平台安全检测
-
-## 安装说明
-
-### 系统要求
-
-- Python 3.8+
-- Node.js 16+ (用于 AST-grep)
-
-### 安装步骤
-
-#### 1. 克隆项目
-
-```bash
-cd /path/to/opencode
-git clone <repository-url>
-cd security-audit
-```
-
-#### 2. 安装 Python 依赖
-
-```bash
-pip install -r requirements.txt
-```
-
-#### 3. 安装 AST-grep CLI
-
-```bash
-npm install -g @ast-grep/cli
-```
-
-或者使用 npx:
-
-```bash
-npx @ast-grep/cli --version
-```
-
-#### 4. 验证安装
-
-```bash
-python scripts/security_scanner.py --help
-```
-
-输出示例:
-```
-usage: security_scanner.py [-h] [--mode {quick,comprehensive}]
-                          [--format {markdown,json,sarif}]
-                          [--fail-on {严重,高危,中危,低危}]
-                          target
-
-安全审计扫描器 - 检测代码中的安全漏洞
-
-positional arguments:
-  target                要扫描的代码目录路径
-
-options:
-  -h, --help            显示帮助信息
-  --mode {quick,comprehensive}
-                        扫描模式
-  --format {markdown,json,sarif}
-                        输出格式
-  --fail-on {严重,高危,中危,低危}
-                        发现指定等级及以上漏洞时返回错误码
-```
-
-## 快速开始
-
-### 基础扫描
-
-```bash
-# 扫描当前目录
-python scripts/security_scanner.py .
-
-# 扫描指定项目
-python scripts/security_scanner.py /path/to/your/project
-
-# 使用综合扫描模式（更慢但更全面）
-python scripts/security_scanner.py /path/to/project --mode comprehensive
-```
-
-### 生成报告
-
-```bash
-# 生成 Markdown 报告（默认）
-python scripts/security_scanner.py /path/to/project --format markdown
-
-# 生成 JSON 报告
-python scripts/security_scanner.py /path/to/project --format json
-
-# 生成 SARIF 报告（用于 CI/CD 集成）
-python scripts/security_scanner.py /path/to/project --format sarif
-```
-
-### 快速演示
-
-```bash
-# 使用示例报告生成器
-cd security-audit
-python scripts/report_generator.py
-```
-
-这将生成一个示例安全报告，展示报告的完整格式。
+- **Java** (`.java`) - 完整的安全规则集
+- **Go** (`.go`) - Go语言特定API检测
+- **Python** (`.py`) - Python框架和库支持
+- **PHP** (`.php`) - PHP常见漏洞模式
+- **C#** (`.cs`) - .NET平台安全检测
 
 ## 使用方法
 
-### 命令行参数
+此安全审计技能通过 OpenCode 等 AI 工具调用。用户只需提供目标代码路径，AI 将自动完成以下流程：
+
+1. **执行 AST-grep 扫描** - AI 自动调用 ast-grep CLI 进行批量扫描
+2. **深度分析漏洞** - 基于扫描结果验证候选漏洞，评估真实性和风险等级
+3. **误报自动确认** - 对疑似误报进行深度复核，分析代码上下文和数据流
+4. **生成审计报告** - 输出中文安全报告，包含复现步骤、调用链、修复建议
+
+### AI 调用示例
 
 ```
-python scripts/security_scanner.py <目标路径> [选项]
+用户: 审计 /path/to/project 的安全漏洞
+
+AI: 我将为您进行安全审计，步骤如下：
+     1. 使用 AST-grep 扫描目标代码
+     2. 分析扫描结果，验证漏洞
+     3. 生成安全审计报告
+
+     [AI 自动执行扫描和分析...]
+
+     审计完成！生成报告: security_audit_report_20250409.md
 ```
 
-| 参数 | 说明 | 可选值 | 默认值 |
-|-----|------|--------|--------|
-| `target` | 要扫描的代码目录或文件 | - | 必需 |
-| `--mode` | 扫描模式 | quick, comprehensive | quick |
-| `--format` | 输出格式 | markdown, json, sarif | markdown |
-| `--fail-on` | 指定等级以上漏洞返回错误码 | 严重, 高危, 中危, 低危 | - |
+## 审计报告格式
 
-### 扫描模式
+AI 生成的安全审计报告包含以下必需字段：
 
-**快速模式 (quick)**
-- 仅扫描核心漏洞模式
-- 扫描速度较快
-- 适合日常开发和 CI 快速检查
+1. **复现步骤** - 包含 HTTP 请求包示例
+2. **漏洞入口** - 漏洞的入口点和攻击向量
+3. **调用链** - 从入口到危险操作的完整调用链
+4. **风险等级** - 严重/高危/中危/低危
+5. **修复建议** - 具体的修复代码示例
+6. **疑似误报说明** - 误报可能性分析和判断依据
 
-**综合模式 (comprehensive)**
-- 启用所有漏洞规则
-- 启用调用链追踪
-- 启用误报过滤分析
-- 适合发布前的安全审计
-
-### 输出格式
-
-**Markdown 格式** (推荐用于人工审查)
-- 中文安全报告
-- 包含漏洞描述、代码片段、修复建议
-- 调用链可视化 (ASCII 艺术图)
-- 疑似误报说明
-
-**JSON 格式** (推荐用于程序处理)
-- 结构化数据输出
-- 易于集成到其他工具
-- 包含完整的漏洞元数据
-
-**SARIF 格式** (推荐用于 CI/CD)
-- 符合 SARIF v2.1.0 标准
-- GitHub Code Scanning 兼容
-- 支持代码流追踪
-
-### 示例输出
+### 报告示例
 
 ```markdown
 # 安全审计报告
 
-**生成时间**: 2024-03-18 10:30:00
+**生成时间**: 2025-04-09 14:30:00
 
 ## 执行摘要
 
@@ -199,7 +87,7 @@ python scripts/security_scanner.py <目标路径> [选项]
 
 ## 🔴 严重
 
-### 1. SQL注入漏洞 🔴 严重
+### 1. SQL注入漏洞
 
 #### 📋 基本信息
 - **规则ID**: `sql-injection-python`
@@ -211,9 +99,13 @@ python scripts/security_scanner.py <目标路径> [选项]
 用户输入直接拼接到SQL查询中，存在SQL注入风险...
 
 #### 🔍 复现步骤
-1. 访问用户详情页面
-2. 在URL参数中输入 `?id=1 OR 1=1`
-3. 观察是否返回所有用户数据
+```http
+POST /api/users HTTP/1.1
+Host: target.com
+Content-Type: application/x-www-form-urlencoded
+
+username=admin' OR '1'='1'--&password=test
+```
 
 #### 🔗 调用链
 ```
@@ -231,225 +123,110 @@ python scripts/security_scanner.py <目标路径> [选项]
 ```
 
 #### 🔧 修复建议
-1. 使用参数化查询
-2. 对用户输入进行类型校验
-3. 使用ORM框架
+```python
+# 修复前（存在漏洞）
+cursor.execute(f"SELECT * FROM users WHERE id={user_id}")
+
+# 修复后（安全）
+cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
 ```
-
-## 配置选项
-
-### 环境变量
-
-| 变量名 | 说明 | 默认值 |
-|-------|------|--------|
-| `SECURITY_AUDIT_MODE` | 默认扫描模式 | `quick` |
-| `SECURITY_AUDIT_OUTPUT` | 默认输出格式 | `markdown` |
-| `SECURITY_AUDIT_RULES_PATH` | 自定义规则路径 | `references/rules/` |
-
-### 规则配置
-
-规则文件位于 `references/rules/` 目录，使用 YAML 格式:
-
-```yaml
-id: sql-injection-python
-severity: CRITICAL
-cwe: CWE-89
-message: 发现SQL注入漏洞
-description: |
-  用户输入直接拼接到SQL查询中，可能导致数据库被攻击。
-remediation: |
-  使用参数化查询替代字符串拼接：
-  ```python
-  cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
-  ```
 ```
-
-### 忽略文件
-
-扫描器会自动跳过以下文件:
-
-- `.git/` 目录
-- `node_modules/` 目录
-- `__pycache__/` 目录
-- 包含 `test` 的文件名
-- `.gitignore` 中指定的文件
-
-## 示例输出
-
-### 控制台输出
-
-```
-发现 156 个待扫描文件
-扫描完成。发现 4 个漏洞。
-
-=== 漏洞统计 ===
-🔴 严重: 1 个
-🟠 高危: 1 个
-🟡 中危: 1 个
-🟢 低危: 1 个
-
-✅ 报告已保存到: /path/to/security_audit_report.md
-```
-
-### JSON 输出示例
-
-```json
-{
-  "target": "/path/to/project",
-  "files_scanned": 156,
-  "findings": [
-    {
-      "rule_id": "sql-injection-python",
-      "name": "SQL注入漏洞",
-      "severity": "严重",
-      "cwe": "CWE-89",
-      "file_path": "app/database.py",
-      "line_number": 42,
-      "confidence": 0.95,
-      "description": "用户输入直接拼接到SQL查询中..."
-    }
-  ]
-}
-```
-
-## 故障排除
-
-### 常见问题
-
-#### 1. AST-grep 未安装
-
-**错误信息**:
-```
-ast-grep: command not found
-```
-
-**解决方法**:
-```bash
-npm install -g @ast-grep/cli
-```
-
-#### 2. Python 版本过低
-
-**错误信息**:
-```
-SyntaxError: invalid syntax
-```
-
-**解决方法**:
-确保 Python 版本 >= 3.8:
-```bash
-python --version
-# 升级 Python 到 3.8+
-```
-
-#### 3. 权限不足
-
-**错误信息**:
-```
-PermissionError: [Errno 13] Permission denied
-```
-
-**解决方法**:
-```bash
-# 检查目录权限
-ls -la /path/to/project
-
-# 使用 sudo（不推荐）
-sudo python scripts/security_scanner.py /path/to/project
-
-# 或者修改目录权限
-chmod -R 755 /path/to/project
-```
-
-#### 4. 扫描结果为空
-
-**可能原因**:
-- 目标目录不包含支持的文件类型
-- 所有文件都被 .gitignore 排除
-- 代码中没有检测到漏洞
-
-**解决方法**:
-```bash
-# 检查文件类型
-find /path/to/project -name "*.py" -o -name "*.java" -o -name "*.go"
-
-# 使用 --no-ignore 选项（开发测试用）
-# 修改 discover_files 函数跳过过滤
-```
-
-#### 5. 报告中文乱码
-
-**解决方法**:
-```bash
-# 设置 UTF-8 编码
-export PYTHONIOENCODING=utf-8
-
-# 或者使用 Python 3 运行
-python3 scripts/security_scanner.py /path/to/project
-```
-
-### 调试模式
-
-```bash
-# 启用详细日志
-python -v scripts/security_scanner.py /path/to/project
-
-# 测试单个规则
-ast-grep scan --rule references/rules/sql-injection-python.yml /path/to/test.py
-```
-
-### 获取帮助
-
-- 查看 SKILL.md 了解详细使用说明
-- 查看 references/cwe-mappings.md 了解漏洞分类
-- 查看 references/remediation-guide.md 了解修复建议
 
 ## 项目结构
 
 ```
 security-audit/
-├── SKILL.md                    # 技能定义文件
+├── SKILL.md                    # 技能定义文件，AI审计流程核心文档
 ├── README.md                   # 本文件
-├── CHANGELOG.md                # 版本历史
-├── scripts/                    # Python 脚本
-│   ├── security_scanner.py     # 主扫描器
-│   ├── ast_grep_wrapper.py     # AST-grep 包装器
-│   ├── taint_tracker.py        # 污点追踪引擎
-│   ├── call_graph.py           # 调用图构建器
-│   ├── call_chain_tracer.py    # 调用链追踪器
-│   ├── fp_filter.py            # 误报过滤器
-│   ├── risk_calculator.py      # 风险计算器
-│   ├── report_generator.py     # 报告生成器
-│   └── sarif_formatter.py      # SARIF 格式化器
 ├── references/                 # 参考文档和规则
-│   ├── rules/                  # AST-grep 规则文件
-│   │   ├── sql-injection-*.yml
-│   │   ├── xss-*.yml
-│   │   ├── command-exec-*.yml
-│   │   └── ...
-│   ├── cwe-mappings.md         # CWE 漏洞映射
-│   └── remediation-guide.md    # 修复指南
-└── test-samples/               # 测试样本
-    ├── sqli_python.py
-    ├── xss_php.php
-    └── ...
+│   ├── rules/                  # AST-grep 规则文件 (45+ 个规则)
+│   │   ├── sql-injection-*.yml # SQL注入规则
+│   │   ├── command-exec-*.yml  # 命令执行规则
+│   │   ├── xss-*.yml          # XSS规则
+│   │   ├── path-traversal-*.yml # 路径穿越规则
+│   │   ├── ssrf-*.yml         # SSRF规则
+│   │   ├── xxe-*.yml          # XXE规则
+│   │   ├── deserialization-*.yml # 反序列化规则
+│   │   ├── auth-defects-*.yml    # 鉴权缺陷规则
+│   │   └── hardcoded-secrets-*.yml # 硬编码密钥规则
+│   ├── cwe-mappings.md        # CWE 漏洞映射表
+│   └── remediation-guide.md   # 漏洞修复指南
+└── test-samples/              # 测试样本代码
+    ├── sqli_*.py/*.php/*.go/*.java/*.cs    # SQL注入示例
+    ├── python_cmd_exec.py     # Python命令执行示例
+    ├── php_cmd_exec.php       # PHP命令执行示例
+    └── ...                    # 其他漏洞类型示例
 ```
 
-## 许可证
+## 规则说明
 
-MIT许可证
+每个规则文件使用 YAML 格式定义，用于 AST-grep 引擎检测特定漏洞模式。
+
+### 规则示例
+
+`sql-injection-python.yml`:
+
+```yaml
+id: sql-injection-python
+severity: CRITICAL
+cwe: CWE-89
+language: python
+message: 发现潜在的SQL注入漏洞
+description: |
+  用户输入直接拼接到SQL查询字符串中，存在SQL注入风险。
+  攻击者可能通过构造特殊输入操控SQL查询逻辑。
+remediation: |
+  使用参数化查询替代字符串拼接：
+  ```python
+  cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+  ```
+
+rule:
+  pattern: |
+    cursor.execute($QUERY)
+  constraints:
+    QUERY:
+      contains: "f'"
+```
+
+### 规则文件命名规范
+
+- `{vulnerability-type}-{language}.yml`
+- 例如: `sql-injection-python.yml`, `command-exec-java.yml`
+
+### 规则字段说明
+
+| 字段 | 说明 | 示例 |
+|------|------|------|
+| `id` | 规则唯一标识符 | `sql-injection-python` |
+| `severity` | 严重程度 | `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` |
+| `cwe` | CWE编号 | `CWE-89` |
+| `language` | 目标语言 | `python`, `java`, `go`, `php`, `csharp` |
+| `message` | 简短描述 | 发现潜在的SQL注入漏洞 |
+| `description` | 详细描述 | 漏洞原理、风险场景等 |
+| `remediation` | 修复建议 | 具体代码示例 |
+| `rule` | 检测规则 | AST-grep匹配模式 |
+
+## 参考文档
+
+- **SKILL.md** - AI审计流程详细说明（面向AI助手）
+- **references/cwe-mappings.md** - CWE 漏洞分类映射表
+- **references/remediation-guide.md** - 各类漏洞的修复指南
 
 ## 贡献指南
 
 1. 复刻本仓库
-2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'feat: add amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
+2. 创建特性分支 (`git checkout -b feature/new-rule`)
+3. 提交更改 (`git commit -m 'feat: add new rule'`)
+4. 推送到分支 (`git push origin feature/new-rule`)
 5. 创建拉取请求
 
 ## 相关链接
 
-- [AST-grep 文档](https://ast-grep.github.io/)
+- [AST-grep 官方文档](https://ast-grep.github.io/)
 - [CWE 官方网站](https://cwe.mitre.org/)
 - [OWASP Top 10](https://owasp.org/Top10/)
-- [SARIF 规范](https://sarifweb.azurewebsites.net/)
+
+## 许可证
+
+MIT License
