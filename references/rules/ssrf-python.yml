@@ -3,50 +3,29 @@ language: python
 name: SSRF服务器端请求伪造（Python）
 description: SSRF允许攻击者利用服务器发起恶意请求，访问内部网络或敏感资源。
 cwe: CWE-918
-remediation: |
-  验证并限制用户提供的URL，仅允许可信目标与协议。
-  ```python
-  # 不安全的代码 ❌
-  requests.get(user_url)
-  # 安全的代码 ✅
-  from urllib.parse import urlparse
-  import ipaddress
-  def is_safe_url(url: str) -> bool:
-      parsed = urlparse(url)
-      # 只允许 http/https
-      if parsed.scheme not in ["http", "https"]:
-          return False
-      host = parsed.hostname
-      if not host:
-          return False
-      # 拒绝环回、私有网段和链路本地地址
-      try:
-          ip = ipaddress.ip_address(host)
-          if ip.is_private or ip.is_loopback or ip.is_link_local:
-              return False
-      except ValueError:
-          pass
-      # 显式拦截云元数据地址
-      if host == "169.254.169.254":
-          return False
-      return True
-  if is_safe_url(user_url):
-      requests.get(user_url, timeout=3)
-  ```
+remediation: "验证并限制用户提供的URL，仅允许可信目标与协议。\n```python\n# 不安全的代码 ❌\nrequests.get(user_url)\n# 安全的代码 ✅\nfrom\
+  \ urllib.parse import urlparse\nimport ipaddress\ndef is_safe_url(url: str) -> bool:\n    parsed = urlparse(url)\n\
+  \    # 只允许 http/https\n    if parsed.scheme not in [\"http\", \"https\"]:\n        return False\n  \
+  \  host = parsed.hostname\n    if not host:\n        return False\n    # 拒绝环回、私有网段和链路本地地址\n    try:\n\
+  \        ip = ipaddress.ip_address(host)\n        if ip.is_private or ip.is_loopback or ip.is_link_local:\n\
+  \            return False\n    except ValueError:\n        pass\n    # 显式拦截云元数据地址\n    if host == \"\
+  169.254.169.254\":\n        return False\n    return True\nif is_safe_url(user_url):\n    requests.get(user_url,\
+  \ timeout=3)\n```\n"
 rule:
+  kind: call
   any:
-    - pattern: requests.get($USER_URL)
-    - pattern: requests.post($USER_URL, $$$ARGS)
-    - pattern: urllib.request.urlopen($USER_URL)
-    - pattern: urllib.request.urlopen("http://$$$URL")
-    - pattern: httpx.get($USER_URL)
-    - pattern: httpx.post($USER_URL, $$$ARGS)
-    - pattern: aiohttp.ClientSession().get($USER_URL)
-    - pattern: aiohttp.ClientSession().post($USER_URL, $$$ARGS)
-    - pattern: requests.get("http://localhost$$$REST")
-    - pattern: requests.get("http://127.0.0.1$$$REST")
-    - pattern: requests.get("http://169.254.169.254$$$REST")
-    - pattern: urllib.request.urlopen("http://169.254.169.254$$$REST")
-    - all:
-        - pattern: requests.get($URL)
-        - regex: 'requests\.get\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)'
+  - pattern: requests.get($USER_URL)
+  - pattern: requests.post($USER_URL, $$$ARGS)
+  - pattern: urllib.request.urlopen($USER_URL)
+  - pattern: urllib.request.urlopen("http://$$$URL")
+  - pattern: httpx.get($USER_URL)
+  - pattern: httpx.post($USER_URL, $$$ARGS)
+  - pattern: aiohttp.ClientSession().get($USER_URL)
+  - pattern: aiohttp.ClientSession().post($USER_URL, $$$ARGS)
+  - pattern: requests.get("http://localhost$$$REST")
+  - pattern: requests.get("http://127.0.0.1$$$REST")
+  - pattern: requests.get("http://169.254.169.254$$$REST")
+  - pattern: urllib.request.urlopen("http://169.254.169.254$$$REST")
+  - all:
+    - pattern: requests.get($URL)
+    - regex: requests\.get\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)

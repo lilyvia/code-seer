@@ -3,27 +3,14 @@ language: csharp
 name: 命令执行漏洞（C#）
 description: 在 .NET 中，Process.Start 若使用字符串命令或拼接参数，容易被注入恶意指令。
 cwe: CWE-78
-remediation: |
-  优先使用托管 API 实现业务功能，避免调用系统 shell。
-  ```csharp
-  // 不安全的代码 ❌
-  Process.Start(userCmd);
-  Process.Start("cmd.exe", "/c " + userInput);
-  // 更安全的代码 ✅
-  var allowed = new HashSet<string> { "whoami", "hostname" };
-  if (allowed.Contains(userCmd))
-  {
-      var startInfo = new ProcessStartInfo
-      {
-          FileName = userCmd,
-          UseShellExecute = false,
-          RedirectStandardOutput = true
-      };
-      Process.Start(startInfo);
-  }
-  ```
+remediation: "优先使用托管 API 实现业务功能，避免调用系统 shell。\n```csharp\n// 不安全的代码 ❌\nProcess.Start(userCmd);\nProcess.Start(\"\
+  cmd.exe\", \"/c \" + userInput);\n// 更安全的代码 ✅\nvar allowed = new HashSet<string> { \"whoami\", \"hostname\"\
+  \ };\nif (allowed.Contains(userCmd))\n{\n    var startInfo = new ProcessStartInfo\n    {\n        FileName\
+  \ = userCmd,\n        UseShellExecute = false,\n        RedirectStandardOutput = true\n    };\n    Process.Start(startInfo);\n\
+  }\n```\n"
 rule:
+  kind: invocation_expression
   any:
-    - pattern: Process.Start($CMD)
-    - pattern: Process.Start($FILE, $ARGS)
-    - pattern: Process.Start(new ProcessStartInfo($$$ARGS))
+  - pattern: Process.Start($CMD)
+  - pattern: Process.Start($FILE, $ARGS)
+  - pattern: Process.Start(new ProcessStartInfo($$$ARGS))

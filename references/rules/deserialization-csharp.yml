@@ -3,20 +3,34 @@ language: csharp
 name: 不安全的反序列化（C#）
 description: .NET 中 BinaryFormatter 已被官方标记为不安全。
 cwe: CWE-502
-remediation: |
-  避免使用 BinaryFormatter 及同类旧式格式化器。
+remediation: '避免使用 BinaryFormatter 及同类旧式格式化器。
+
   ```csharp
+
   // 不安全的代码 ❌
+
   var formatter = new BinaryFormatter();
+
   var obj = formatter.Deserialize(stream);
+
   // 更安全的代码 ✅
+
   // 使用 System.Text.Json
+
   var dto = JsonSerializer.Deserialize<SafeDto>(jsonText);
+
   ```
+
   建议：
+
   - 将历史反序列化逻辑迁移到 System.Text.Json
+
   - 对输入做签名校验与来源校验
+
   - 仅反序列化受控 DTO 类型
+
+  '
 rule:
+  kind: invocation_expression
   any:
-    - pattern: $FORMATTER.Deserialize($DATA)
+  - pattern: $FORMATTER.Deserialize($DATA)

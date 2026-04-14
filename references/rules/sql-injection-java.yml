@@ -3,40 +3,75 @@ language: java
 name: SQL注入（Java）
 description: SQL注入会在动态拼接SQL语句时发生。
 cwe: CWE-89
-remediation: |
-  使用参数化查询（PreparedStatement）替代动态字符串拼接：
+remediation: '使用参数化查询（PreparedStatement）替代动态字符串拼接：
+
   ```java
+
   // 不安全的代码 ❌
+
   stmt.executeQuery("SELECT * FROM users WHERE id = " + userId);
-  stmt.executeQuery(String.format("SELECT * FROM users WHERE name = '%s'", name));
+
+  stmt.executeQuery(String.format("SELECT * FROM users WHERE name = ''%s''", name));
+
   // 安全的代码 ✅
+
   PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
+
   ps.setString(1, userId);
+
   ps.executeQuery();
+
   ```
+
+  '
 rule:
+  kind: method_invocation
   any:
-    - pattern: |
-        $STMT.executeQuery($SQL + $VAR)
-    - pattern: |
-        $STMT.execute($SQL + $VAR)
-    - pattern: |
-        $STMT.executeUpdate($SQL + $VAR)
-    - pattern: |
-        $STMT.executeBatch($SQL + $VAR)
-    - pattern: |
-        $STMT.executeQuery(String.format($FMT, $$$ARGS))
-    - pattern: |
-        $STMT.execute(String.format($FMT, $$$ARGS))
-    - pattern: |
-        $STMT.executeUpdate(String.format($FMT, $$$ARGS))
-    - pattern: |
-        $STMT.executeQuery(new StringBuilder().append($A).append($VAR).toString())
-    - pattern: |
-        $STMT.execute(new StringBuilder().append($A).append($VAR).toString())
-    - pattern: |
-        $STMT.executeUpdate(new StringBuilder().append($A).append($VAR).toString())
-    - pattern: |
-        $STMT.executeQuery($SQL.concat($VAR))
-    - pattern: |
-        $STMT.execute($SQL.concat($VAR))
+  - pattern: '$STMT.executeQuery($SQL + $VAR)
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.execute($SQL + $VAR)
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.executeUpdate($SQL + $VAR)
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.executeBatch($SQL + $VAR)
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.executeQuery(String.format($FMT, $$$ARGS))
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.execute(String.format($FMT, $$$ARGS))
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.executeUpdate(String.format($FMT, $$$ARGS))
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.executeQuery(new StringBuilder().append($A).append($VAR).toString())
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.execute(new StringBuilder().append($A).append($VAR).toString())
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.executeUpdate(new StringBuilder().append($A).append($VAR).toString())
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.executeQuery($SQL.concat($VAR))
+
+      '
+    kind: method_invocation
+  - pattern: '$STMT.execute($SQL.concat($VAR))
+
+      '
+    kind: method_invocation

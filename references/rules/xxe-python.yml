@@ -3,41 +3,66 @@ language: python
 name: XXE XML外部实体注入（Python）
 description: Python中多个XML解析库在处理不可信XML时可能受到XXE攻击。
 cwe: CWE-611
-remediation: |
-  对不可信XML输入应使用安全解析配置，或改用defusedxml：
+remediation: '对不可信XML输入应使用安全解析配置，或改用defusedxml：
+
   ```python
+
   # 不安全的代码 ❌
+
   import xml.etree.ElementTree as ET
+
   root = ET.fromstring(user_xml)
+
   # 安全的代码 ✅
+
   from defusedxml import ElementTree as SafeET
+
   root = SafeET.fromstring(user_xml)
+
   # lxml安全配置示例
+
   from lxml import etree
+
   parser = etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False)
+
   root = etree.fromstring(user_xml, parser=parser)
+
   ```
+
+  '
 rule:
+  kind: call
   any:
-    - pattern: |
-        ET.parse($XML_INPUT)
-    - pattern: |
-        ET.fromstring($XML_INPUT)
-    - pattern: |
-        xml.etree.ElementTree.parse($XML_INPUT)
-    - pattern: |
-        xml.etree.ElementTree.fromstring($XML_INPUT)
-    - pattern: |
-        minidom.parse($XML_INPUT)
-    - pattern: |
-        minidom.parseString($XML_INPUT)
-    - pattern: |
-        etree.fromstring($XML_INPUT)
-    - pattern: |
-        etree.parse($XML_INPUT)
-    - pattern: |
-        etree.XMLParser(resolve_entities=True)
-    - pattern: |
-        etree.XMLParser(load_dtd=True)
-    - pattern: |
-        etree.XMLParser(no_network=False)
+  - pattern: 'ET.parse($XML_INPUT)
+
+      '
+  - pattern: 'ET.fromstring($XML_INPUT)
+
+      '
+  - pattern: 'xml.etree.ElementTree.parse($XML_INPUT)
+
+      '
+  - pattern: 'xml.etree.ElementTree.fromstring($XML_INPUT)
+
+      '
+  - pattern: 'minidom.parse($XML_INPUT)
+
+      '
+  - pattern: 'minidom.parseString($XML_INPUT)
+
+      '
+  - pattern: 'etree.fromstring($XML_INPUT)
+
+      '
+  - pattern: 'etree.parse($XML_INPUT)
+
+      '
+  - pattern: 'etree.XMLParser(resolve_entities=True)
+
+      '
+  - pattern: 'etree.XMLParser(load_dtd=True)
+
+      '
+  - pattern: 'etree.XMLParser(no_network=False)
+
+      '

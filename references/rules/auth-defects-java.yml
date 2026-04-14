@@ -29,6 +29,7 @@ remediation: |
   - 普通查询校验资源归属关系
   - 在Service层保留二次权限校验，避免绕过Controller
 rule:
+  kind: method_declaration
   any:
     - pattern: |
         @GetMapping("/admin")

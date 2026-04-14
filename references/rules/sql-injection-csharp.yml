@@ -3,27 +3,41 @@ language: csharp
 name: SQL注入（C#）
 description: C#中若通过字符串插值、String.Format 或字符串拼接构建 SQL 语句，攻击者可注入恶意 SQL 代码。
 cwe: CWE-89
-remediation: |
-  使用参数化查询并显式绑定参数：
+remediation: '使用参数化查询并显式绑定参数：
+
   ```csharp
+
   // 不安全的代码 ❌
+
   command.CommandText = $"SELECT * FROM Users WHERE Id = {userId}";
+
   command.CommandText = "SELECT * FROM Users WHERE Id = " + userId;
+
   // 安全的代码 ✅
+
   command.CommandText = "SELECT * FROM Users WHERE Id = @id";
+
   command.Parameters.AddWithValue("@id", userId);
+
   ```
+
+  '
 rule:
+  kind: invocation_expression
   any:
-    - all:
-        - pattern: |
-            $CMD.CommandText = $SQL;
-        - regex: 'CommandText = \$\".*(SELECT|INSERT|UPDATE|DELETE).*'
-    - pattern: |
-        $CMD.CommandText = string.Format($FMT, $$$ARGS);
-    - pattern: |
-        $CMD.CommandText = $SQL + $VAR;
-    - all:
-        - pattern: |
-            new SqlCommand($SQL, $CONN)
-        - regex: 'SqlCommand\(\$\".*(SELECT|INSERT|UPDATE|DELETE).*'
+  - all:
+    - pattern: '$CMD.CommandText = $SQL;
+
+        '
+    - regex: CommandText = \$\".*(SELECT|INSERT|UPDATE|DELETE).*
+  - pattern: '$CMD.CommandText = string.Format($FMT, $$$ARGS);
+
+      '
+  - pattern: '$CMD.CommandText = $SQL + $VAR;
+
+      '
+  - all:
+    - pattern: 'new SqlCommand($SQL, $CONN)
+
+        '
+    - regex: SqlCommand\(\$\".*(SELECT|INSERT|UPDATE|DELETE).*

@@ -3,25 +3,39 @@ language: python
 name: SQL注入（Python）
 description: SQL注入是一种严重的安全漏洞，攻击者可以通过操控输入数据来执行恶意SQL语句。
 cwe: CWE-89
-remediation: |
-  使用参数化查询（Prepared Statements）替代字符串拼接：
+remediation: '使用参数化查询（Prepared Statements）替代字符串拼接：
+
   ```python
+
   # 不安全的代码 ❌
+
   cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")
+
   cursor.execute("SELECT * FROM users WHERE id = %s" % user_id)
+
   # 安全的代码 ✅
+
   cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+
   cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+
   ```
+
+  '
 rule:
+  kind: call
   any:
-    - all:
-        - pattern: |
-            $CURSOR.execute($Q)
-        - regex: 'execute\(f\".*\{.*\}.*\"\)'
-    - pattern: |
-        $CURSOR.execute($SQL % $VAR)
-    - pattern: |
-        $CURSOR.execute($SQL.format($$$ARGS))
-    - pattern: |
-        $CURSOR.execute($SQL + $VAR)
+  - all:
+    - pattern: '$CURSOR.execute($Q)
+
+        '
+    - regex: execute\(f\".*\{.*\}.*\"\)
+  - pattern: '$CURSOR.execute($SQL % $VAR)
+
+      '
+  - pattern: '$CURSOR.execute($SQL.format($$$ARGS))
+
+      '
+  - pattern: '$CURSOR.execute($SQL + $VAR)
+
+      '

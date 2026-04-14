@@ -3,24 +3,18 @@ language: go
 name: 命令执行漏洞（Go）
 description: Go 中命令执行风险主要来自 os/exec 包。
 cwe: CWE-78
-remediation: |
-  避免使用 shell 包装命令，禁止将用户输入直接作为命令或参数。
-  ```go
-  // 不安全的代码 ❌
-  exec.Command("sh", "-c", userCmd).Run()
-  exec.Command(userCmd).Run()
-  // 更安全的代码 ✅
-  allowed := map[string]bool{"date": true, "whoami": true}
-  if allowed[userCmd] {
-      cmd := exec.Command(userCmd)
-      out, err := cmd.Output()
-      _ = out
-      _ = err
-  }
-  ```
+remediation: "避免使用 shell 包装命令，禁止将用户输入直接作为命令或参数。\n```go\n// 不安全的代码 ❌\nexec.Command(\"sh\", \"-c\", userCmd).Run()\n\
+  exec.Command(userCmd).Run()\n// 更安全的代码 ✅\nallowed := map[string]bool{\"date\": true, \"whoami\": true}\n\
+  if allowed[userCmd] {\n    cmd := exec.Command(userCmd)\n    out, err := cmd.Output()\n    _ = out\n\
+  \    _ = err\n}\n```\n"
 rule:
+  kind: call_expression
   any:
-    - pattern: exec.Command($CMD).Run()
-    - pattern: exec.CommandContext($CTX, $CMD).Run()
-    - pattern: exec.Command("sh", "-c", $CMD).Run()
-    - pattern: exec.Command("cmd", "/c", $CMD).Run()
+  - pattern: exec.Command($CMD).Run()
+    kind: call_expression
+  - pattern: exec.CommandContext($CTX, $CMD).Run()
+    kind: call_expression
+  - pattern: exec.Command("sh", "-c", $CMD).Run()
+    kind: call_expression
+  - pattern: exec.Command("cmd", "/c", $CMD).Run()
+    kind: call_expression

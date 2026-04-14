@@ -3,28 +3,48 @@ language: python
 name: 不安全的反序列化（Python）
 description: 不安全的反序列化允许攻击者通过操控序列化数据执行任意代码。
 cwe: CWE-502
-remediation: |
-  使用安全的替代方法：
+remediation: '使用安全的替代方法：
+
   ```python
+
   # 不安全的代码 ❌
+
   pickle.loads(user_data)
+
   yaml.load(user_data)
+
   # 安全的代码 ✅
+
   # 如果必须使用 pickle，确保数据来自可信来源并实施签名验证
+
   # 使用 yaml.safe_load 代替 yaml.load
+
   yaml.safe_load(user_data)
+
   # 或者显式使用 SafeLoader
+
   yaml.load(user_data, Loader=yaml.SafeLoader)
+
   # 使用 JSON 替代 pickle（功能受限但更安全）
+
   import json
+
   json.loads(user_data)
+
   ```
+
   如果必须使用 pickle：
+
   - 对序列化数据实施 HMAC 签名验证
+
   - 使用加密通道传输
+
   - 限制反序列化环境权限
+
+  '
 rule:
+  kind: call
   any:
-    - pattern: pickle.loads($USER_DATA)
-    - pattern: yaml.load($USER_DATA)
-    - pattern: dill.loads($USER_DATA)
+  - pattern: pickle.loads($USER_DATA)
+  - pattern: yaml.load($USER_DATA)
+  - pattern: dill.loads($USER_DATA)

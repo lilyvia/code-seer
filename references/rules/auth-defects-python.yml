@@ -29,6 +29,7 @@ remediation: |
       return render(request, 'order.html', {'order': order})
   ```
 rule:
+  kind: function_definition
   any:
     - pattern: |
         @app.route("/admin")

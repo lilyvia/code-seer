@@ -3,48 +3,39 @@ language: python
 name: 路径穿越漏洞（Python）
 description: 路径穿越漏洞允许攻击者访问或操作预期目录之外的文件。
 cwe: CWE-22
-remediation: |
-  验证和净化用户输入的文件路径：
-  ```python
-  import os
-  from pathlib import Path
-  # 不安全的代码 ❌
-  with open(user_path, 'r') as f:
-      content = f.read()
-  # 安全的代码 ✅
-  def safe_open(base_dir, user_path):
-      full_path = os.path.realpath(os.path.join(base_dir, user_path))
-      base_real = os.path.realpath(base_dir)
-      if not full_path.startswith(base_real + os.sep):
-          raise ValueError("路径不在允许的目录内")
-      return open(full_path, 'r', encoding='utf-8')
-  def safe_write(base_dir, user_path, content):
-      target = safe_path(base_dir, user_path)
-      with open(target, 'wb') as f:
-          f.write(content)
-  # 或者使用pathlib
-  def safe_path(base_dir, user_path):
-      base = Path(base_dir).resolve()
-      target = (base / user_path).resolve()
-      if base != target and base not in target.parents:
-          raise ValueError("路径穿越检测")
-      return target
-  ```
+remediation: "验证和净化用户输入的文件路径：\n```python\nimport os\nfrom pathlib import Path\n# 不安全的代码 ❌\nwith open(user_path,\
+  \ 'r') as f:\n    content = f.read()\n# 安全的代码 ✅\ndef safe_open(base_dir, user_path):\n    full_path\
+  \ = os.path.realpath(os.path.join(base_dir, user_path))\n    base_real = os.path.realpath(base_dir)\n\
+  \    if not full_path.startswith(base_real + os.sep):\n        raise ValueError(\"路径不在允许的目录内\")\n  \
+  \  return open(full_path, 'r', encoding='utf-8')\ndef safe_write(base_dir, user_path, content):\n  \
+  \  target = safe_path(base_dir, user_path)\n    with open(target, 'wb') as f:\n        f.write(content)\n\
+  # 或者使用pathlib\ndef safe_path(base_dir, user_path):\n    base = Path(base_dir).resolve()\n    target\
+  \ = (base / user_path).resolve()\n    if base != target and base not in target.parents:\n        raise\
+  \ ValueError(\"路径穿越检测\")\n    return target\n```\n"
 rule:
+  kind: call
   any:
-    - pattern: |
-        open($USER_PATH, $MODE)
-    - pattern: |
-        open($UPLOAD_PATH, "wb").write($CONTENT)
-    - pattern: |
-        os.remove($USER_PATH)
-    - pattern: |
-        os.unlink($USER_PATH)
-    - pattern: |
-        os.path.join($BASE_DIR, $USER_PATH)
-    - pattern: |
-        open("../$$$REST", $MODE)
-    - pattern: |
-        os.remove("../$$$REST")
-    - pattern: |
-        os.path.join($BASE_DIR, "../$$$REST")
+  - pattern: 'open($USER_PATH, $MODE)
+
+      '
+  - pattern: 'open($UPLOAD_PATH, "wb").write($CONTENT)
+
+      '
+  - pattern: 'os.remove($USER_PATH)
+
+      '
+  - pattern: 'os.unlink($USER_PATH)
+
+      '
+  - pattern: 'os.path.join($BASE_DIR, $USER_PATH)
+
+      '
+  - pattern: 'open("../$$$REST", $MODE)
+
+      '
+  - pattern: 'os.remove("../$$$REST")
+
+      '
+  - pattern: 'os.path.join($BASE_DIR, "../$$$REST")
+
+      '

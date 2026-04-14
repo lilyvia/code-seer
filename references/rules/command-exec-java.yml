@@ -3,23 +3,18 @@ language: java
 name: 命令执行漏洞（Java）
 description: Java 中的命令执行风险通常来自 Runtime.exec 和 ProcessBuilder，若直接拼接用户输入将允许任意命令执行。
 cwe: CWE-78
-remediation: |
-  避免将外部输入直接传入命令执行 API，优先用业务 API 替代系统命令。
-  ```java
-  // 不安全的代码 ❌
-  Runtime.getRuntime().exec(userCmd);
-  new ProcessBuilder("sh", "-c", userCmd).start();
-  // 更安全的代码 ✅
-  List<String> allowed = Arrays.asList("date", "uptime");
-  if (allowed.contains(userCmd)) {
-      ProcessBuilder pb = new ProcessBuilder(userCmd);
-      pb.redirectErrorStream(true);
-      Process p = pb.start();
-  }
-  ```
+remediation: "避免将外部输入直接传入命令执行 API，优先用业务 API 替代系统命令。\n```java\n// 不安全的代码 ❌\nRuntime.getRuntime().exec(userCmd);\n\
+  new ProcessBuilder(\"sh\", \"-c\", userCmd).start();\n// 更安全的代码 ✅\nList<String> allowed = Arrays.asList(\"\
+  date\", \"uptime\");\nif (allowed.contains(userCmd)) {\n    ProcessBuilder pb = new ProcessBuilder(userCmd);\n\
+  \    pb.redirectErrorStream(true);\n    Process p = pb.start();\n}\n```\n"
 rule:
+  kind: method_invocation
   any:
-    - pattern: Runtime.getRuntime().exec($CMD)
-    - pattern: new ProcessBuilder($$$ARGS).start()
-    - pattern: new ProcessBuilder("sh", "-c", $CMD).start()
-    - pattern: new ProcessBuilder("cmd", "/c", $CMD).start()
+  - pattern: Runtime.getRuntime().exec($CMD)
+    kind: method_invocation
+  - pattern: new ProcessBuilder($$$ARGS).start()
+    kind: method_invocation
+  - pattern: new ProcessBuilder("sh", "-c", $CMD).start()
+    kind: method_invocation
+  - pattern: new ProcessBuilder("cmd", "/c", $CMD).start()
+    kind: method_invocation

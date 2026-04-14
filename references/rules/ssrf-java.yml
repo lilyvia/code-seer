@@ -3,31 +3,31 @@ language: java
 name: SSRF服务器端请求伪造（Java）
 description: SSRF会让攻击者借助服务端网络能力访问内网或云环境敏感接口。
 cwe: CWE-918
-remediation: |
-  不要直接使用外部输入构造请求目标，建议固定目标域名并做强校验。
-  ```java
-  // 不安全的代码 ❌
-  URL url = new URL(userUrl);
-  URLConnection conn = url.openConnection();
-  // 安全的代码 ✅
-  URI uri = URI.create(userUrl);
-  String host = uri.getHost();
-  String scheme = uri.getScheme();
-  if ("https".equalsIgnoreCase(scheme) && "api.example.com".equalsIgnoreCase(host)) {
-      HttpRequest req = HttpRequest.newBuilder(uri).GET().build();
-      HttpClient.newHttpClient().send(req, HttpResponse.BodyHandlers.ofString());
-  }
-  ```
+remediation: "不要直接使用外部输入构造请求目标，建议固定目标域名并做强校验。\n```java\n// 不安全的代码 ❌\nURL url = new URL(userUrl);\nURLConnection\
+  \ conn = url.openConnection();\n// 安全的代码 ✅\nURI uri = URI.create(userUrl);\nString host = uri.getHost();\n\
+  String scheme = uri.getScheme();\nif (\"https\".equalsIgnoreCase(scheme) && \"api.example.com\".equalsIgnoreCase(host))\
+  \ {\n    HttpRequest req = HttpRequest.newBuilder(uri).GET().build();\n    HttpClient.newHttpClient().send(req,\
+  \ HttpResponse.BodyHandlers.ofString());\n}\n```\n"
 rule:
+  kind: object_creation_expression
   any:
-    - pattern: new URL($USER_URL).openConnection()
-    - pattern: $URL.openConnection()
-    - pattern: HttpRequest.newBuilder(URI.create($USER_URL)).build()
-    - pattern: HttpClient.newHttpClient().send($REQ, $HANDLER)
-    - pattern: HttpClient.newHttpClient().sendAsync($REQ, $HANDLER)
-    - pattern: new URL("http://localhost$$$REST").openConnection()
-    - pattern: new URL("http://127.0.0.1$$$REST").openConnection()
-    - pattern: new URL("http://169.254.169.254$$$REST").openConnection()
-    - all:
-        - pattern: URI.create($URL)
-        - regex: 'URI\.create\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)'
+  - pattern: new URL($USER_URL).openConnection()
+    kind: object_creation_expression
+  - pattern: $URL.openConnection()
+    kind: object_creation_expression
+  - pattern: HttpRequest.newBuilder(URI.create($USER_URL)).build()
+    kind: object_creation_expression
+  - pattern: HttpClient.newHttpClient().send($REQ, $HANDLER)
+    kind: object_creation_expression
+  - pattern: HttpClient.newHttpClient().sendAsync($REQ, $HANDLER)
+    kind: object_creation_expression
+  - pattern: new URL("http://localhost$$$REST").openConnection()
+    kind: object_creation_expression
+  - pattern: new URL("http://127.0.0.1$$$REST").openConnection()
+    kind: object_creation_expression
+  - pattern: new URL("http://169.254.169.254$$$REST").openConnection()
+    kind: object_creation_expression
+  - all:
+    - pattern: URI.create($URL)
+      kind: object_creation_expression
+    - regex: URI\.create\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)

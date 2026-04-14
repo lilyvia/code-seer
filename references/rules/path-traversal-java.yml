@@ -1,42 +1,47 @@
 id: java-path-traversal
 language: java
 name: 路径穿越漏洞（Java）
-description: |
-  Java中如果将用户可控路径直接传入File、FileInputStream、FileOutputStream或删除操作，
+description: 'Java中如果将用户可控路径直接传入File、FileInputStream、FileOutputStream或删除操作，
+
+  '
 cwe: CWE-22
-remediation: |
-  在使用用户输入访问文件前，先做规范化并校验父目录：
-  ```java
-  import java.nio.file.Path;
-  import java.nio.file.Paths;
-  // 不安全的代码 ❌
-  FileInputStream fis = new FileInputStream(userPath);
-  FileOutputStream fos = new FileOutputStream(uploadPath);
-  // 安全的代码 ✅
-  Path base = Paths.get("/app/data").toRealPath();
-  Path target = base.resolve(userPath).normalize();
-  if (!target.startsWith(base)) {
-      throw new IllegalArgumentException("检测到路径穿越");
-  }
-  try (FileInputStream fis = new FileInputStream(target.toFile())) {
-      // 读取安全文件
-  }
-  ```
+remediation: "在使用用户输入访问文件前，先做规范化并校验父目录：\n```java\nimport java.nio.file.Path;\nimport java.nio.file.Paths;\n\
+  // 不安全的代码 ❌\nFileInputStream fis = new FileInputStream(userPath);\nFileOutputStream fos = new FileOutputStream(uploadPath);\n\
+  // 安全的代码 ✅\nPath base = Paths.get(\"/app/data\").toRealPath();\nPath target = base.resolve(userPath).normalize();\n\
+  if (!target.startsWith(base)) {\n    throw new IllegalArgumentException(\"检测到路径穿越\");\n}\ntry (FileInputStream\
+  \ fis = new FileInputStream(target.toFile())) {\n    // 读取安全文件\n}\n```\n"
 rule:
+  kind: object_creation_expression
   any:
-    - pattern: |
-        new File($USER_PATH)
-    - pattern: |
-        new FileInputStream($USER_PATH)
-    - pattern: |
-        new FileOutputStream($UPLOAD_PATH)
-    - pattern: |
-        new File($USER_PATH).delete()
-    - pattern: |
-        Paths.get($BASE_DIR, $USER_PATH)
-    - pattern: |
-        new File("../$$$REST")
-    - pattern: |
-        new FileInputStream("../$$$REST")
-    - pattern: |
-        new FileOutputStream("../$$$REST")
+  - pattern: 'new File($USER_PATH)
+
+      '
+    kind: object_creation_expression
+  - pattern: 'new FileInputStream($USER_PATH)
+
+      '
+    kind: object_creation_expression
+  - pattern: 'new FileOutputStream($UPLOAD_PATH)
+
+      '
+    kind: object_creation_expression
+  - pattern: 'new File($USER_PATH).delete()
+
+      '
+    kind: object_creation_expression
+  - pattern: 'Paths.get($BASE_DIR, $USER_PATH)
+
+      '
+    kind: object_creation_expression
+  - pattern: 'new File("../$$$REST")
+
+      '
+    kind: object_creation_expression
+  - pattern: 'new FileInputStream("../$$$REST")
+
+      '
+    kind: object_creation_expression
+  - pattern: 'new FileOutputStream("../$$$REST")
+
+      '
+    kind: object_creation_expression

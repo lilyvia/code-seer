@@ -3,45 +3,40 @@ language: csharp
 name: 路径穿越漏洞（C#）
 description: 在C#/ .NET 应用中，若直接将用户输入用于文件路径拼接，可能导致目录遍历攻击。.
 cwe: CWE-22
-remediation: |
-  使用Path.GetFullPath规范化路径，并验证目标路径位于基准目录内：
-  ```csharp
-  using System;
-  using System.IO;
-  // 不安全的代码 ❌
-  var text = File.ReadAllText(userPath);
-  File.WriteAllBytes(uploadPath, content);
-  // 安全的代码 ✅
-  static string SafePath(string baseDir, string userPath)
-  {
-      var baseFull = Path.GetFullPath(baseDir);
-      var targetFull = Path.GetFullPath(Path.Combine(baseFull, userPath));
-      if (!targetFull.StartsWith(baseFull + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
-      {
-          throw new InvalidOperationException("检测到路径穿越");
-      }
-      return targetFull;
-  }
-  var safeFile = SafePath("C:/app/uploads", userPath);
-  var text2 = File.ReadAllText(safeFile);
-  ```
+remediation: "使用Path.GetFullPath规范化路径，并验证目标路径位于基准目录内：\n```csharp\nusing System;\nusing System.IO;\n//\
+  \ 不安全的代码 ❌\nvar text = File.ReadAllText(userPath);\nFile.WriteAllBytes(uploadPath, content);\n// 安全的代码\
+  \ ✅\nstatic string SafePath(string baseDir, string userPath)\n{\n    var baseFull = Path.GetFullPath(baseDir);\n\
+  \    var targetFull = Path.GetFullPath(Path.Combine(baseFull, userPath));\n    if (!targetFull.StartsWith(baseFull\
+  \ + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))\n    {\n        throw new InvalidOperationException(\"\
+  检测到路径穿越\");\n    }\n    return targetFull;\n}\nvar safeFile = SafePath(\"C:/app/uploads\", userPath);\n\
+  var text2 = File.ReadAllText(safeFile);\n```\n"
 rule:
+  kind: invocation_expression
   any:
-    - pattern: |
-        File.ReadAllText($USER_PATH)
-    - pattern: |
-        File.ReadAllBytes($USER_PATH)
-    - pattern: |
-        File.WriteAllBytes($UPLOAD_PATH, $CONTENT)
-    - pattern: |
-        File.WriteAllText($UPLOAD_PATH, $CONTENT)
-    - pattern: |
-        File.Delete($USER_PATH)
-    - pattern: |
-        Path.Combine($BASE_DIR, $USER_PATH)
-    - pattern: |
-        File.ReadAllText("../" + $USER_PATH)
-    - pattern: |
-        File.WriteAllBytes("../" + $USER_PATH, $CONTENT)
-    - pattern: |
-        File.Delete("../" + $USER_PATH)
+  - pattern: 'File.ReadAllText($USER_PATH)
+
+      '
+  - pattern: 'File.ReadAllBytes($USER_PATH)
+
+      '
+  - pattern: 'File.WriteAllBytes($UPLOAD_PATH, $CONTENT)
+
+      '
+  - pattern: 'File.WriteAllText($UPLOAD_PATH, $CONTENT)
+
+      '
+  - pattern: 'File.Delete($USER_PATH)
+
+      '
+  - pattern: 'Path.Combine($BASE_DIR, $USER_PATH)
+
+      '
+  - pattern: 'File.ReadAllText("../" + $USER_PATH)
+
+      '
+  - pattern: 'File.WriteAllBytes("../" + $USER_PATH, $CONTENT)
+
+      '
+  - pattern: 'File.Delete("../" + $USER_PATH)
+
+      '

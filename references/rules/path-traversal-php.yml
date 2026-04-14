@@ -25,21 +25,21 @@ remediation: |
   ```
 rule:
   any:
-    - pattern: |
-        file_get_contents($USER_PATH)
-    - pattern: |
-        include($USER_PATH)
-    - pattern: |
-        require($USER_PATH)
-    - pattern: |
-        file_put_contents($UPLOAD_PATH, $CONTENT)
-    - pattern: |
-        unlink($USER_PATH)
-    - pattern: |
-        $BASE . $USER_PATH
-    - pattern: |
-        file_get_contents("../" . $USER_PATH)
-    - pattern: |
-        include("../" . $USER_PATH)
-    - pattern: |
-        unlink("../" . $USER_PATH)
+    - kind: function_call_expression
+      pattern: file_get_contents($USER_PATH)
+    - kind: function_call_expression
+      pattern: include($USER_PATH)
+    - kind: function_call_expression
+      pattern: require($USER_PATH)
+    - kind: function_call_expression
+      pattern: file_put_contents($UPLOAD_PATH, $CONTENT)
+    - kind: function_call_expression
+      pattern: unlink($USER_PATH)
+    - kind: binary_expression
+      pattern: $BASE . $USER_PATH
+    - kind: function_call_expression
+      pattern: file_get_contents("../" . $USER_PATH)
+    - kind: function_call_expression
+      pattern: include("../" . $USER_PATH)
+    - kind: function_call_expression
+      pattern: unlink("../" . $USER_PATH)

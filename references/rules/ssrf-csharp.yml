@@ -3,28 +3,20 @@ language: csharp
 name: SSRF服务器端请求伪造（C#）
 description: 在 .NET 中使用 HttpClient、WebRequest 访问外部 URL 时，若 URL 来自用户输入可能触发 SSRF 攻击。
 cwe: CWE-918
-remediation: |
-  不要信任外部输入的URL，使用白名单域名并限制可访问网络范围。
-  ```csharp
-  // 不安全的代码 ❌
-  await client.GetAsync(userUrl);
-  // 安全的代码 ✅
-  var uri = new Uri(userUrl);
-  if (uri.Scheme == Uri.UriSchemeHttps && uri.Host == "api.example.com")
-  {
-      await client.GetAsync(uri);
-  }
-  ```
+remediation: "不要信任外部输入的URL，使用白名单域名并限制可访问网络范围。\n```csharp\n// 不安全的代码 ❌\nawait client.GetAsync(userUrl);\n\
+  // 安全的代码 ✅\nvar uri = new Uri(userUrl);\nif (uri.Scheme == Uri.UriSchemeHttps && uri.Host == \"api.example.com\"\
+  )\n{\n    await client.GetAsync(uri);\n}\n```\n"
 rule:
+  kind: invocation_expression
   any:
-    - pattern: $CLIENT.GetAsync($USER_URL)
-    - pattern: $CLIENT.PostAsync($USER_URL, $CONTENT)
-    - pattern: new HttpClient().GetAsync($USER_URL)
-    - pattern: WebRequest.Create($USER_URL)
-    - pattern: HttpWebRequest.Create($USER_URL)
-    - pattern: WebRequest.Create("http://localhost$$$REST")
-    - pattern: WebRequest.Create("http://127.0.0.1$$$REST")
-    - pattern: WebRequest.Create("http://169.254.169.254$$$REST")
-    - all:
-        - pattern: $CLIENT.GetAsync($URL)
-        - regex: 'GetAsync\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)'
+  - pattern: $CLIENT.GetAsync($USER_URL)
+  - pattern: $CLIENT.PostAsync($USER_URL, $CONTENT)
+  - pattern: new HttpClient().GetAsync($USER_URL)
+  - pattern: WebRequest.Create($USER_URL)
+  - pattern: HttpWebRequest.Create($USER_URL)
+  - pattern: WebRequest.Create("http://localhost$$$REST")
+  - pattern: WebRequest.Create("http://127.0.0.1$$$REST")
+  - pattern: WebRequest.Create("http://169.254.169.254$$$REST")
+  - all:
+    - pattern: $CLIENT.GetAsync($URL)
+    - regex: GetAsync\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)

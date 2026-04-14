@@ -25,6 +25,7 @@ remediation: |
   - 控制器中校验资源归属
   - 避免仅依赖前端隐藏按钮做权限控制
 rule:
+  kind: expression_statement
   any:
     - pattern: |
         Route::get('/admin', [$CTRL::class, '$ACTION']);

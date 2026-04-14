@@ -3,49 +3,49 @@ language: go
 name: 路径穿越漏洞（Go）
 description: Go项目中如果将用户输入直接传给os.
 cwe: CWE-22
-remediation: |
-  使用filepath.Clean和绝对路径前缀校验，确保目标路径仍在允许目录内：
-  ```go
-  package safe
-  import (
-      "fmt"
-      "os"
-      "path/filepath"
-      "strings"
-  )
-  // 不安全的代码 ❌
-  f, _ := os.Open(userPath)
-  os.WriteFile(uploadPath, content, 0644)
-  // 安全的代码 ✅
-  func safeJoin(baseDir, userPath string) (string, error) {
-      baseAbs, err := filepath.Abs(baseDir)
-      if err != nil {
-          return "", err
-      }
-      target := filepath.Clean(filepath.Join(baseAbs, userPath))
-      if target != baseAbs && !strings.HasPrefix(target, baseAbs+string(os.PathSeparator)) {
-          return "", fmt.Errorf("检测到路径穿越")
-      }
-      return target, nil
-  }
-  ```
+remediation: "使用filepath.Clean和绝对路径前缀校验，确保目标路径仍在允许目录内：\n```go\npackage safe\nimport (\n    \"fmt\"\n \
+  \   \"os\"\n    \"path/filepath\"\n    \"strings\"\n)\n// 不安全的代码 ❌\nf, _ := os.Open(userPath)\nos.WriteFile(uploadPath,\
+  \ content, 0644)\n// 安全的代码 ✅\nfunc safeJoin(baseDir, userPath string) (string, error) {\n    baseAbs,\
+  \ err := filepath.Abs(baseDir)\n    if err != nil {\n        return \"\", err\n    }\n    target :=\
+  \ filepath.Clean(filepath.Join(baseAbs, userPath))\n    if target != baseAbs && !strings.HasPrefix(target,\
+  \ baseAbs+string(os.PathSeparator)) {\n        return \"\", fmt.Errorf(\"检测到路径穿越\")\n    }\n    return\
+  \ target, nil\n}\n```\n"
 rule:
+  kind: call_expression
   any:
-    - pattern: |
-        os.Open($USER_PATH)
-    - pattern: |
-        os.ReadFile($USER_PATH)
-    - pattern: |
-        os.Create($UPLOAD_PATH)
-    - pattern: |
-        os.WriteFile($UPLOAD_PATH, $CONTENT, $PERM)
-    - pattern: |
-        os.Remove($USER_PATH)
-    - pattern: |
-        filepath.Join($BASE_DIR, $USER_PATH)
-    - pattern: |
-        os.Open("../" + $USER_PATH)
-    - pattern: |
-        os.Remove("../" + $USER_PATH)
-    - pattern: |
-        filepath.Join($BASE_DIR, "../" + $USER_PATH)
+  - pattern: 'os.Open($USER_PATH)
+
+      '
+    kind: call_expression
+  - pattern: 'os.ReadFile($USER_PATH)
+
+      '
+    kind: call_expression
+  - pattern: 'os.Create($UPLOAD_PATH)
+
+      '
+    kind: call_expression
+  - pattern: 'os.WriteFile($UPLOAD_PATH, $CONTENT, $PERM)
+
+      '
+    kind: call_expression
+  - pattern: 'os.Remove($USER_PATH)
+
+      '
+    kind: call_expression
+  - pattern: 'filepath.Join($BASE_DIR, $USER_PATH)
+
+      '
+    kind: call_expression
+  - pattern: 'os.Open("../" + $USER_PATH)
+
+      '
+    kind: call_expression
+  - pattern: 'os.Remove("../" + $USER_PATH)
+
+      '
+    kind: call_expression
+  - pattern: 'filepath.Join($BASE_DIR, "../" + $USER_PATH)
+
+      '
+    kind: call_expression

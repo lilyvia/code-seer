@@ -3,64 +3,76 @@ language: javascript
 name: XSS跨站脚本攻击（JavaScript）
 description: XSS（跨站脚本攻击）允许攻击者在用户浏览器中执行恶意脚本。
 cwe: CWE-79
-
-remediation: |
-  对用户输入进行HTML转义后再输出：
-  ```javascript
-  // 不安全的代码 ❌
-  element.innerHTML = userInput;
-  document.write(userInput);
-  eval(userCode);
-  // 安全的代码 ✅
-  // 使用textContent代替innerHTML
-  element.textContent = userInput;
-  // 或者进行HTML转义
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-  element.innerHTML = escapeHtml(userInput);
-  // React中使用JSX自动转义
-  <div>{userInput}</div>
-  // 如果必须使用dangerouslySetInnerHTML，确保内容已净化
-  <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(userInput)}} />
-  ```
-  推荐措施：
-  - 使用DOMPurify等库净化HTML
-  - 使用CSP（内容安全策略）
-  - 避免使用eval和document.write
+remediation: "对用户输入进行HTML转义后再输出：\n```javascript\n// 不安全的代码 ❌\nelement.innerHTML = userInput;\ndocument.write(userInput);\n\
+  eval(userCode);\n// 安全的代码 ✅\n// 使用textContent代替innerHTML\nelement.textContent = userInput;\n// 或者进行HTML转义\n\
+  function escapeHtml(text) {\n  const div = document.createElement('div');\n  div.textContent = text;\n\
+  \  return div.innerHTML;\n}\nelement.innerHTML = escapeHtml(userInput);\n// React中使用JSX自动转义\n<div>{userInput}</div>\n\
+  // 如果必须使用dangerouslySetInnerHTML，确保内容已净化\n<div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(userInput)}}\
+  \ />\n```\n推荐措施：\n- 使用DOMPurify等库净化HTML\n- 使用CSP（内容安全策略）\n- 避免使用eval和document.write\n"
 rule:
+  kind: assignment_expression
   any:
-    - pattern: |
-        $ELEMENT.innerHTML = $USER_INPUT
-    - pattern: |
-        $ELEMENT.outerHTML = $USER_INPUT
-    - pattern: |
-        $ELEMENT.insertAdjacentHTML($POS, $USER_INPUT)
-    - pattern: |
-        document.write($USER_INPUT)
-    - pattern: |
-        document.writeln($USER_INPUT)
-    - pattern: |
-        <div dangerouslySetInnerHTML={{__html: $USER_INPUT}} />
-    - pattern: |
-        eval($USER_INPUT)
-    - pattern: |
-        setTimeout($USER_INPUT, $DELAY)
-    - pattern: |
-        setInterval($USER_INPUT, $DELAY)
-    - pattern: |
-        new Function($USER_INPUT)
-    - pattern: |
-        location.href = $USER_INPUT
-    - pattern: |
-        location.replace($USER_INPUT)
-    - pattern: |
-        document.location = $USER_INPUT
-    - pattern: |
-        window.location = $USER_INPUT
-    - pattern: |
-        <div v-html="$USER_INPUT">
-    - pattern: |
-        $ELEMENT.html($USER_INPUT)
+  - pattern: '$ELEMENT.innerHTML = $USER_INPUT
+
+      '
+    kind: assignment_expression
+  - pattern: '$ELEMENT.outerHTML = $USER_INPUT
+
+      '
+    kind: assignment_expression
+  - pattern: '$ELEMENT.insertAdjacentHTML($POS, $USER_INPUT)
+
+      '
+    kind: assignment_expression
+  - pattern: 'document.write($USER_INPUT)
+
+      '
+    kind: assignment_expression
+  - pattern: 'document.writeln($USER_INPUT)
+
+      '
+    kind: assignment_expression
+  - pattern: '<div dangerouslySetInnerHTML={{__html: $USER_INPUT}} />
+
+      '
+    kind: assignment_expression
+  - pattern: 'eval($USER_INPUT)
+
+      '
+    kind: assignment_expression
+  - pattern: 'setTimeout($USER_INPUT, $DELAY)
+
+      '
+    kind: assignment_expression
+  - pattern: 'setInterval($USER_INPUT, $DELAY)
+
+      '
+    kind: assignment_expression
+  - pattern: 'new Function($USER_INPUT)
+
+      '
+    kind: assignment_expression
+  - pattern: 'location.href = $USER_INPUT
+
+      '
+    kind: assignment_expression
+  - pattern: 'location.replace($USER_INPUT)
+
+      '
+    kind: assignment_expression
+  - pattern: 'document.location = $USER_INPUT
+
+      '
+    kind: assignment_expression
+  - pattern: 'window.location = $USER_INPUT
+
+      '
+    kind: assignment_expression
+  - pattern: '<div v-html="$USER_INPUT">
+
+      '
+    kind: assignment_expression
+  - pattern: '$ELEMENT.html($USER_INPUT)
+
+      '
+    kind: assignment_expression

@@ -3,20 +3,13 @@ language: go
 name: 反序列化风险（Go）
 description: Go 语言常用的 encoding/json 在默认场景下通常不会触发代码执行。
 cwe: CWE-502
-remediation: |
-  建议优先使用 encoding/json，并对输入做结构与大小校验。
-  ```go
-  // 相对安全的代码 ✅
-  var req Request
-  if err := json.Unmarshal(input, &req); err != nil {
-      return err
-  }
-  ```
-  建议：
-  - 对不可信输入增加长度限制与字段白名单
-  - 避免在边界层直接使用 gob 解码外部数据
-  - 对 YAML 输入进行 schema 校验
+remediation: "建议优先使用 encoding/json，并对输入做结构与大小校验。\n```go\n// 相对安全的代码 ✅\nvar req Request\nif err := json.Unmarshal(input,\
+  \ &req); err != nil {\n    return err\n}\n```\n建议：\n- 对不可信输入增加长度限制与字段白名单\n- 避免在边界层直接使用 gob 解码外部数据\n\
+  - 对 YAML 输入进行 schema 校验\n"
 rule:
+  kind: call_expression
   any:
-    - pattern: gob.NewDecoder($READER).Decode($OBJ)
-    - pattern: yaml.Unmarshal($DATA, $OUT)
+  - pattern: gob.NewDecoder($READER).Decode($OBJ)
+    kind: call_expression
+  - pattern: yaml.Unmarshal($DATA, $OUT)
+    kind: call_expression

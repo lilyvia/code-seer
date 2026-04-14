@@ -19,6 +19,7 @@ remediation: |
   ?>
   ```
 rule:
+  kind: function_call_expression
   any:
     - pattern: file_get_contents($USER_URL)
     - pattern: fopen($USER_URL, "r")

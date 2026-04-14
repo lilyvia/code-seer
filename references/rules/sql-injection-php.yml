@@ -3,23 +3,37 @@ language: php
 name: SQL注入（PHP）
 description: PHP中常见的SQL注入问题通常来自动态拼接SQL语句。
 cwe: CWE-89
-remediation: |
-  使用参数化查询（Prepared Statements）避免拼接SQL：
+remediation: '使用参数化查询（Prepared Statements）避免拼接SQL：
+
   ```php
+
   // 不安全的代码 ❌
+
   $db->query("SELECT * FROM users WHERE id = " . $id);
-  mysqli_query($conn, sprintf("SELECT * FROM users WHERE name = '%s'", $name));
+
+  mysqli_query($conn, sprintf("SELECT * FROM users WHERE name = ''%s''", $name));
+
   // 安全的代码 ✅
+
   $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+
   $stmt->execute([$id]);
+
   ```
+
+  '
 rule:
+  kind: function_call_expression
   any:
-    - pattern: |
-        $DB->query($SQL . $VAR)
-    - pattern: |
-        mysqli_query($CONN, $SQL . $VAR)
-    - pattern: |
-        $DB->query(sprintf($FMT, $$$ARGS))
-    - pattern: |
-        mysqli_query($CONN, sprintf($FMT, $$$ARGS))
+  - pattern: '$DB->query($SQL . $VAR)
+
+      '
+  - pattern: 'mysqli_query($CONN, $SQL . $VAR)
+
+      '
+  - pattern: '$DB->query(sprintf($FMT, $$$ARGS))
+
+      '
+  - pattern: 'mysqli_query($CONN, sprintf($FMT, $$$ARGS))
+
+      '

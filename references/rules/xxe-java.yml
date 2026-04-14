@@ -3,43 +3,81 @@ language: java
 name: XXE XML外部实体注入（Java）
 description: XXE允许攻击者通过XML外部实体读取服务器文件或执行SSRF攻击。
 cwe: CWE-611
-remediation: |
-  禁用XML外部实体和DOCTYPE：
+remediation: '禁用XML外部实体和DOCTYPE：
+
   ```java
+
   // 不安全的代码 ❌
+
   DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
   DocumentBuilder builder = factory.newDocumentBuilder();
+
   Document doc = builder.parse(xmlInput);
+
   // 安全的代码 ✅
+
   DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
   // 禁用DOCTYPE和外部实体
+
   factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
   factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+
   factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
   factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
   factory.setXIncludeAware(false);
+
   factory.setExpandEntityReferences(false);
+
   DocumentBuilder builder = factory.newDocumentBuilder();
+
   ```
+
   额外建议：
+
   - 对不可信XML启用白名单字段映射
+
   - 尽量使用不支持DTD的安全解析库
+
   - 在网关层限制可疑XML负载大小
+
+  '
 rule:
+  kind: method_invocation
   any:
-    - pattern: |
-        DocumentBuilderFactory.newInstance()
-    - pattern: |
-        SAXParserFactory.newInstance()
-    - pattern: |
-        XMLReaderFactory.createXMLReader()
-    - pattern: |
-        TransformerFactory.newInstance()
-    - pattern: |
-        $FACTORY.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
-    - pattern: |
-        $FACTORY.setFeature("http://xml.org/sax/features/external-general-entities", true)
-    - pattern: |
-        $FACTORY.setFeature("http://xml.org/sax/features/external-parameter-entities", true)
-    - pattern: |
-        $FACTORY.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true)
+  - pattern: 'DocumentBuilderFactory.newInstance()
+
+      '
+    kind: method_invocation
+  - pattern: 'SAXParserFactory.newInstance()
+
+      '
+    kind: method_invocation
+  - pattern: 'XMLReaderFactory.createXMLReader()
+
+      '
+    kind: method_invocation
+  - pattern: 'TransformerFactory.newInstance()
+
+      '
+    kind: method_invocation
+  - pattern: '$FACTORY.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+
+      '
+    kind: method_invocation
+  - pattern: '$FACTORY.setFeature("http://xml.org/sax/features/external-general-entities", true)
+
+      '
+    kind: method_invocation
+  - pattern: '$FACTORY.setFeature("http://xml.org/sax/features/external-parameter-entities", true)
+
+      '
+    kind: method_invocation
+  - pattern: '$FACTORY.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true)
+
+      '
+    kind: method_invocation

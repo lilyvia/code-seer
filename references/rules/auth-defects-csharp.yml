@@ -34,6 +34,7 @@ remediation: |
   - 查询接口必须验证资源归属
   - 服务层保留权限校验，防止API层绕过
 rule:
+  kind: expression_statement
   any:
     - pattern: |
         app.MapGet("/admin", $HANDLER);

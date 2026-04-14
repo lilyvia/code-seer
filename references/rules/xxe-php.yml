@@ -3,37 +3,60 @@ language: php
 name: XXE XML外部实体注入（PHP）
 description: PHP处理XML时，如果启用了实体替换或外部DTD，攻击者可构造恶意XML触发XXE。
 cwe: CWE-611
-remediation: |
-  使用安全的XML解析参数，避免启用实体替换：
+remediation: '使用安全的XML解析参数，避免启用实体替换：
+
   ```php
+
   // 不安全的代码 ❌
+
   $doc = new DOMDocument();
+
   $doc->loadXML($xml, LIBXML_NOENT | LIBXML_DTDLOAD);
+
   // 安全的代码 ✅
+
   $doc = new DOMDocument();
+
   $doc->resolveExternals = false;
+
   $doc->substituteEntities = false;
+
   $doc->loadXML($xml, LIBXML_NONET);
+
   // 对simplexml同样避免 NOENT/DTD 相关选项
-  $obj = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NONET);
+
+  $obj = simplexml_load_string($xml, ''SimpleXMLElement'', LIBXML_NONET);
+
   ```
+
+  '
 rule:
+  kind: function_call_expression
   any:
-    - pattern: |
-        libxml_disable_entity_loader(false)
-    - pattern: |
-        $DOC->loadXML($XML, LIBXML_NOENT)
-    - pattern: |
-        $DOC->loadXML($XML, LIBXML_DTDLOAD)
-    - pattern: |
-        $DOC->loadXML($XML, LIBXML_DTDATTR)
-    - pattern: |
-        simplexml_load_string($XML, $CLASS, LIBXML_NOENT)
-    - pattern: |
-        simplexml_load_string($XML, $CLASS, LIBXML_DTDLOAD)
-    - pattern: |
-        simplexml_load_file($XML_FILE, $CLASS, LIBXML_NOENT)
-    - pattern: |
-        $READER->XML($XML)
-    - pattern: |
-        $READER->open($XML_PATH)
+  - pattern: 'libxml_disable_entity_loader(false)
+
+      '
+  - pattern: '$DOC->loadXML($XML, LIBXML_NOENT)
+
+      '
+  - pattern: '$DOC->loadXML($XML, LIBXML_DTDLOAD)
+
+      '
+  - pattern: '$DOC->loadXML($XML, LIBXML_DTDATTR)
+
+      '
+  - pattern: 'simplexml_load_string($XML, $CLASS, LIBXML_NOENT)
+
+      '
+  - pattern: 'simplexml_load_string($XML, $CLASS, LIBXML_DTDLOAD)
+
+      '
+  - pattern: 'simplexml_load_file($XML_FILE, $CLASS, LIBXML_NOENT)
+
+      '
+  - pattern: '$READER->XML($XML)
+
+      '
+  - pattern: '$READER->open($XML_PATH)
+
+      '

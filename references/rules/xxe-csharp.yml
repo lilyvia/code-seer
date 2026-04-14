@@ -3,38 +3,31 @@ language: csharp
 name: XXE XML外部实体注入（C#）
 description: 在 .NET 中解析 XML 时，若允许 DTD 或外部实体，可能导致 XXE 攻击，造成文件读取或内网探测。
 cwe: CWE-611
-remediation: |
-  使用安全的 XmlReaderSettings 并禁用外部实体：
-  ```csharp
-  // 不安全的代码 ❌
-  var doc = new XmlDocument();
-  doc.LoadXml(userXml);
-  // 安全的代码 ✅
-  var settings = new XmlReaderSettings
-  {
-      DtdProcessing = DtdProcessing.Prohibit,
-      XmlResolver = null
-  };
-  using var reader = XmlReader.Create(new StringReader(userXml), settings);
-  var doc = new XmlDocument
-  {
-      XmlResolver = null
-  };
-  doc.Load(reader);
-  ```
+remediation: "使用安全的 XmlReaderSettings 并禁用外部实体：\n```csharp\n// 不安全的代码 ❌\nvar doc = new XmlDocument();\n\
+  doc.LoadXml(userXml);\n// 安全的代码 ✅\nvar settings = new XmlReaderSettings\n{\n    DtdProcessing = DtdProcessing.Prohibit,\n\
+  \    XmlResolver = null\n};\nusing var reader = XmlReader.Create(new StringReader(userXml), settings);\n\
+  var doc = new XmlDocument\n{\n    XmlResolver = null\n};\ndoc.Load(reader);\n```\n"
 rule:
+  kind: invocation_expression
   any:
-    - pattern: |
-        $DOC.LoadXml($XML)
-    - pattern: |
-        $DOC.Load($XML_SOURCE)
-    - pattern: |
-        new XmlTextReader($XML_SOURCE)
-    - pattern: |
-        XmlReader.Create($XML_SOURCE)
-    - pattern: |
-        $SETTINGS.DtdProcessing = DtdProcessing.Parse
-    - pattern: |
-        $SETTINGS.XmlResolver = new XmlUrlResolver()
-    - pattern: |
-        $DOC.XmlResolver = new XmlUrlResolver()
+  - pattern: '$DOC.LoadXml($XML)
+
+      '
+  - pattern: '$DOC.Load($XML_SOURCE)
+
+      '
+  - pattern: 'new XmlTextReader($XML_SOURCE)
+
+      '
+  - pattern: 'XmlReader.Create($XML_SOURCE)
+
+      '
+  - pattern: '$SETTINGS.DtdProcessing = DtdProcessing.Parse
+
+      '
+  - pattern: '$SETTINGS.XmlResolver = new XmlUrlResolver()
+
+      '
+  - pattern: '$DOC.XmlResolver = new XmlUrlResolver()
+
+      '

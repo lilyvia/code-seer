@@ -3,43 +3,37 @@ language: go
 name: SSRF服务器端请求伪造（Go）
 description: Go 服务中若将外部输入直接用于 http.Get/http.Post 等请求，容易触发SSRF。
 cwe: CWE-918
-remediation: |
-  对目标URL进行协议、域名和IP范围校验，禁止访问内网和元数据地址。
-  ```go
-  // 不安全的代码 ❌
-  http.Get(userURL)
-  // 安全的代码 ✅
-  u, err := url.Parse(userURL)
-  if err != nil {
-      return
-  }
-  if u.Scheme != "https" || u.Hostname() != "api.example.com" {
-      return
-  }
-  resp, err := http.Get(userURL)
-  _ = resp
-  _ = err
-  ```
+remediation: "对目标URL进行协议、域名和IP范围校验，禁止访问内网和元数据地址。\n```go\n// 不安全的代码 ❌\nhttp.Get(userURL)\n// 安全的代码 ✅\n\
+  u, err := url.Parse(userURL)\nif err != nil {\n    return\n}\nif u.Scheme != \"https\" || u.Hostname()\
+  \ != \"api.example.com\" {\n    return\n}\nresp, err := http.Get(userURL)\n_ = resp\n_ = err\n```\n"
 rule:
+  kind: call_expression
   any:
-    - all:
-        - pattern: $FN($USER_URL)
-        - regex: '(http\.Get\(|\w+\.Get\()'
-    - all:
-        - pattern: $FN($USER_URL, $CONTENT_TYPE, $BODY)
-        - regex: 'http\.Post\('
-    - all:
-        - pattern: $FN($METHOD, $USER_URL, $BODY)
-        - regex: 'http\.NewRequest\('
-    - all:
-        - pattern: $FN($URL)
-        - regex: 'http\.Get\("http://localhost'
-    - all:
-        - pattern: $FN($URL)
-        - regex: 'http\.Get\("http://127\.0\.0\.1'
-    - all:
-        - pattern: $FN($URL)
-        - regex: 'http\.Get\("http://169\.254\.169\.254'
-    - all:
-        - pattern: $FN($URL)
-        - regex: 'http\.Get\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)'
+  - all:
+    - pattern: $FN($USER_URL)
+      kind: call_expression
+    - regex: (http\.Get\(|\w+\.Get\()
+  - all:
+    - pattern: $FN($USER_URL, $CONTENT_TYPE, $BODY)
+      kind: call_expression
+    - regex: http\.Post\(
+  - all:
+    - pattern: $FN($METHOD, $USER_URL, $BODY)
+      kind: call_expression
+    - regex: http\.NewRequest\(
+  - all:
+    - pattern: $FN($URL)
+      kind: call_expression
+    - regex: http\.Get\("http://localhost
+  - all:
+    - pattern: $FN($URL)
+      kind: call_expression
+    - regex: http\.Get\("http://127\.0\.0\.1
+  - all:
+    - pattern: $FN($URL)
+      kind: call_expression
+    - regex: http\.Get\("http://169\.254\.169\.254
+  - all:
+    - pattern: $FN($URL)
+      kind: call_expression
+    - regex: http\.Get\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)
