@@ -1,5 +1,7 @@
 id: csharp-xxe
 language: csharp
+severity: warning
+message: 'XXE XML外部实体注入（C#） (CWE-611)'
 name: XXE XML外部实体注入（C#）
 description: 在 .NET 中解析 XML 时，若允许 DTD 或外部实体，可能导致 XXE 攻击，造成文件读取或内网探测。
 cwe: CWE-611

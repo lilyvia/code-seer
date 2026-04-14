@@ -1,5 +1,7 @@
 id: java-path-traversal
 language: java
+severity: warning
+message: '路径穿越漏洞（Java） (CWE-22)'
 name: 路径穿越漏洞（Java）
 description: 'Java中如果将用户可控路径直接传入File、FileInputStream、FileOutputStream或删除操作，
 

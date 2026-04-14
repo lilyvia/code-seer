@@ -1,5 +1,7 @@
 id: python-deserialization
 language: python
+severity: error
+message: '不安全的反序列化（Python） (CWE-502)'
 name: 不安全的反序列化（Python）
 description: 不安全的反序列化允许攻击者通过操控序列化数据执行任意代码。
 cwe: CWE-502

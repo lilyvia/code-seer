@@ -1,5 +1,7 @@
 id: python-xxe
 language: python
+severity: warning
+message: 'XXE XML外部实体注入（Python） (CWE-611)'
 name: XXE XML外部实体注入（Python）
 description: Python中多个XML解析库在处理不可信XML时可能受到XXE攻击。
 cwe: CWE-611

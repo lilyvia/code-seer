@@ -1,5 +1,7 @@
 id: javascript-xss
 language: javascript
+severity: warning
+message: 'XSS跨站脚本攻击（JavaScript） (CWE-79)'
 name: XSS跨站脚本攻击（JavaScript）
 description: XSS（跨站脚本攻击）允许攻击者在用户浏览器中执行恶意脚本。
 cwe: CWE-79
@@ -10,69 +12,52 @@ remediation: "对用户输入进行HTML转义后再输出：\n```javascript\n// 
   // 如果必须使用dangerouslySetInnerHTML，确保内容已净化\n<div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(userInput)}}\
   \ />\n```\n推荐措施：\n- 使用DOMPurify等库净化HTML\n- 使用CSP（内容安全策略）\n- 避免使用eval和document.write\n"
 rule:
-  kind: assignment_expression
   any:
   - pattern: '$ELEMENT.innerHTML = $USER_INPUT
 
       '
-    kind: assignment_expression
   - pattern: '$ELEMENT.outerHTML = $USER_INPUT
 
       '
-    kind: assignment_expression
   - pattern: '$ELEMENT.insertAdjacentHTML($POS, $USER_INPUT)
 
       '
-    kind: assignment_expression
   - pattern: 'document.write($USER_INPUT)
 
       '
-    kind: assignment_expression
   - pattern: 'document.writeln($USER_INPUT)
 
       '
-    kind: assignment_expression
   - pattern: '<div dangerouslySetInnerHTML={{__html: $USER_INPUT}} />
 
       '
-    kind: assignment_expression
   - pattern: 'eval($USER_INPUT)
 
       '
-    kind: assignment_expression
   - pattern: 'setTimeout($USER_INPUT, $DELAY)
 
       '
-    kind: assignment_expression
   - pattern: 'setInterval($USER_INPUT, $DELAY)
 
       '
-    kind: assignment_expression
   - pattern: 'new Function($USER_INPUT)
 
       '
-    kind: assignment_expression
   - pattern: 'location.href = $USER_INPUT
 
       '
-    kind: assignment_expression
   - pattern: 'location.replace($USER_INPUT)
 
       '
-    kind: assignment_expression
   - pattern: 'document.location = $USER_INPUT
 
       '
-    kind: assignment_expression
   - pattern: 'window.location = $USER_INPUT
 
       '
-    kind: assignment_expression
   - pattern: '<div v-html="$USER_INPUT">
 
       '
-    kind: assignment_expression
   - pattern: '$ELEMENT.html($USER_INPUT)
 
       '
-    kind: assignment_expression

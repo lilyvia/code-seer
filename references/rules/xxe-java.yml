@@ -1,5 +1,7 @@
 id: java-xxe
 language: java
+severity: warning
+message: 'XXE XML外部实体注入（Java） (CWE-611)'
 name: XXE XML外部实体注入（Java）
 description: XXE允许攻击者通过XML外部实体读取服务器文件或执行SSRF攻击。
 cwe: CWE-611

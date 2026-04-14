@@ -1,5 +1,7 @@
 id: csharp-command-exec
 language: csharp
+severity: error
+message: '命令执行漏洞（C#） (CWE-78)'
 name: 命令执行漏洞（C#）
 description: 在 .NET 中，Process.Start 若使用字符串命令或拼接参数，容易被注入恶意指令。
 cwe: CWE-78

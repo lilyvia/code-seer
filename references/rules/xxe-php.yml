@@ -1,5 +1,7 @@
 id: php-xxe
 language: php
+severity: warning
+message: 'XXE XML外部实体注入（PHP） (CWE-611)'
 name: XXE XML外部实体注入（PHP）
 description: PHP处理XML时，如果启用了实体替换或外部DTD，攻击者可构造恶意XML触发XXE。
 cwe: CWE-611

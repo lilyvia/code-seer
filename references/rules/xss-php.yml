@@ -1,5 +1,7 @@
 id: php-xss
 language: php
+severity: warning
+message: 'XSS跨站脚本攻击（PHP） (CWE-79)'
 name: XSS跨站脚本攻击（PHP）
 description: PHP中常见的XSS漏洞来源：
 cwe: CWE-79
@@ -33,13 +35,11 @@ remediation: '使用htmlspecialchars()转义输出：
 
   '
 rule:
-  kind: expression_statement
   any:
   - all:
     - pattern: 'echo $USER_INPUT;
 
         '
-      kind: expression_statement
     - not:
         pattern: 'echo htmlspecialchars($$$ARGS);
 
@@ -48,7 +48,6 @@ rule:
     - pattern: 'print $USER_INPUT;
 
         '
-      kind: expression_statement
     - not:
         pattern: 'print htmlspecialchars($$$ARGS);
 

@@ -1,5 +1,7 @@
 id: php-ssrf
 language: php
+severity: warning
+message: 'SSRF服务器端请求伪造（PHP） (CWE-918)'
 name: SSRF服务器端请求伪造（PHP）
 description: PHP 中 file_get_contents/cURL 常用于远程请求，若URL来源不可信会导致SSRF。
 cwe: CWE-918

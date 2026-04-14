@@ -1,5 +1,7 @@
 id: csharp-path-traversal
 language: csharp
+severity: warning
+message: '路径穿越漏洞（C#） (CWE-22)'
 name: 路径穿越漏洞（C#）
 description: 在C#/ .NET 应用中，若直接将用户输入用于文件路径拼接，可能导致目录遍历攻击。.
 cwe: CWE-22

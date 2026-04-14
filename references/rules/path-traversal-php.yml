@@ -1,5 +1,7 @@
 id: php-path-traversal
 language: php
+severity: warning
+message: '路径穿越漏洞（PHP） (CWE-22)'
 name: 路径穿越漏洞（PHP）
 description: PHP应用中常见路径穿越点包括file_get_contents、include/require、unlink等。
 cwe: CWE-22

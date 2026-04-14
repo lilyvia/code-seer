@@ -1,5 +1,7 @@
 id: go-ssrf
 language: go
+severity: warning
+message: 'SSRF服务器端请求伪造（Go） (CWE-918)'
 name: SSRF服务器端请求伪造（Go）
 description: Go 服务中若将外部输入直接用于 http.Get/http.Post 等请求，容易触发SSRF。
 cwe: CWE-918

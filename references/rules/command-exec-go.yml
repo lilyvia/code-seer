@@ -1,5 +1,7 @@
 id: go-command-exec
 language: go
+severity: error
+message: '命令执行漏洞（Go） (CWE-78)'
 name: 命令执行漏洞（Go）
 description: Go 中命令执行风险主要来自 os/exec 包。
 cwe: CWE-78

@@ -1,5 +1,7 @@
 id: python-path-traversal
 language: python
+severity: warning
+message: '路径穿越漏洞（Python） (CWE-22)'
 name: 路径穿越漏洞（Python）
 description: 路径穿越漏洞允许攻击者访问或操作预期目录之外的文件。
 cwe: CWE-22
@@ -15,21 +17,6 @@ remediation: "验证和净化用户输入的文件路径：\n```python\nimport o
 rule:
   kind: call
   any:
-  - pattern: 'open($USER_PATH, $MODE)
-
-      '
-  - pattern: 'open($UPLOAD_PATH, "wb").write($CONTENT)
-
-      '
-  - pattern: 'os.remove($USER_PATH)
-
-      '
-  - pattern: 'os.unlink($USER_PATH)
-
-      '
-  - pattern: 'os.path.join($BASE_DIR, $USER_PATH)
-
-      '
   - pattern: 'open("../$$$REST", $MODE)
 
       '
@@ -39,3 +26,21 @@ rule:
   - pattern: 'os.path.join($BASE_DIR, "../$$$REST")
 
       '
+  - pattern: 'open($UPLOAD_PATH, "wb").write($CONTENT)
+
+      '
+  - all:
+    - pattern: 'open($USER_INPUT, $MODE)
+
+        '
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'os.remove($USER_INPUT)
+
+        '
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'os.path.join($BASE_DIR, $USER_INPUT)
+
+        '
+    - regex: '(user_|request|param|input|arg|query)'

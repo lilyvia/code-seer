@@ -1,5 +1,7 @@
 id: python-auth-defects
 language: python
+severity: warning
+message: '鉴权缺陷（Python） (CWE-287)'
 name: 鉴权缺陷（Python）
 description: 鉴权缺陷允许未授权用户访问敏感资源或执行特权操作。
 cwe: CWE-287

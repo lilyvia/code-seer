@@ -1,5 +1,7 @@
 id: php-deserialization
 language: php
+severity: error
+message: '不安全的反序列化（PHP） (CWE-502)'
 name: 不安全的反序列化（PHP）
 description: 'PHP 的 unserialize 在处理不可信数据时风险极高，可能触发 __wakeup/__destruct 等魔术方法。
 

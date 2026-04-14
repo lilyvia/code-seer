@@ -1,5 +1,7 @@
 id: csharp-auth-defects
 language: csharp
+severity: warning
+message: '鉴权缺陷（C#） (CWE-287)'
 name: 鉴权缺陷（C#）
 description: ASP.NET 鉴权缺陷常发生在缺少身份验证或授权校验的 API 端点。
 cwe: CWE-287

@@ -1,5 +1,7 @@
 id: python-sql-injection
 language: python
+severity: error
+message: 'SQL注入（Python） (CWE-89)'
 name: SQL注入（Python）
 description: SQL注入是一种严重的安全漏洞，攻击者可以通过操控输入数据来执行恶意SQL语句。
 cwe: CWE-89

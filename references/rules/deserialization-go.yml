@@ -1,5 +1,7 @@
 id: go-deserialization
 language: go
+severity: error
+message: '反序列化风险（Go） (CWE-502)'
 name: 反序列化风险（Go）
 description: Go 语言常用的 encoding/json 在默认场景下通常不会触发代码执行。
 cwe: CWE-502

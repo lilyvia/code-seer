@@ -1,5 +1,7 @@
 id: php-auth-defects
 language: php
+severity: warning
+message: '鉴权缺陷（PHP） (CWE-287)'
 name: 鉴权缺陷（PHP）
 description: PHP/Laravel 项目若缺少中间件、角色检查和资源归属校验，
 cwe: CWE-287

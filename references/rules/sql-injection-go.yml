@@ -1,5 +1,7 @@
 id: go-sql-injection
 language: go
+severity: error
+message: 'SQL注入（Go） (CWE-89)'
 name: SQL注入（Go）
 description: 在Go代码中，如果通过字符串拼接或 fmt.Sprintf 动态构造 SQL，攻击者可注入恶意 SQL 代码。
 cwe: CWE-89

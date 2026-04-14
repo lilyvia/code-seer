@@ -1,0 +1,62 @@
+id: javascript-sql-injection
+language: javascript
+severity: error
+message: 'SQL注入漏洞（JavaScript） (CWE-89)'
+name: SQL注入（JavaScript）
+description: Node.js 应用中 SQL 注入漏洞发生在使用字符串拼接动态构造 SQL 查询时，而不是使用参数化查询。
+cwe: CWE-89
+remediation: '使用参数化查询替代字符串拼接：
+
+  ```javascript
+
+  // 不安全的代码 ❌
+
+  const query = `SELECT * FROM users WHERE id = ${userId}`;
+
+  connection.query(query);
+
+  const sql = "SELECT * FROM users WHERE id = " + userId;
+
+  db.query(sql);
+
+  // 安全的代码 ✅
+
+  // MySQL - 使用参数占位符
+
+  connection.query("SELECT * FROM users WHERE id = ?", [userId]);
+
+  // PostgreSQL - 使用 $1 占位符
+
+  db.query("SELECT * FROM users WHERE id = $1", [userId]);
+
+  // Sequelize ORM (推荐)
+
+  User.findByPk(userId);
+
+  // Mongoose (MongoDB)
+
+  User.findById(userId);
+
+  ```
+
+  '
+rule:
+  any:
+  - pattern: '$QUERY = `$SQL ${$VAR}$REST`
+
+      '
+  - pattern: '$QUERY = "$SQL" + $VAR
+
+      '
+  - pattern: '$CONN.query($SQL + $VAR)
+
+      '
+  - pattern: '$CONN.query(`$SQL ${$VAR}`)
+
+      '
+  - pattern: '$DB.query($SQL + $VAR)
+
+      '
+  - pattern: '$DB.query(`$SQL ${$VAR}`)
+
+      '

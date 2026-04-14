@@ -1,5 +1,7 @@
 id: php-sql-injection
 language: php
+severity: error
+message: 'SQL注入（PHP） (CWE-89)'
 name: SQL注入（PHP）
 description: PHP中常见的SQL注入问题通常来自动态拼接SQL语句。
 cwe: CWE-89

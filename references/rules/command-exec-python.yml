@@ -1,5 +1,7 @@
 id: python-command-exec
 language: python
+severity: error
+message: '命令执行漏洞（Python） (CWE-78)'
 name: 命令执行漏洞（Python）
 description: 命令执行漏洞允许攻击者在服务器上执行任意系统命令。
 cwe: CWE-78

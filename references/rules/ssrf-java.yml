@@ -1,5 +1,7 @@
 id: java-ssrf
 language: java
+severity: warning
+message: 'SSRF服务器端请求伪造（Java） (CWE-918)'
 name: SSRF服务器端请求伪造（Java）
 description: SSRF会让攻击者借助服务端网络能力访问内网或云环境敏感接口。
 cwe: CWE-918

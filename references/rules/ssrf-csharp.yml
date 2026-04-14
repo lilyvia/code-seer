@@ -1,5 +1,7 @@
 id: csharp-ssrf
 language: csharp
+severity: warning
+message: 'SSRF服务器端请求伪造（C#） (CWE-918)'
 name: SSRF服务器端请求伪造（C#）
 description: 在 .NET 中使用 HttpClient、WebRequest 访问外部 URL 时，若 URL 来自用户输入可能触发 SSRF 攻击。
 cwe: CWE-918

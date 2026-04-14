@@ -1,5 +1,7 @@
 id: csharp-deserialization
 language: csharp
+severity: error
+message: '不安全的反序列化（C#） (CWE-502)'
 name: 不安全的反序列化（C#）
 description: .NET 中 BinaryFormatter 已被官方标记为不安全。
 cwe: CWE-502

@@ -1,5 +1,7 @@
 id: java-auth-defects
 language: java
+severity: warning
+message: '鉴权缺陷（Java） (CWE-287)'
 name: 鉴权缺陷（Java）
 description: Java/Spring 项目中的鉴权缺陷通常出现在Controller层。
 cwe: CWE-287

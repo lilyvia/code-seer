@@ -1,5 +1,7 @@
 id: go-auth-defects
 language: go
+severity: warning
+message: '鉴权缺陷（Go） (CWE-287)'
 name: 鉴权缺陷（Go）
 description: Go Web 服务常通过路由和中间件控制访问权限。
 cwe: CWE-287

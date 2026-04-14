@@ -1,5 +1,7 @@
 id: java-deserialization
 language: java
+severity: error
+message: '不安全的反序列化（Java） (CWE-502)'
 name: 不安全的反序列化（Java）
 description: Java 原生反序列化在处理不可信输入时存在高风险。
 cwe: CWE-502

@@ -1,5 +1,7 @@
 id: python-ssrf
 language: python
+severity: warning
+message: 'SSRF服务器端请求伪造（Python） (CWE-918)'
 name: SSRF服务器端请求伪造（Python）
 description: SSRF允许攻击者利用服务器发起恶意请求，访问内部网络或敏感资源。
 cwe: CWE-918
@@ -14,18 +16,43 @@ remediation: "验证并限制用户提供的URL，仅允许可信目标与协议
 rule:
   kind: call
   any:
-  - pattern: requests.get($USER_URL)
-  - pattern: requests.post($USER_URL, $$$ARGS)
-  - pattern: urllib.request.urlopen($USER_URL)
-  - pattern: urllib.request.urlopen("http://$$$URL")
-  - pattern: httpx.get($USER_URL)
-  - pattern: httpx.post($USER_URL, $$$ARGS)
-  - pattern: aiohttp.ClientSession().get($USER_URL)
-  - pattern: aiohttp.ClientSession().post($USER_URL, $$$ARGS)
   - pattern: requests.get("http://localhost$$$REST")
+
   - pattern: requests.get("http://127.0.0.1$$$REST")
+
   - pattern: requests.get("http://169.254.169.254$$$REST")
+
   - pattern: urllib.request.urlopen("http://169.254.169.254$$$REST")
+
+  - pattern: urllib.request.urlopen("http://localhost$$$REST")
+
+  - pattern: urllib.request.urlopen("http://127.0.0.1$$$REST")
+
   - all:
     - pattern: requests.get($URL)
-    - regex: requests\.get\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: requests.post($URL, $$$ARGS)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: urllib.request.urlopen($URL)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: httpx.get($URL)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: httpx.post($URL, $$$ARGS)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: aiohttp.ClientSession().get($URL)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: aiohttp.ClientSession().post($URL, $$$ARGS)
+
+    - regex: '(user_|request|param|input|arg|query)'

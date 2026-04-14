@@ -1,5 +1,7 @@
 id: java-command-exec
 language: java
+severity: error
+message: '命令执行漏洞（Java） (CWE-78)'
 name: 命令执行漏洞（Java）
 description: Java 中的命令执行风险通常来自 Runtime.exec 和 ProcessBuilder，若直接拼接用户输入将允许任意命令执行。
 cwe: CWE-78

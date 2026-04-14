@@ -1,5 +1,7 @@
 id: php-command-exec
 language: php
+severity: error
+message: '命令执行漏洞（PHP） (CWE-78)'
 name: 命令执行漏洞（PHP）
 description: PHP 提供了多个可直接调用系统命令的函数，若参数可控将导致命令注入。
 cwe: CWE-78

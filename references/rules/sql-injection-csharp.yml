@@ -1,5 +1,7 @@
 id: csharp-sql-injection
 language: csharp
+severity: error
+message: 'SQL注入（C#） (CWE-89)'
 name: SQL注入（C#）
 description: C#中若通过字符串插值、String.Format 或字符串拼接构建 SQL 语句，攻击者可注入恶意 SQL 代码。
 cwe: CWE-89

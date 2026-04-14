@@ -1,5 +1,7 @@
 id: java-sql-injection
 language: java
+severity: error
+message: 'SQL注入（Java） (CWE-89)'
 name: SQL注入（Java）
 description: SQL注入会在动态拼接SQL语句时发生。
 cwe: CWE-89

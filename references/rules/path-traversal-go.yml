@@ -1,5 +1,7 @@
 id: go-path-traversal
 language: go
+severity: warning
+message: '路径穿越漏洞（Go） (CWE-22)'
 name: 路径穿越漏洞（Go）
 description: Go项目中如果将用户输入直接传给os.
 cwe: CWE-22

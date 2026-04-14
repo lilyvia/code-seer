@@ -1,0 +1,40 @@
+id: javascript-command-exec
+language: javascript
+severity: error
+message: '命令执行漏洞（JavaScript） (CWE-78)'
+name: 命令执行漏洞（JavaScript）
+description: Node.js 中命令执行漏洞发生在使用 child_process 模块执行系统命令时，将用户输入直接传递给 shell。
+cwe: CWE-78
+remediation: "避免使用 shell=true，优先使用参数列表而非字符串拼接。\n```javascript\nconst { exec, execFile, spawn } = require('child_process');\n\n// 不安全的代码 ❌\nexec(`cat ${userFile}`);  // 用户输入直接传入 shell\nchild_process.exec(userInput);\nrequire('child_process').exec(cmd, shell=true);\n\n// 安全的代码 ✅\n// 使用 execFile 避免 shell 解释\nexecFile('cat', [userFile], (err, stdout) => {\n  console.log(stdout);\n});\n\n// 使用 spawn 处理大输出\nconst child = spawn('ls', ['-la', dirPath]);\n\n// 白名单验证命令\nconst allowedCommands = ['ls', 'pwd', 'whoami'];\nif (allowedCommands.includes(userCmd)) {\n  execFile(userCmd);\n}\n\n// 避免 eval\n// eval(userCode);  // 危险！\n\n// 使用 vm 模块沙箱（仍需谨慎）\nconst vm = require('vm');\nconst sandbox = { /* 受限变量 */ };\nvm.runInNewContext(userCode, sandbox, { timeout: 1000 });\n```\n"
+rule:
+  any:
+  - pattern: 'exec(`$CMD ${$VAR}`)
+
+      '
+  - pattern: 'exec("$CMD" + $VAR)
+
+      '
+  - pattern: 'execSync(`$CMD ${$VAR}`)
+
+      '
+  - pattern: 'execSync("$CMD" + $VAR)
+
+      '
+  - pattern: 'execFile($CMD, [$VAR])
+
+      '
+  - pattern: 'child_process.exec($USER_CMD)
+
+      '
+  - pattern: 'child_process.execSync($USER_CMD)
+
+      '
+  - pattern: 'spawn($USER_CMD)
+
+      '
+  - pattern: 'require("child_process").exec($USER_CMD)
+
+      '
+  - pattern: 'eval($USER_CODE)
+
+      '

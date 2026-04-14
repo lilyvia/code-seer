@@ -28,10 +28,16 @@ metadata:
 
 ### 项目配置
 
-创建 `sgconfig.yml` 配置文件：
+创建 `sgconfig.yml` 配置文件（相对于审计项目根目录）：
 ```yaml
 ruleDirs:
-  - /mnt/e/Seafile/sync/code/ctf/security-audit/references/rules
+  - references/rules
+```
+
+或使用绝对路径（当规则已安装到 OpenCode 技能目录时）：
+```yaml
+ruleDirs:
+  - ~/.config/opencode/skills/security-audit/references/rules
 ```
 
 ### 扫描命令
@@ -140,10 +146,10 @@ username=admin' OR '1'='1'--&password=test
 ## 使用示例
 
 ```bash
-# 创建项目配置并扫描
+# 创建项目配置并扫描（使用相对路径，假设规则在当前项目中）
 cat > /path/to/project/sgconfig.yml << 'EOF'
 ruleDirs:
-  - /mnt/e/Seafile/sync/code/ctf/security-audit/references/rules
+  - references/rules
 EOF
 cd /path/to/project && ast-grep scan --json > /tmp/scan_results.json
 
