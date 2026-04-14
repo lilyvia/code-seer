@@ -27,19 +27,18 @@ remediation: |
   - 控制器中校验资源归属
   - 避免仅依赖前端隐藏按钮做权限控制
 rule:
-  kind: expression_statement
   any:
-    - pattern: |
-        Route::get('/admin', [$CTRL::class, '$ACTION']);
-    - pattern: |
-        Route::get('/admin/users', [$CTRL::class, '$ACTION']);
-    - pattern: |
-        Route::post('/admin', [$CTRL::class, '$ACTION']);
+    - pattern: $MODEL::findOrFail($REQUEST->input($KEY))
+    - pattern: $MODEL::findOrFail($REQUEST->get($KEY))
+    - pattern: $MODEL::find($REQUEST->input($KEY))
+    - pattern: $MODEL::find($REQUEST->get($KEY))
+    - pattern: $MODEL::where('id', $REQUEST->input($KEY))->first()
+    - pattern: $MODEL::where('id', $REQUEST->get($KEY))->first()
     - pattern: |
         if (Auth::check()) {
-            User::where('id', $ID)->delete();
+            $MODEL::where($$$)->delete();
         }
     - pattern: |
-        $ORDER = Order::findOrFail($request->input('order_id'));
-    - pattern: |
-        $USER = User::findOrFail($request->input('user_id'));
+        if (Auth::check()) {
+            $MODEL::where($$$)->forceDelete();
+        }

@@ -28,17 +28,18 @@ remediation: |
   - 所有按ID读取的业务都校验资源归属
   - 关键操作在Service层进行二次权限校验
 rule:
-  kind: call_expression
   any:
     - pattern: |
-        r.GET("/admin", $HANDLER)
+        $VAR, $ERR := $REPO.$METHOD($REQ.URL.Query().Get($KEY))
     - pattern: |
-        r.POST("/admin/$$$PATH", $HANDLER)
+        $VAR, $ERR := $DB.$METHOD($CTX.Param($KEY))
     - pattern: |
-        http.HandleFunc("/admin", $HANDLER)
-    - pattern: |
-        if userID != "" {
-            repo.DeleteUser($TARGET)
+        if $USERID != "" {
+            $REPO.DeleteUser($TARGET)
         }
     - pattern: |
-        order, _ := repo.GetOrderByID(r.URL.Query().Get("order_id"))
+        $RESULT := $DB.First($$$, $CTX.Query($KEY))
+    - pattern: |
+        $DB.Where($$$, $CTX.Param($KEY)).$METHOD($$$)
+    - pattern: |
+        $CTX.JSON($CODE, $DB.Find($CTX.Param($KEY)))

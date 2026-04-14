@@ -36,15 +36,15 @@ remediation: |
   - 查询接口必须验证资源归属
   - 服务层保留权限校验，防止API层绕过
 rule:
-  kind: expression_statement
   any:
-    - pattern: |
-        app.MapGet("/admin", $HANDLER);
-    - pattern: |
-        app.MapPost("/admin", $HANDLER);
-    - pattern: |
-        if (User.Identity != null && User.Identity.IsAuthenticated) {
-            _context.Users.Remove($TARGET);
-        }
-    - pattern: |
-        return Ok(_context.Users.Find(id));
+    - pattern: return Ok($CTX.$TABLE.Find($ID));
+    - pattern: return Ok(await $CTX.$TABLE.FindAsync($ID));
+    - pattern: return Ok($CTX.$TABLE.FirstOrDefault($$$));
+    - pattern: return Ok(await $CTX.$TABLE.FirstOrDefaultAsync($$$));
+    - kind: expression_statement
+      pattern: $CTX.$TABLE.Remove($ENTITY);
+      inside:
+        kind: block
+        inside:
+          kind: if_statement
+          regex: IsAuthenticated

@@ -31,22 +31,11 @@ remediation: |
       return render(request, 'order.html', {'order': order})
   ```
 rule:
-  kind: function_definition
   any:
-    - pattern: |
-        @app.route("/admin")
-        def $FUNC($$$):
-            $$$BODY
-    - pattern: |
-        @app.route('/admin')
-        def $FUNC($$$):
-            $$$BODY
-    - pattern: |
-        @login_required
-        def $FUNC(request, $$$):
-            if request.user.is_authenticated:
-                $MODEL.objects.filter(id=$ID).delete()
-    - pattern: |
-        order = Order.objects.get(id=request.GET.get($KEY))
-    - pattern: |
-        order = Order.query.get(request.args.get($KEY))
+    - pattern: $VAR = $MODEL.objects.get($$$ARGS)
+    - pattern: $VAR = $MODEL.query.get($$$ARGS)
+    - pattern: $VAR = db.session.query($MODEL).get($$$ARGS)
+    - pattern: $VAR = $MODEL.objects.filter($$$ARGS).first()
+    - pattern: $VAR = $MODEL.query.filter_by($$$ARGS).first()
+    - pattern: $MODEL.objects.filter($$$ARGS).delete()
+    - pattern: $MODEL.query.filter_by($$$ARGS).delete()

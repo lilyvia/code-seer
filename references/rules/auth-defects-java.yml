@@ -33,24 +33,44 @@ remediation: |
 rule:
   kind: method_declaration
   any:
+    # Pattern 1: IDOR - Direct object return without ownership check
     - pattern: |
-        @GetMapping("/admin")
-        public $RET $FUNC($$$) {
-            $$$BODY
+        @GetMapping($PATH)
+        public $RET $METHOD($$$PARAMS) {
+          return $REPO.findById($ID).orElseThrow();
         }
-    - pattern: |
-        @PostMapping("/admin/$$$PATH")
-        public $RET $FUNC($$$) {
-            $$$BODY
-        }
+
+    # Pattern 2: Delete operation guarded only by isAuthenticated
     - pattern: |
         @PreAuthorize("isAuthenticated()")
         @DeleteMapping($PATH)
-        public $RET $FUNC($$$) {
-            $$$BODY
+        public $RET $METHOD($$$PARAMS) {
+          $$$BODY
         }
+
+    # Pattern 3: Sensitive write operations (Delete/Put) without any security annotation
     - pattern: |
-        @GetMapping("/users/{id}")
-        public $RET $FUNC(@PathVariable Long id) {
-            return $REPO.findById(id).orElseThrow();
+        @DeleteMapping($PATH)
+        public $RET $METHOD($$$PARAMS) {
+          $$$BODY
+        }
+      not:
+        follows:
+          pattern: '@PreAuthorize($$$_)'
+          stopBy: end
+    - pattern: |
+        @PutMapping($PATH)
+        public $RET $METHOD($$$PARAMS) {
+          $$$BODY
+        }
+      not:
+        follows:
+          pattern: '@PreAuthorize($$$_)'
+          stopBy: end
+
+    # Pattern 4: Direct findById return from request param
+    - pattern: |
+        @GetMapping($PATH)
+        public $RET $METHOD($$$PARAMS) {
+          return $REPO.findById($REQUEST.getParameter($PARAM));
         }

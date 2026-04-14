@@ -33,27 +33,11 @@ remediation: |
   ```
 rule:
   any:
-  - kind: call_expression
-    pattern: 'app.get($PATH, $HANDLER)'
-    regex: 'app\.get\(["'']/admin'
-  - kind: call_expression
-    pattern: 'app.post($PATH, $HANDLER)'
-    regex: 'app\.post\(["'']/admin'
-  - kind: call_expression
-    pattern: 'app.delete($PATH, $HANDLER)'
-    regex: 'app\.delete\(["'']/admin'
-  - kind: call_expression
-    pattern: 'app.put($PATH, $HANDLER)'
-    regex: 'app\.put\(["'']/admin'
-  - kind: call_expression
-    pattern: 'router.get($PATH, $HANDLER)'
-    regex: 'router\.get\(["'']/admin'
-  - kind: call_expression
-    pattern: 'router.post($PATH, $HANDLER)'
-    regex: 'router\.post\(["'']/admin'
-  - kind: call_expression
-    pattern: 'router.delete($PATH, $HANDLER)'
-    regex: 'router\.delete\(["'']/admin'
-  - kind: call_expression
-    pattern: 'router.put($PATH, $HANDLER)'
-    regex: 'router\.put\(["'']/admin'
+    - pattern: 'await $MODEL.findById(req.params.$KEY)'
+    - pattern: 'await $MODEL.findOne({ _id: req.body.$KEY })'
+    - pattern: 'await $MODEL.findByIdAndDelete(req.params.$KEY)'
+    - pattern: 'await $MODEL.findByIdAndUpdate(req.params.$KEY, $$$)'
+    - pattern: 'res.json(await $MODEL.findById($$$))'
+    - pattern: 'res.send(await $MODEL.findById($$$))'
+    - pattern: 'res.json(await $MODEL.findOne($$$))'
+    - pattern: 'res.send(await $MODEL.findOne($$$))'
