@@ -1,0 +1,35 @@
+id: ruby-path-traversal
+language: ruby
+severity: warning
+message: '路径穿越漏洞（Ruby） (CWE-22)'
+name: 路径穿越漏洞（Ruby）
+description: 路径穿越漏洞允许攻击者访问或操作预期目录之外的文件。
+cwe: CWE-22
+remediation: "验证和净化用户输入的文件路径：\n```ruby\n# 不安全的代码 ❌\nFile.open(user_path, 'r')\n# 安全的代码 ✅\ndef safe_open(base_dir, user_path)\n  full_path = File.realpath(File.join(base_dir, user_path))\n  base_real = File.realpath(base_dir)\n  raise '路径不在允许的目录内' unless full_path.start_with?(base_real + File::SEPARATOR)\n  File.open(full_path, 'r')\nend\n\n# 使用 Rails 的 ActiveStorage 或 carrierwave 等安全库\n# 或者使用 Pathname\nrequire 'pathname'\ndef safe_path(base_dir, user_path)\n  base = Pathname.new(base_dir).realpath\n  target = (base + user_path).realpath\n  raise '路径穿越检测' unless target.to_s.start_with?(base.to_s + File::SEPARATOR)\n  target\nend\n```\n"
+rule:
+  kind: call
+  any:
+  - pattern: 'File.open("../$$$REST", $MODE)'
+  - pattern: 'File.read("../$$$REST")'
+  - pattern: 'send_file("../$$$REST")'
+  - pattern: 'FileUtils.rm("../$$$REST")'
+  - pattern: 'FileUtils.rm_rf("../$$$REST")'
+  - pattern: 'File.delete("../$$$REST")'
+  - all:
+    - pattern: 'File.open($USER_INPUT, $MODE)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'File.read($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'send_file($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'FileUtils.rm($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'FileUtils.rm_rf($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'File.delete($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query|params)'

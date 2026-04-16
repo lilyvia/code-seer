@@ -1,0 +1,37 @@
+id: ruby-xss
+language: ruby
+severity: warning
+message: 'XSS跨站脚本攻击（Ruby） (CWE-79)'
+name: XSS跨站脚本攻击（Ruby）
+description: Ruby/Rails/Sinatra中常见的XSS漏洞来源包括未转义的用户输入直接渲染到页面、使用raw输出、ERB解析用户输入等。
+cwe: CWE-79
+remediation: "对输出到HTML上下文的数据进行转义，避免直接使用raw或ERB解析用户输入：\n```ruby\n# 不安全的代码 ❌\nrender inline: \"<div>#{params[:name]}</div>\"\nrender html: raw(user_input)\nERB.new(user_input).result\nresponse.write(user_input)\n# 安全的代码 ✅\nrender inline: \"<div>#{h(params[:name])}</div>\"\nrender html: user_input\n# Rails会自动转义ERB模板中的变量\n# Sinatra中使用Rack::Utils.escape_html\nresponse.write(Rack::Utils.escape_html(user_input))\n```\n推荐措施：\n- 使用Rails/Sinatra内置的HTML转义机制\n- 避免使用raw和html_safe\n- 对富文本使用 sanitize 过滤\n- 启用CSP降低XSS利用风险\n"
+rule:
+  any:
+  - pattern: 'render inline: $CONTENT
+
+      '
+  - pattern: 'render html: raw($INPUT)
+
+      '
+  - pattern: 'render html: $INPUT.html_safe
+
+      '
+  - pattern: 'ERB.new($TMPL).result
+
+      '
+  - pattern: 'ERB.new($TMPL).result($BINDING)
+
+      '
+  - pattern: 'response.write($INPUT)
+
+      '
+  - pattern: '$OUT << $INPUT
+
+      '
+  - pattern: 'content_tag($TAG, raw($INPUT))
+
+      '
+  - pattern: 'raw($INPUT)
+
+      '

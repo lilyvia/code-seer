@@ -1,0 +1,16 @@
+id: ruby-xxe
+language: ruby
+severity: warning
+message: 'XXE XML外部实体注入（Ruby） (CWE-611)'
+name: XXE XML外部实体注入（Ruby）
+description: Ruby中多个XML解析库在处理不可信XML时可能受到XXE攻击。
+cwe: CWE-611
+remediation: "对不可信XML输入应使用安全解析配置：\n```ruby\n# 不安全的代码 ❌\nNokogiri::XML(user_xml)\n# 安全的代码 ✅\ndoc = Nokogiri::XML(user_xml) do |config|\n  config.nonet\n  config.noblanks\n  config.noent\n  config.nosubst\n  config.nocdata\nend\n\n# Nokogiri 安全配置\ndoc = Nokogiri::XML(user_xml) do |config|\n  config.strict.noent.noblanks\nend\n\n# REXML 安全配置\nrequire 'rexml/document'\ndoc = REXML::Document.new(user_xml, { :entity_expansion_text_limit => 0 })\n\n# Ox 安全配置\ndoc = Ox.parse(user_xml, :mode => :generic, :effort => 1)\n# 或者使用 Ox.load 并禁用外部实体\n```\n"
+rule:
+  kind: call
+  any:
+  - pattern: 'Nokogiri::XML($XML_INPUT)'
+  - pattern: 'Nokogiri::XML::Reader($XML_INPUT)'
+  - pattern: 'REXML::Document.new($XML_INPUT)'
+  - pattern: 'Ox.parse($XML_INPUT)'
+  - pattern: 'Ox.load($XML_INPUT)'

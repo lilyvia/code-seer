@@ -1,0 +1,39 @@
+id: ruby-deserialization
+language: ruby
+severity: error
+message: '不安全的反序列化（Ruby） (CWE-502)'
+name: 不安全的反序列化（Ruby）
+description: 不安全的反序列化允许攻击者通过操控序列化数据执行任意代码。
+cwe: CWE-502
+remediation: |
+  使用安全的替代方法：
+  ```ruby
+  # 不安全的代码 ❌
+  Marshal.load(user_data)
+  YAML.load(user_data)
+  JSON.load(user_data)
+
+  # 安全的代码 ✅
+  # 使用 YAML.safe_load 代替 YAML.load
+  YAML.safe_load(user_data)
+
+  # 使用 JSON.parse 代替 JSON.load
+  JSON.parse(user_data)
+
+  # 如果必须使用 Marshal，确保数据来自可信来源并实施签名验证
+  ```
+  如果必须使用反序列化：
+  - 对序列化数据实施 HMAC 签名验证
+  - 使用加密通道传输
+  - 限制反序列化环境权限
+rule:
+  kind: call
+  any:
+  - pattern: Marshal.load($USER_DATA)
+  - pattern: Marshal.restore($USER_DATA)
+  - pattern: YAML.load($USER_DATA)
+  - pattern: JSON.load($USER_DATA)
+  - pattern: Oj.load($USER_DATA)
+  - pattern: Oj.object_load($USER_DATA)
+  - pattern: MessagePack.unpack($USER_DATA)
+  - pattern: MessagePack.load($USER_DATA)

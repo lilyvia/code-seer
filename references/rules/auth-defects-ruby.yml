@@ -1,0 +1,46 @@
+id: ruby-auth-defects
+language: ruby
+severity: warning
+message: '鉴权缺陷（Ruby） (CWE-287)'
+name: 鉴权缺陷（Ruby）
+description: 鉴权缺陷允许未授权用户访问敏感资源或执行特权操作。
+cwe: CWE-287
+remediation: |
+  实施适当的身份验证和授权：
+  ```ruby
+  # Rails 示例
+  class OrdersController < ApplicationController
+    before_action :authenticate_user!
+    before_action :authorize_order, only: [:show, :edit, :update, :destroy]
+
+    def show
+      @order = Order.find(params[:id])
+      authorize @order
+    end
+
+    private
+
+    def authorize_order
+      @order = Order.find(params[:id])
+      redirect_to root_path, alert: '无权访问' unless @order.user_id == current_user.id
+    end
+  end
+
+  # 使用 Pundit 或 CanCanCan 进行授权
+  # Pundit: authorize Order.find(params[:id])
+  # CanCanCan: authorize! :read, Order.find(params[:id])
+  ```
+rule:
+  any:
+  - pattern: $MODEL.find($PARAMS)
+    regex: params\[|:id\]|:user_id\]|:order_id\]|:post_id\]
+  - pattern: $MODEL.find_by_id($PARAMS)
+    regex: params\[|:id\]|:user_id\]|:order_id\]|:post_id\]
+  - pattern: $MODEL.find_by($PARAMS)
+    regex: params\[|:id\]|:user_id\]|:order_id\]|:post_id\]
+  - pattern: $MODEL.where($PARAMS).first
+    regex: params\[|:id\]|:user_id\]|:order_id\]|:post_id\]
+  - pattern: $MODEL.where($PARAMS).first!
+    regex: params\[|:id\]|:user_id\]|:order_id\]|:post_id\]
+  - pattern: $MODEL.where($PARAMS).take
+    regex: params\[|:id\]|:user_id\]|:order_id\]|:post_id\]

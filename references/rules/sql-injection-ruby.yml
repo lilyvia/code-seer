@@ -1,0 +1,57 @@
+id: ruby-sql-injection
+language: ruby
+severity: error
+message: 'SQL注入（Ruby） (CWE-89)'
+name: SQL注入（Ruby）
+description: Ruby/Rails中常见的SQL注入问题通常来自动态拼接SQL语句或直接将用户输入传入SQL方法。
+cwe: CWE-89
+remediation: '使用参数化查询（Prepared Statements）替代字符串拼接：
+
+  ```ruby
+
+  # 不安全的代码 ❌
+
+  User.find_by_sql("SELECT * FROM users WHERE id = #{params[:id]}")
+
+  User.where("name = ''#{params[:name]}''")
+
+  User.connection.execute("DELETE FROM posts WHERE id = #{id}")
+
+  # 安全的代码 ✅
+
+  User.find_by_sql(["SELECT * FROM users WHERE id = ?", params[:id]])
+
+  User.where("name = ?", params[:name])
+
+  User.connection.execute("DELETE FROM posts WHERE id = $1", id)
+
+  ```
+
+  '
+rule:
+  kind: call
+  any:
+  - pattern: '$REPO.find_by_sql($SQL)
+
+      '
+  - pattern: '$REPO.where($SQL)
+
+      '
+  - pattern: '$CONN.execute($SQL)
+
+      '
+  - pattern: '$CONN.exec($SQL)
+
+      '
+  - pattern: '$CONN.raw_connection.exec($SQL)
+
+      '
+  - pattern: '$CONN.raw_connection.exec_params($SQL, $$$ARGS)
+
+      '
+  - pattern: 'ActiveRecord::Base.connection.execute($SQL)
+
+      '
+  - pattern: 'ActiveRecord::Base.connection.exec_query($SQL)
+
+      '

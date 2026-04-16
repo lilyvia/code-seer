@@ -1,0 +1,23 @@
+id: ruby-command-exec
+language: ruby
+severity: error
+message: '命令执行漏洞（Ruby） (CWE-78)'
+name: 命令执行漏洞（Ruby）
+description: Ruby提供了多个可直接调用系统命令的函数，若参数可控将导致命令注入。
+cwe: CWE-78
+remediation: "尽量避免直接执行用户输入；必须使用时采用白名单并严格约束参数。\n```ruby\n# 不安全的代码 ❌\nsystem(user_input)\nexec(user_cmd)\n`#{user_cmd}`\nIO.popen(user_input)\nOpen3.popen3(user_cmd)\neval(user_code)\n# 更安全的代码 ✅\nallowed = %w[ls pwd whoami]\nif allowed.include?(user_cmd)\n  system(user_cmd)\nend\n# 使用参数列表而非字符串\nsystem('ls', '-la')\n```\n"
+rule:
+  kind: call
+  any:
+  - pattern: system($CMD)
+  - pattern: exec($CMD)
+  - pattern: IO.popen($CMD)
+  - pattern: Open3.popen3($CMD)
+  - pattern: Open3.capture3($CMD)
+  - pattern: Open3.popen2($CMD)
+  - pattern: eval($CODE)
+  - pattern: instance_eval($CODE)
+  - pattern: class_eval($CODE)
+  - pattern: module_eval($CODE)
+  - pattern: Kernel.eval($CODE)
+  - pattern: '`$CMD`'

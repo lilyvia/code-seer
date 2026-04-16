@@ -1,0 +1,44 @@
+id: ruby-ssrf
+language: ruby
+severity: warning
+message: 'SSRF服务器端请求伪造（Ruby） (CWE-918)'
+name: SSRF服务器端请求伪造（Ruby）
+description: SSRF允许攻击者利用服务器发起恶意请求，访问内部网络或敏感资源。
+cwe: CWE-918
+remediation: "验证并限制用户提供的URL，仅允许可信目标与协议。\n```ruby\n# 不安全的代码 ❌\nNet::HTTP.get(URI(user_url))\n# 安全的代码 ✅\nrequire 'uri'\nrequire 'ipaddr'\n\ndef safe_url?(url)\n  uri = URI.parse(url)\n  return false unless %w[http https].include?(uri.scheme)\n  host = uri.hostname\n  return false unless host\n  begin\n    ip = IPAddr.new(host)\n    return false if ip.private? || ip.loopback? || ip.link_local?\n  rescue IPAddr::InvalidAddressError\n    # 不是IP地址，继续检查域名\n  end\n  return false if host == '169.254.169.254'\n  true\nend\n\nNet::HTTP.get(URI(user_url)) if safe_url?(user_url)\n```\n"
+rule:
+  kind: call
+  any:
+  - pattern: 'Net::HTTP.get(URI("http://localhost$$$REST"))'
+  - pattern: 'Net::HTTP.get(URI("http://127.0.0.1$$$REST"))'
+  - pattern: 'Net::HTTP.get(URI("http://169.254.169.254$$$REST"))'
+  - pattern: 'open("http://localhost$$$REST")'
+  - pattern: 'open("http://127.0.0.1$$$REST")'
+  - pattern: 'open("http://169.254.169.254$$$REST")'
+  - pattern: 'URI.open("http://localhost$$$REST")'
+  - pattern: 'URI.open("http://127.0.0.1$$$REST")'
+  - pattern: 'URI.open("http://169.254.169.254$$$REST")'
+  - all:
+    - pattern: 'Net::HTTP.get($URL)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'Net::HTTP.get_response($URL)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'Net::HTTP.post_form($URL, $$$ARGS)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'open($URL)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'URI.open($URL)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'RestClient.get($URL)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'Faraday.get($URL)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'HTTParty.get($URL)'
+    - regex: '(user_|request|param|input|arg|query|params)'
