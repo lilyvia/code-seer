@@ -1,0 +1,17 @@
+id: java-xss
+language: java
+severity: warning
+message: 'XSS跨站脚本攻击（Java） (CWE-79)'
+name: XSS跨站脚本攻击（Java）
+description: Java Web应用（Spring/JSP/Servlet等）中，若将用户输入直接输出到HTML响应中，可能导致反射型或存储型XSS攻击。
+cwe: CWE-79
+remediation: "对输出到HTML上下文的数据进行转义，避免直接拼接用户输入：\n```java\n// 不安全的代码 ❌\nout.println(\"<div>\" + userInput + \"</div>\");\nresponse.getWriter().write(\"<script>\" + userInput + \"</script>\");\n// 安全的代码 ✅\n// 使用Spring的HtmlUtils\nString safe = HtmlUtils.htmlEscape(userInput);\nout.println(\"<div>\" + safe + \"</div>\");\n// 使用OWASP Java Encoder\nString encoded = Encode.forHtml(userInput);\n```\n推荐措施：\n- 使用模板引擎（Thymeleaf、Freemarker）的自动转义功能\n- 对直接输出使用HTML编码库\n- 启用CSP降低XSS利用风险\n"
+rule:
+  kind: expression_statement
+  any:
+  - pattern: '$OUT.println("<$$$HTML>" + $USER_INPUT + "</$$$HTML>");'
+  - pattern: '$WRITER.write("<$$$HTML>" + $USER_INPUT + "</$$$HTML>");'
+  - pattern: '$WRITER.print($USER_INPUT);'
+  - pattern: 'response.getWriter().write($USER_INPUT);'
+  - pattern: 'out.print($USER_INPUT);'
+  - pattern: 'model.addAttribute("$KEY", $USER_INPUT);'

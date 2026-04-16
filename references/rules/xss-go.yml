@@ -1,0 +1,29 @@
+id: go-xss
+language: go
+severity: warning
+message: 'XSS跨站脚本攻击（Go） (CWE-79)'
+name: XSS跨站脚本攻击（Go）
+description: Go Web框架（Gin、Echo、标准库net/http等）中，若将用户输入直接拼接到HTML响应中，可能导致反射型或存储型XSS攻击。
+cwe: CWE-79
+remediation: "对输出到HTML上下文的数据进行转义，避免直接拼接用户输入：\n```go\n// 不安全的代码 ❌\nc.String(200, \"<div>\"+userInput+\"</div>\")\nfmt.Fprintf(w, \"<div>%s</div>\", userInput)\n// 安全的代码 ✅\nimport \"html/template\"\ntmpl := template.Must(template.New(\"t\").Parse(\"<div>{{.}}</div>\"))\ntmpl.Execute(w, userInput)\n// 或使用html.EscapeString\nimport \"html\"\nsafe := html.EscapeString(userInput)\n```\n推荐措施：\n- 使用html/template自动转义\n- 对直接输出使用html.EscapeString\n- 启用CSP降低XSS利用风险\n"
+rule:
+  kind: call_expression
+  any:
+  - all:
+    - pattern: 'fmt.Fprintf($W, $FMT, $USER_INPUT)'
+    - regex: 'fmt\.Fprintf\(.*".*<.*>.*%s.*</.*>.*"'
+  - all:
+    - pattern: 'fmt.Fprint($W, $HTML)'
+    - regex: 'fmt\.Fprint\(.*".*<.*>"\s*\+\s*.*\s*\+\s*".*</.*>.*"'
+  - all:
+    - pattern: '$CTX.String(200, $HTML)'
+    - regex: '\.String\(200,\s*".*<.*>"\s*\+\s*.*\s*\+\s*".*</.*>.*"'
+  - all:
+    - pattern: '$CTX.HTML(200, $HTML)'
+    - regex: '\.HTML\(200,\s*".*<.*>"\s*\+\s*.*\s*\+\s*".*</.*>.*"'
+  - all:
+    - pattern: 'io.WriteString($W, $HTML)'
+    - regex: 'io\.WriteString\(.*".*<.*>"\s*\+\s*.*\s*\+\s*".*</.*>.*"'
+  - all:
+    - pattern: 'w.Write($DATA)'
+    - regex: 'w\.Write\(\[\]byte\(.*".*<.*>"\s*\+\s*.*\s*\+\s*".*</.*>.*"'

@@ -1,0 +1,20 @@
+id: csharp-xss
+language: csharp
+severity: warning
+message: 'XSS跨站脚本攻击（C#） (CWE-79)'
+name: XSS跨站脚本攻击（C#）
+description: ASP.NET / .NET Web应用中，若将用户输入直接输出到HTML响应中，可能导致反射型或存储型XSS攻击。
+cwe: CWE-79
+remediation: "对输出到HTML上下文的数据进行转义，避免直接拼接用户输入：\n```csharp\n// 不安全的代码 ❌\nreturn Content(\"<div>\" + userInput + \"</div>\");\nResponse.Write(\"<script>\" + userInput + \"</script>\");\n// 安全的代码 ✅\n// Razor视图自动转义\nreturn View(model);\n// 使用HtmlEncoder\nusing System.Text.Encodings.Web;\nvar encoded = HtmlEncoder.Default.Encode(userInput);\nreturn Content(\"<div>\" + encoded + \"</div>\");\n```\n推荐措施：\n- 使用Razor视图的自动转义功能\n- 对直接输出使用System.Text.Encodings.Web.HtmlEncoder\n- 启用CSP降低XSS利用风险\n"
+rule:
+  any:
+  - kind: invocation_expression
+    pattern: 'Response.Write($USER_INPUT)'
+  - kind: invocation_expression
+    pattern: 'Response.Write("<$$$HTML>" + $USER_INPUT + "</$$$HTML>")'
+  - kind: invocation_expression
+    pattern: '$CONTEXT.Response.Write($USER_INPUT)'
+  - kind: return_statement
+    pattern: 'return Content("<$$$HTML>" + $USER_INPUT + "</$$$HTML>");'
+  - kind: return_statement
+    pattern: 'return new ContentResult { Content = "<$$$HTML>" + $USER_INPUT + "</$$$HTML>" };'

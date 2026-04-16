@@ -1,0 +1,14 @@
+id: go-xxe
+language: go
+severity: warning
+message: 'XXE XML外部实体注入（Go） (CWE-611)'
+name: XXE XML外部实体注入（Go）
+description: Go中多个XML解析库在处理不可信XML时可能受到XXE攻击，攻击者可能通过外部实体读取服务器敏感文件或发起内网请求。
+cwe: CWE-611
+remediation: "对不可信XML输入应禁用DTD和外部实体解析：\n```go\n// 不安全的代码 ❌\nxml.Unmarshal(userXml, &obj)\n// 安全的代码 ✅\n// encoding/xml默认不解析外部实体，但仍应验证输入来源\n// 对libxml2绑定需显式禁用外部实体\n```\n推荐措施：\n- 使用encoding/xml时确保不启用外部实体解析\n- 对第三方XML库检查其默认安全设置\n- 验证XML输入来源并限制大小\n"
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'xml.Unmarshal($XML_INPUT, $OBJ)'
+  - pattern: 'xml.NewDecoder($READER).Decode($OBJ)'
+  - pattern: 'encoding/xml.Unmarshal($XML_INPUT, $OBJ)'

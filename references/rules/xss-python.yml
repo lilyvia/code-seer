@@ -1,0 +1,18 @@
+id: python-xss
+language: python
+severity: warning
+message: 'XSS跨站脚本攻击（Python） (CWE-79)'
+name: XSS跨站脚本攻击（Python）
+description: Python Web框架（Flask/Django/FastAPI等）中，若将用户输入直接渲染到HTML响应中，可能导致反射型或存储型XSS攻击。
+cwe: CWE-79
+remediation: "对输出到HTML上下文的数据进行转义，避免直接拼接用户输入：\n```python\n# 不安全的代码 ❌\nreturn f\"<div>{user_input}</div>\"\nreturn \"<div>\" + user_input + \"</div>\"\n# Flask\nrender_template_string(\"<div>{{ user_input }}</div>\")\n# Django\nreturn HttpResponse(\"<div>\" + user_input + \"</div>\")\n# 安全的代码 ✅\nfrom markupsafe import escape\nreturn f\"<div>{escape(user_input)}</div>\"\n# Django自动转义模板变量\nreturn render(request, 'template.html', {'name': user_input})\n```\n推荐措施：\n- 使用模板引擎的自动转义功能\n- 对必须拼接的字符串使用HTML转义\n- 启用CSP降低XSS利用风险\n"
+rule:
+  kind: return_statement
+  any:
+  - pattern: 'return f"<$$$HTML>{$USER_INPUT}</$$$HTML>"'
+  - pattern: 'return "<$$$HTML>" + $USER_INPUT + "</$$$HTML>"'
+  - pattern: 'return render_template_string($TMPL)'
+  - pattern: 'return HttpResponse($HTML + $USER_INPUT)'
+  - pattern: 'return HttpResponse(f"<$$$HTML>{$USER_INPUT}</$$$HTML>")'
+  - pattern: 'Markup($USER_INPUT)'
+  - pattern: 'markupsafe.Markup($USER_INPUT)'
