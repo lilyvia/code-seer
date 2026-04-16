@@ -1,0 +1,44 @@
+id: rust-ssrf
+language: rust
+severity: warning
+message: 'SSRF服务器端请求伪造（Rust） (CWE-918)'
+name: SSRF服务器端请求伪造（Rust）
+description: Rust服务中若将外部输入直接用于HTTP客户端请求，容易触发SSRF，访问内部网络或敏感元数据地址。
+cwe: CWE-918
+remediation: "对目标URL进行协议、域名和IP范围校验，禁止访问内网和元数据地址：\n```rust\nuse url::Url;\nuse std::net::IpAddr;\n// 不安全的代码 ❌\nlet resp = reqwest::get(user_url).await;\n// 安全的代码 ✅\nfn is_safe_url(url: \u0026str) -> bool {\n    let parsed = match Url::parse(url) {\n        Ok(u) => u,\n        Err(_) => return false,\n    };\n    if parsed.scheme() != \"https\" {\n        return false;\n    }\n    if let Some(host) = parsed.host_str() {\n        if host == \"169.254.169.254\" {\n            return false;\n        }\n        if let Ok(ip) = host.parse::\u003cIpAddr\u003e() {\n            if ip.is_loopback() || ip.is_private() || ip.is_link_local() {\n                return false;\n            }\n        }\n    }\n    true\n}\n```\n"
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'reqwest::get("http://localhost$$$REST")'
+  - pattern: 'reqwest::get("http://127.0.0.1$$$REST")'
+  - pattern: 'reqwest::get("http://169.254.169.254$$$REST")'
+  - pattern: 'ureq::get("http://localhost$$$REST")'
+  - pattern: 'ureq::get("http://127.0.0.1$$$REST")'
+  - pattern: 'ureq::get("http://169.254.169.254$$$REST")'
+  - pattern: 'surf::get("http://localhost$$$REST")'
+  - pattern: 'surf::get("http://127.0.0.1$$$REST")'
+  - pattern: 'surf::get("http://169.254.169.254$$$REST")'
+  - pattern: 'isahc::get("http://localhost$$$REST")'
+  - pattern: 'isahc::get("http://127.0.0.1$$$REST")'
+  - pattern: 'isahc::get("http://169.254.169.254$$$REST")'
+  - pattern: 'isahc::get_async("http://localhost$$$REST")'
+  - pattern: 'isahc::get_async("http://127.0.0.1$$$REST")'
+  - pattern: 'isahc::get_async("http://169.254.169.254$$$REST")'
+  - all:
+    - pattern: 'reqwest::get($USER_URL)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'ureq::get($USER_URL)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'surf::get($USER_URL)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'isahc::get($USER_URL)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'isahc::get_async($USER_URL)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: '$CLIENT.get($USER_URL).send()'
+    - regex: '(user_|request|param|input|arg|query)'

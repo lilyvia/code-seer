@@ -1,0 +1,42 @@
+id: rust-auth-defects
+language: rust
+severity: warning
+message: '鉴权缺陷（Rust） (CWE-287)'
+name: 鉴权缺陷（Rust）
+description: Rust Web 服务常通过路由和中间件控制访问权限。按 ID 读取资源但缺少归属校验，可能导致水平越权。
+cwe: CWE-287
+remediation: |
+  对路由与处理函数同时加强鉴权：
+  ```rust
+  // Axum 路由示例
+  async fn get_order(
+      Path(id): Path<i32>,
+      Extension(db): Extension<Database>,
+      claims: Claims,
+  ) -> Result<Json<Order>, StatusCode> {
+      let order = sqlx::query_as::<_, Order>("SELECT * FROM orders WHERE id = $1")
+          .bind(id)
+          .fetch_one(&db)
+          .await
+          .map_err(|_| StatusCode::NOT_FOUND)?;
+
+      if order.user_id != claims.user_id {
+          return Err(StatusCode::FORBIDDEN);
+      }
+      Ok(Json(order))
+  }
+  ```
+  建议：
+  - 敏感路由必须绑定认证+角色中间件
+  - 所有按 ID 读取的业务都校验资源归属
+  - 关键操作在 Service 层进行二次权限校验
+rule:
+  any:
+  - pattern: |
+      sqlx::query($SQL).bind($ID).execute($DB).await
+  - pattern: |
+      sqlx::query_as::<_, $TYPE>($SQL).bind($ID).fetch_one($DB).await
+  - pattern: |
+      sqlx::query($SQL).bind($ID).bind($ID2).execute($DB).await
+  - pattern: |
+      $DB.query($SQL, &[$$$]).await

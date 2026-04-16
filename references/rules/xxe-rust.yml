@@ -1,0 +1,17 @@
+id: rust-xxe
+language: rust
+severity: warning
+message: 'XXE XML外部实体注入（Rust） (CWE-611)'
+name: XXE XML外部实体注入（Rust）
+description: Rust中多个XML解析库在处理不可信XML时可能受到XXE攻击，攻击者可能通过外部实体读取服务器敏感文件或发起内网请求。
+cwe: CWE-611
+remediation: "对不可信XML输入应禁用DTD和外部实体解析：\n```rust\n// 不安全的代码 ❌\nlet reader = quick_xml::Reader::from_str(user_xml);\n// 安全的代码 ✅\n// quick-xml: 默认不解析外部实体，但应避免启用相关功能\n// 对于 serde_xml_rs，应确保输入来自可信来源\n// 使用 roxmltree 时验证输入并限制大小\n```\n"
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'quick_xml::Reader::from_str($XML_INPUT)'
+  - pattern: 'xml::reader::EventReader::new($XML_INPUT)'
+  - all:
+    - pattern: '$FN($XML_INPUT)'
+    - regex: 'serde_xml_rs::from_str'
+  - pattern: 'roxmltree::Document::parse($XML_INPUT)'

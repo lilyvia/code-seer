@@ -1,0 +1,17 @@
+id: rust-xss
+language: rust
+severity: warning
+message: 'XSS跨站脚本攻击（Rust） (CWE-79)'
+name: XSS跨站脚本攻击（Rust）
+description: Rust Web框架（Actix、Rocket、Axum等）中，若将用户输入直接拼接进HTML响应，可能导致反射型或存储型XSS攻击。
+cwe: CWE-79
+remediation: "对输出到HTML上下文的数据进行转义，避免直接拼接用户输入：\n```rust\n// 不安全的代码 ❌\nlet html = format!(\"<div>{}</div>\", user_input);\nHttpResponse::Ok().body(format!(\"<h1>{}</h1>\", user_input))\nHtml(format!(\"<script>alert('{}')</script>\", user_input))\n\n// 安全的代码 ✅\nuse askama::Template;\n\n#[derive(Template)]\n#[template(path = \"hello.html\")]\nstruct HelloTemplate { name: String }\n\nlet html = HelloTemplate { name: user_input }.render().unwrap();\nHttpResponse::Ok().body(html)\n```\n推荐措施：\n- 使用模板引擎自动转义\n- 对必须拼接的字符串使用HTML转义库（如html-escape）\n- 启用CSP降低XSS利用风险\n"
+rule:
+  any:
+  - pattern: 'HttpResponse::Ok().body(format!($$$))'
+  - pattern: 'Html(format!($$$))'
+  - pattern: 'response.set_body(format!($$$))'
+  - all:
+    - kind: macro_invocation
+      pattern: 'format!($FMT, $$$)'
+    - regex: 'format!\s*\(\s*".*<.*>.*"'

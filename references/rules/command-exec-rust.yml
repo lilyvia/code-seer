@@ -1,0 +1,29 @@
+id: rust-command-exec
+language: rust
+severity: error
+message: '命令执行漏洞（Rust） (CWE-78)'
+name: 命令执行漏洞（Rust）
+description: Rust中std::process::Command允许执行系统命令。若将用户输入直接传入Command::new()或参数中，可能导致命令注入。
+cwe: CWE-78
+remediation: "避免将用户输入直接作为命令或参数，优先使用白名单校验：\n```rust\n// 不安全的代码 ❌\nCommand::new(user_cmd).output();\nCommand::new(\u0026cmd).args(\u0026user_args).spawn();\n\n// 安全的代码 ✅\nlet allowed = [\"ls\", \"pwd\", \"whoami\"];\nif allowed.contains(\u0026user_cmd) {\n    Command::new(user_cmd).output();\n}\n```\n"
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'Command::new($CMD).output()'
+  - pattern: 'Command::new($CMD).spawn()'
+  - pattern: 'Command::new($CMD).status()'
+  - pattern: 'Command::new($CMD).arg($$$).output()'
+  - pattern: 'Command::new($CMD).arg($$$).spawn()'
+  - pattern: 'Command::new($CMD).arg($$$).status()'
+  - pattern: 'Command::new($CMD).args($$$).output()'
+  - pattern: 'Command::new($CMD).args($$$).spawn()'
+  - pattern: 'Command::new($CMD).args($$$).status()'
+  - pattern: 'std::process::Command::new($CMD).output()'
+  - pattern: 'std::process::Command::new($CMD).spawn()'
+  - pattern: 'std::process::Command::new($CMD).status()'
+  - pattern: 'std::process::Command::new($CMD).arg($$$).output()'
+  - pattern: 'std::process::Command::new($CMD).arg($$$).spawn()'
+  - pattern: 'std::process::Command::new($CMD).arg($$$).status()'
+  - pattern: 'std::process::Command::new($CMD).args($$$).output()'
+  - pattern: 'std::process::Command::new($CMD).args($$$).spawn()'
+  - pattern: 'std::process::Command::new($CMD).args($$$).status()'

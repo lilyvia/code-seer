@@ -1,0 +1,50 @@
+id: rust-path-traversal
+language: rust
+severity: warning
+message: '路径穿越漏洞（Rust） (CWE-22)'
+name: 路径穿越漏洞（Rust）
+description: Rust项目中如果将用户输入直接传给文件系统操作函数，存在路径穿越风险。
+cwe: CWE-22
+remediation: "使用安全的Path操作和路径前缀校验，确保目标路径仍在允许目录内：\n```rust\nuse std::path::{Path, PathBuf};\nuse std::fs;\n// 不安全的代码 ❌\nlet file = std::fs::File::open(user_path);\n// 安全的代码 ✅\nfn safe_path(base_dir: \u0026str, user_path: \u0026str) -> Result\u003cPathBuf, std::io::Error\u003e {\n    let base = Path::new(base_dir).canonicalize()?;\n    let target = base.join(user_path).canonicalize()?;\n    if !target.starts_with(\u0026base) {\n        return Err(std::io::Error::new(\n            std::io::ErrorKind::PermissionDenied,\n            \"路径穿越检测\"\n        ));\n    }\n    Ok(target)\n}\n```\n"
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'File::open("../$$$REST")'
+  - pattern: 'fs::remove_file("../$$$REST")'
+  - pattern: 'fs::remove_dir_all("../$$$REST")'
+  - pattern: 'Path::new("../$$$REST")'
+  - pattern: 'PathBuf::from("../$$$REST")'
+  - pattern: 'fs::read("../$$$REST")'
+  - pattern: 'fs::write("../$$$REST", $$$)'
+  - pattern: 'tokio::fs::File::open("../$$$REST")'
+  - pattern: 'tokio::fs::remove_file("../$$$REST")'
+  - all:
+    - pattern: 'File::open($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'std::fs::File::open($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'fs::remove_file($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'fs::remove_dir_all($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'tokio::fs::File::open($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'tokio::fs::remove_file($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'Path::new($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'PathBuf::from($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'fs::read($USER_INPUT)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'fs::write($USER_INPUT, $$$)'
+    - regex: '(user_|request|param|input|arg|query)'

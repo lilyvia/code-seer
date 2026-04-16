@@ -1,0 +1,16 @@
+id: rust-sql-injection
+language: rust
+severity: error
+message: 'SQL注入（Rust） (CWE-89)'
+name: SQL注入（Rust）
+description: Rust代码中通过format!宏或字符串拼接动态构造SQL查询，攻击者可能注入恶意SQL代码。
+cwe: CWE-89
+remediation: "使用参数化查询替代动态SQL拼接：\n```rust\n// 不安全的代码 ❌\nsqlx::query(\u0026format!(\"SELECT * FROM users WHERE id = {}\", user_id))\n    .execute(\u0026pool).await;\n\nconn.execute(\"SELECT * FROM users WHERE id = \".to_string() + user_input).await;\n\n// 安全的代码 ✅\nsqlx::query(\"SELECT * FROM users WHERE id = $1\")\n    .bind(user_id)\n    .execute(\u0026pool).await;\n\nconn.execute(\"SELECT * FROM users WHERE id = $1\", \u0026[\u0026user_input]).await;\n```\n"
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'sqlx::query($Q).bind($$$).execute($$$)'
+  - pattern: 'sqlx::query($Q).execute($$$)'
+  - pattern: '$OBJ.query($Q, $$$)'
+  - pattern: '$CONN.execute($Q)'
+  - pattern: 'Statement::from($Q)'

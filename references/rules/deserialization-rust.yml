@@ -1,0 +1,40 @@
+id: rust-deserialization
+language: rust
+severity: error
+message: '不安全的反序列化（Rust） (CWE-502)'
+name: 不安全的反序列化（Rust）
+description: 不安全的反序列化允许攻击者通过操控序列化数据执行任意代码或导致拒绝服务。
+cwe: CWE-502
+remediation: |
+  使用安全的替代方法：
+  ```rust
+  // 不安全的代码 ❌
+  let user: User = serde_json::from_str(user_data).unwrap();
+  let obj: User = bincode::deserialize(bytes).unwrap();
+
+  // 安全的代码 ✅
+  // 对不可信输入增加长度限制与字段白名单
+  if user_data.len() > MAX_SIZE {
+      return Err("Input too large");
+  }
+  let user: User = serde_json::from_str(user_data)?;
+
+  // 避免在边界层直接使用 bincode 解码外部数据
+  // 使用 JSON 替代（功能受限但更安全）
+  let user: User = serde_json::from_str(user_data)?;
+  ```
+  建议：
+  - 对不可信输入增加长度限制与字段白名单
+  - 避免在边界层直接使用 bincode/postcard 解码外部数据
+  - 对 YAML/TOML 输入进行 schema 校验
+rule:
+  kind: call_expression
+  any:
+  - pattern: serde_json::from_str($DATA)
+  - pattern: serde_json::from_slice($DATA)
+  - pattern: bincode::deserialize($DATA)
+  - pattern: bincode::deserialize_from($DATA, $READER)
+  - pattern: postcard::from_bytes($DATA)
+  - pattern: rmp_serde::from_slice($DATA)
+  - pattern: serde_yaml::from_str($DATA)
+  - pattern: toml::from_str($DATA)
