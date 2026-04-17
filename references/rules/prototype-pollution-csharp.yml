@@ -1,0 +1,35 @@
+id: prototype-pollution-csharp
+language: csharp
+severity: warning
+message: '对象属性注入风险（C#） (CWE-915)'
+name: 对象属性注入风险（C#）
+description: |
+  C#中若将用户输入直接用于反射设置属性或字段，
+  攻击者可能通过注入危险属性名操纵对象行为或执行任意代码。
+cwe: CWE-915
+remediation: |
+  对反射操作的属性名做允许名单校验，避免直接使用用户输入：
+  ```csharp
+  // 不安全的代码 ❌
+  var prop = obj.GetType().GetProperty(userPropertyName);
+  prop.SetValue(obj, userValue);
+  
+  // 安全的代码 ✅
+  var allowedProperties = new HashSet<string> { "Name", "Email", "Age" };
+  if (allowedProperties.Contains(propertyName)) {
+      var prop = obj.GetType().GetProperty(propertyName);
+      prop.SetValue(obj, value);
+  }
+  ```
+rule:
+  any:
+  - kind: invocation_expression
+    pattern: '$OBJ.GetType().GetProperty($NAME).SetValue($TARGET, $VAL)'
+  - kind: invocation_expression
+    pattern: '$OBJ.GetType().GetField($NAME).SetValue($TARGET, $VAL)'
+  - kind: invocation_expression
+    pattern: '$TYPE.GetProperty($NAME).SetValue($TARGET, $VAL)'
+  - kind: invocation_expression
+    pattern: '$TYPE.GetField($NAME).SetValue($TARGET, $VAL)'
+  - kind: invocation_expression
+    pattern: '$OBJ.GetType().GetMethod($NAME).Invoke($TARGET, $ARGS)'

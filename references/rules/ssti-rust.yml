@@ -1,0 +1,34 @@
+id: ssti-rust
+language: rust
+severity: warning
+message: 'SSTI服务端模板注入（Rust） (CWE-1336)'
+name: SSTI服务端模板注入（Rust）
+description: |
+  Rust应用中若将用户输入直接传入模板引擎（如Tera、Handlebars、Askama等），
+  攻击者可能通过构造恶意模板表达式执行任意代码或访问敏感对象。
+cwe: CWE-1336
+remediation: |
+  避免直接渲染用户提供的模板源码，改为渲染受信任的固定模板并仅把用户输入作为上下文数据传入：
+  ```rust
+  // 不安全的代码 ❌
+  let template = Tera::one_off(user_template, &context, false)?;
+  
+  // 安全的代码 ✅
+  let tera = Tera::new("templates/**/*")?;
+  let template = tera.render("safe_template.html", &context)?;
+  ```
+  推荐措施：
+  - 不要把用户输入当作模板源码
+  - 仅渲染受信任的静态模板文件
+  - 将用户数据作为上下文数据而不是模板内容传入
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'Tera::one_off($TMPL, $CTX, $AUTO)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - pattern: '$TERA.render_str($TMPL, $CTX)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - pattern: '$HANDLEBARS.render_template($TMPL, $CTX)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - pattern: 'Handlebars::new().render_template($TMPL, $CTX)'
+    regex: '(user_|request|param|input|arg|query|template|source)'

@@ -1,0 +1,31 @@
+id: jndi-injection-go
+language: go
+severity: warning
+message: 'LDAP/目录服务注入风险（Go） (CWE-917)'
+name: LDAP/目录服务注入风险（Go）
+description: |
+  Go应用中使用go-ldap等库时，若将用户输入直接拼接到LDAP查询或绑定操作中，
+  攻击者可能通过构造恶意输入执行未授权的LDAP操作或访问敏感目录信息。
+cwe: CWE-917
+remediation: |
+  避免将用户输入直接拼接到LDAP查询中，使用参数化查询或白名单校验：
+  ```go
+  // 不安全的代码 ❌
+  filter := fmt.Sprintf("(uid=%s)", userInput)
+  req := ldap.NewSearchRequest("dc=example,dc=com", ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false, filter, nil, nil)
+  
+  // 安全的代码 ✅
+  filter := ldap.EscapeFilter(userInput)
+  req := ldap.NewSearchRequest("dc=example,dc=com", ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false, fmt.Sprintf("(uid=%s)", filter), nil, nil)
+  ```
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'ldap.NewSearchRequest($BASE, $SCOPE, $DEREF, $SIZE, $TIME, $TYPES, $FILTER, $ATTRS, $CTRLS)'
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: '$CONN.Search($REQ)'
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: '$CONN.Bind($USER, $PWD)'
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: 'fmt.Sprintf($FMT, $ARG)'
+    regex: 'ldap|uid|cn|dn|ou|dc'

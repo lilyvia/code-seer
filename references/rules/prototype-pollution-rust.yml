@@ -1,0 +1,31 @@
+id: prototype-pollution-rust
+language: rust
+severity: warning
+message: '对象属性注入风险（Rust） (CWE-915)'
+name: 对象属性注入风险（Rust）
+description: |
+  Rust中没有传统的类继承和原型链，但若将用户输入直接用于不安全的反序列化、
+  反射操作或动态属性访问，仍可能导致对象状态被恶意篡改或执行危险操作。
+cwe: CWE-915
+remediation: |
+  避免反序列化用户提供的不可信数据，使用安全的序列化格式：
+  ```rust
+  // 不安全的代码 ❌
+  let obj: MyStruct = serde_json::from_str(user_input)?;
+  
+  // 安全的代码 ✅
+  let obj: MyStruct = serde_json::from_str(user_input)?;
+  // 对反序列化后的数据进行验证
+  obj.validate()?;
+  ```
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'serde_json::from_str::<$TYPE>($DATA)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: 'serde_json::from_slice::<$TYPE>($DATA)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: 'bincode::deserialize::<$TYPE>($DATA)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: 'ron::de::from_str::<$TYPE>($DATA)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'

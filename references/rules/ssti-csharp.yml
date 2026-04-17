@@ -1,0 +1,32 @@
+id: ssti-csharp
+language: csharp
+severity: warning
+message: 'SSTI服务端模板注入（C#） (CWE-1336)'
+name: SSTI服务端模板注入（C#）
+description: |
+  C#应用中若将用户输入直接传入模板引擎（如Razor、DotLiquid、Scriban等），
+  攻击者可能通过构造恶意模板表达式执行任意代码或访问敏感对象。
+cwe: CWE-1336
+remediation: |
+  避免直接渲染用户提供的模板源码，改为渲染受信任的固定模板并仅把用户输入作为模板变量传入：
+  ```csharp
+  // 不安全的代码 ❌
+  var template = Template.Parse(userTemplate);
+  var result = template.Render(Hash.FromAnonymousObject(data));
+  
+  // 安全的代码 ✅
+  var template = Template.Parse(File.ReadAllText("safe_template.liquid"));
+  var result = template.Render(Hash.FromAnonymousObject(data));
+  ```
+  推荐措施：
+  - 不要把用户输入当作模板源码
+  - 仅渲染受信任的静态模板文件
+  - 将用户数据作为模板变量而不是模板内容传入
+rule:
+  any:
+  - kind: invocation_expression
+    pattern: 'Template.Parse($TMPL)'
+  - kind: invocation_expression
+    pattern: 'Scriban.Template.Parse($TMPL)'
+  - kind: invocation_expression
+    pattern: '$ENGINE.CompileRenderAsync($NAME, $TMPL, $MODEL)'

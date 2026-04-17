@@ -1,0 +1,46 @@
+id: ssti-javascript
+language: javascript
+severity: warning
+message: 'SSTI服务端模板注入（JavaScript） (CWE-1336)'
+name: SSTI服务端模板注入（JavaScript）
+description: |
+  JavaScript/Node.js应用中若将用户输入直接传入模板引擎（如EJS、Handlebars、Pug、Mustache等），
+  攻击者可能通过构造恶意模板表达式执行任意代码或访问敏感对象。
+cwe: CWE-1336
+remediation: |
+  避免直接编译用户提供的模板源码，改为编译受信任的固定模板并仅把用户输入作为数据传入：
+  ```javascript
+  // 不安全的代码 ❌
+  const template = ejs.compile(userTemplate);
+  const html = template(data);
+  
+  // 安全的代码 ✅
+  const html = ejs.renderFile('safe_template.ejs', data);
+  ```
+  推荐措施：
+  - 不要把用户输入当作模板源码
+  - 仅编译受信任的静态模板文件
+  - 将用户数据作为模板数据而不是模板内容传入
+rule:
+  any:
+  - kind: call_expression
+    pattern: 'ejs.compile($TMPL)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - kind: call_expression
+    pattern: 'ejs.render($TMPL, $DATA)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - kind: call_expression
+    pattern: 'Handlebars.compile($TMPL)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - kind: call_expression
+    pattern: 'Mustache.render($TMPL, $DATA)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - kind: call_expression
+    pattern: 'pug.compile($TMPL)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - kind: call_expression
+    pattern: 'pug.render($TMPL, $DATA)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - kind: call_expression
+    pattern: '_.template($TMPL)'
+    regex: '(user_|request|param|input|arg|query|template|source)'

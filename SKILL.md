@@ -3,13 +3,13 @@ name: security-audit
 description: |
   源码安全审计技能。AI作为主导审计者，通过LLM深度代码分析挖掘安全漏洞，ast-grep仅作为辅助筛选工具。
   适用于跨语言、跨项目的源码安全审计，输出中文报告供人工复核与落地修复。
-  兼容 Java、Go、Python、PHP、C#、JavaScript/TypeScript（由 JavaScript 规则覆盖 TS 代码库）、Ruby、Rust 等语言，覆盖 9 类漏洞类型。
+  兼容 Java、Go、Python、PHP、C#、JavaScript/TypeScript（由 JavaScript 规则覆盖 TS 代码库）、Ruby、Rust 等语言，覆盖 14 类漏洞类型。
   AI基于源代码深度分析生成带日期的最终审计报告。
 metadata:
   version: "0.0.1"
   languages: "Java, Go, Python, PHP, C#, JavaScript/TypeScript (JS rules cover TS codebases), Ruby, Rust"
   scan_modes: "静态分析, AST分析, LLM深度代码审查"
-  vulnerabilities: "SQL注入, XSS, 命令执行, 反序列化, 路径穿越, SSRF, XXE, 鉴权缺陷, 硬编码密钥"
+  vulnerabilities: "SQL注入, XSS, 命令执行, 反序列化, 路径穿越, SSRF, XXE, 鉴权缺陷, 硬编码密钥, SSTI, NoSQL注入, 原型污染, JNDI注入, 开放重定向"
 ---
 
 # 源码安全审计
@@ -112,6 +112,11 @@ ast-grep scan -r references/rules/sql-injection-csharp.yml /path/to/project --js
 - `deserialization-{lang}.yml` - 反序列化
 - `auth-defects-{lang}.yml` - 鉴权缺陷
 - `hardcoded-secrets-{lang}.yml` - 硬编码密钥
+- `ssti-{lang}.yml` - SSTI（服务端模板注入）
+- `nosql-injection-{lang}.yml` - NoSQL注入
+- `prototype-pollution-{lang}.yml` - 原型污染/对象属性注入
+- `jndi-injection-{lang}.yml` - JNDI注入/LDAP目录服务注入
+- `open-redirect-{lang}.yml` - 开放重定向
 
 支持语言：python, java, go, php, csharp, javascript（统一由 JavaScript 规则执行 JavaScript/TypeScript 项目的首轮扫描，当前未单独维护 TypeScript 规则矩阵）, ruby, rust
 

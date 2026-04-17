@@ -1,0 +1,33 @@
+id: jndi-injection-javascript
+language: javascript
+severity: warning
+message: 'LDAP/目录服务注入风险（JavaScript） (CWE-917)'
+name: LDAP/目录服务注入风险（JavaScript）
+description: |
+  JavaScript/Node.js应用中使用ldapjs等库时，若将用户输入直接拼接到LDAP查询或绑定操作中，
+  攻击者可能通过构造恶意输入执行未授权的LDAP操作或访问敏感目录信息。
+cwe: CWE-917
+remediation: |
+  避免将用户输入直接拼接到LDAP查询中，使用参数化查询或白名单校验：
+  ```javascript
+  // 不安全的代码 ❌
+  const filter = `(uid=${userInput})`;
+  client.search('dc=example,dc=com', { filter }, (err, res) => {
+    // ...
+  });
+  
+  // 安全的代码 ✅
+  const safeInput = userInput.replace(/[\*\(\)\\\x00]/g, '\\$&');
+  const filter = `(uid=${safeInput})`;
+  client.search('dc=example,dc=com', { filter }, (err, res) => {
+    // ...
+  });
+  ```
+rule:
+  any:
+  - kind: call_expression
+    pattern: '$CLIENT.search($BASE, $OPTS)'
+  - kind: call_expression
+    pattern: '$CLIENT.bind($USER, $PWD, $CB)'
+  - kind: call_expression
+    pattern: 'ldap.createClient($URL).search($BASE, $OPTS)'

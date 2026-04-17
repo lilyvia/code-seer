@@ -1,0 +1,31 @@
+id: prototype-pollution-php
+language: php
+severity: warning
+message: '对象属性注入风险（PHP） (CWE-915)'
+name: 对象属性注入风险（PHP）
+description: |
+  PHP中若将用户输入直接用于动态对象属性赋值或不安全的反序列化，
+  攻击者可能注入危险属性（如__wakeup、__destruct等魔术方法），
+  进而操纵对象行为或执行任意代码。
+cwe: CWE-915
+remediation: |
+  对可写属性名做允许名单校验，拒绝以双下划线开头的魔术属性，
+  并避免将未经校验的外部数据直接用于反序列化：
+  ```php
+  // 不安全的代码 ❌
+  $obj->$userProperty = $userValue;
+  $data = unserialize($userInput);
+  
+  // 安全的代码 ✅
+  $allowedProperties = ['name', 'email', 'age'];
+  if (in_array($propertyName, $allowedProperties)) {
+      $obj->$propertyName = $value;
+  }
+  $data = json_decode($userInput, true);  // 使用JSON替代反序列化
+  ```
+rule:
+  kind: assignment_expression
+  any:
+  - pattern: '$OBJ->$PROP = $VAL'
+  - kind: function_call_expression
+    pattern: 'unserialize($DATA)'

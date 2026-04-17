@@ -1,0 +1,29 @@
+id: prototype-pollution-go
+language: go
+severity: warning
+message: '对象属性注入风险（Go） (CWE-915)'
+name: 对象属性注入风险（Go）
+description: |
+  Go语言中没有传统的类继承和原型链，但若将用户输入直接用于反射设置字段、
+  map键值操作或不安全的反序列化，仍可能导致对象状态被恶意篡改或执行危险操作。
+cwe: CWE-915
+remediation: |
+  对反射操作的字段名做允许名单校验，避免直接使用用户输入设置结构体字段：
+  ```go
+  // 不安全的代码 ❌
+  field := reflect.ValueOf(obj).Elem().FieldByName(userFieldName)
+  field.SetString(userValue)
+  
+  // 安全的代码 ✅
+  allowedFields := map[string]bool{"Name": true, "Email": true}
+  if allowedFields[fieldName] {
+      field := reflect.ValueOf(obj).Elem().FieldByName(fieldName)
+      field.SetString(value)
+  }
+  ```
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'reflect.ValueOf($OBJ).Elem().FieldByName($NAME).Set$METHOD($$$ARGS)'
+  - pattern: 'reflect.ValueOf($OBJ).FieldByName($NAME).Set$METHOD($$$ARGS)'
+  - pattern: 'reflect.ValueOf($OBJ).Elem().FieldByName($NAME).Set($VAL)'

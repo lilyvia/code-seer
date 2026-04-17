@@ -1,0 +1,31 @@
+id: jndi-injection-ruby
+language: ruby
+severity: warning
+message: 'LDAP/目录服务注入风险（Ruby） (CWE-917)'
+name: LDAP/目录服务注入风险（Ruby）
+description: |
+  Ruby应用中使用net-ldap等库时，若将用户输入直接拼接到LDAP查询或绑定操作中，
+  攻击者可能通过构造恶意输入执行未授权的LDAP操作或访问敏感目录信息。
+cwe: CWE-917
+remediation: |
+  避免将用户输入直接拼接到LDAP查询中，使用参数化查询或白名单校验：
+  ```ruby
+  # 不安全的代码 ❌
+  filter = "(uid=#{user_input})"
+  ldap.search(base: "dc=example,dc=com", filter: filter)
+  
+  # 安全的代码 ✅
+  filter = Net::LDAP::Filter.eq("uid", user_input)
+  ldap.search(base: "dc=example,dc=com", filter: filter)
+  ```
+rule:
+  kind: call
+  any:
+  - pattern: '$LDAP.search($$$ARGS)'
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: '$LDAP.bind($$$ARGS)'
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: 'Net::LDAP.new($$$).search($$$ARGS)'
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: 'Net::LDAP::Filter.construct($FILTER)'
+    regex: '(user_|request|param|input|arg|query)'

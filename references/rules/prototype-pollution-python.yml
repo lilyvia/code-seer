@@ -1,0 +1,34 @@
+id: prototype-pollution-python
+language: python
+severity: warning
+message: '对象属性注入风险（Python） (CWE-915)'
+name: 对象属性注入风险（Python）
+description: |
+  Python中若将用户输入直接用于对象属性设置、动态属性访问或不安全的反序列化，
+  攻击者可能注入危险属性（如__class__、__bases__、__subclasses__等），
+  进而操纵对象行为或执行任意代码。
+cwe: CWE-915
+remediation: |
+  对可写属性名做允许名单校验，拒绝以双下划线开头的魔术属性，
+  并避免将未经校验的外部数据直接用于setattr或反序列化：
+  ```python
+  # 不安全的代码 ❌
+  setattr(obj, user_key, user_value)
+  data = pickle.loads(user_input)
+  data = yaml.load(user_input, Loader=yaml.Loader)
+  
+  # 安全的代码 ✅
+  allowed_keys = {'name', 'email', 'age'}
+  if user_key in allowed_keys:
+      setattr(obj, user_key, user_value)
+  data = pickle.loads(user_input)  # 避免反序列化用户输入
+  data = yaml.safe_load(user_input)
+  ```
+rule:
+  any:
+  - kind: call
+    pattern: 'pickle.loads($DATA)'
+  - kind: call
+    pattern: 'yaml.load($DATA, $LOADER)'
+  - kind: call
+    pattern: '__import__("pickle").loads($DATA)'

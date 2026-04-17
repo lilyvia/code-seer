@@ -1,0 +1,26 @@
+id: jndi-injection-rust
+language: rust
+severity: warning
+message: 'LDAP/目录服务注入风险（Rust） (CWE-917)'
+name: LDAP/目录服务注入风险（Rust）
+description: |
+  Rust应用中使用ldap3等crate时，若将用户输入直接拼接到LDAP查询或绑定操作中，
+  攻击者可能通过构造恶意输入执行未授权的LDAP操作或访问敏感目录信息。
+cwe: CWE-917
+remediation: |
+  避免将用户输入直接拼接到LDAP查询中，使用参数化查询或白名单校验：
+  ```rust
+  // 不安全的代码 ❌
+  let filter = format!("(uid={})", user_input);
+  let search = ldap.search("dc=example,dc=com", Scope::Subtree, &filter, vec![]).await?;
+  
+  // 安全的代码 ✅
+  let filter = ldap3::filter::eq("uid", user_input);
+  let search = ldap.search("dc=example,dc=com", Scope::Subtree, &filter, vec![]).await?;
+  ```
+rule:
+  kind: call_expression
+  any:
+  - pattern: '$LDAP.search($BASE, $SCOPE, $FILTER, $ATTRS)'
+  - pattern: '$LDAP.bind($USER, $PWD).await'
+  - pattern: 'format!("(uid={})", $INPUT)'

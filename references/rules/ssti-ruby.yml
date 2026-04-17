@@ -1,0 +1,37 @@
+id: ssti-ruby
+language: ruby
+severity: warning
+message: 'SSTI服务端模板注入（Ruby） (CWE-1336)'
+name: SSTI服务端模板注入（Ruby）
+description: |
+  Ruby应用中若将用户输入直接传入模板引擎（如ERB、Haml、Slim等），
+  攻击者可能通过构造恶意模板表达式执行任意代码或访问敏感对象。
+cwe: CWE-1336
+remediation: |
+  避免直接解析用户提供的模板源码，改为解析受信任的固定模板并仅把用户输入作为局部变量传入：
+  ```ruby
+  # 不安全的代码 ❌
+  template = ERB.new(user_template)
+  result = template.result(binding)
+  
+  # 安全的代码 ✅
+  template = ERB.new(File.read('safe_template.erb'))
+  result = template.result_with_hash(user: current_user)
+  ```
+  推荐措施：
+  - 不要把用户输入当作模板源码
+  - 仅解析受信任的静态模板文件
+  - 将用户数据作为模板局部变量而不是模板内容传入
+rule:
+  kind: call
+  any:
+  - pattern: 'ERB.new($TMPL).result($$$)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - pattern: 'ERB.new($TMPL).result_with_hash($$$)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - pattern: 'Haml::Engine.new($TMPL).render($$$)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - pattern: 'Slim::Template.new($TMPL).render($$$)'
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - pattern: 'Tilt.new($TMPL).render($$$)'
+    regex: '(user_|request|param|input|arg|query|template|source)'

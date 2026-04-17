@@ -1,0 +1,28 @@
+id: jndi-injection-php
+language: php
+severity: warning
+message: 'LDAP/目录服务注入风险（PHP） (CWE-917)'
+name: LDAP/目录服务注入风险（PHP）
+description: |
+  PHP应用中使用LDAP扩展时，若将用户输入直接拼接到LDAP查询或绑定操作中，
+  攻击者可能通过构造恶意输入执行未授权的LDAP操作或访问敏感目录信息。
+cwe: CWE-917
+remediation: |
+  避免将用户输入直接拼接到LDAP查询中，使用ldap_escape函数进行转义：
+  ```php
+  // 不安全的代码 ❌
+  $filter = "(uid=" . $userInput . ")";
+  ldap_search($conn, "dc=example,dc=com", $filter);
+  
+  // 安全的代码 ✅
+  $safeInput = ldap_escape($userInput, "", LDAP_ESCAPE_FILTER);
+  $filter = "(uid=" . $safeInput . ")";
+  ldap_search($conn, "dc=example,dc=com", $filter);
+  ```
+rule:
+  kind: function_call_expression
+  any:
+  - pattern: 'ldap_search($CONN, $BASE, $FILTER)'
+  - pattern: 'ldap_list($CONN, $BASE, $FILTER)'
+  - pattern: 'ldap_bind($CONN, $USER, $PWD)'
+  - pattern: 'ldap_read($CONN, $BASE, $FILTER)'

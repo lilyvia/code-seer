@@ -1,0 +1,38 @@
+id: prototype-pollution-ruby
+language: ruby
+severity: warning
+message: '对象属性注入风险（Ruby） (CWE-915)'
+name: 对象属性注入风险（Ruby）
+description: |
+  Ruby中若将用户输入直接用于动态实例变量设置、send方法调用或eval，
+  攻击者可能注入危险方法名或属性名，进而操纵对象行为或执行任意代码。
+cwe: CWE-915
+remediation: |
+  对动态调用的方法名做允许名单校验，避免直接使用用户输入：
+  ```ruby
+  # 不安全的代码 ❌
+  obj.instance_variable_set(user_var_name, user_value)
+  obj.send(user_method_name, *args)
+  eval(user_input)
+  
+  # 安全的代码 ✅
+  allowed_methods = [:name, :email, :age]
+  if allowed_methods.include?(method_name.to_sym)
+      obj.send(method_name, *args)
+  end
+  ```
+rule:
+  kind: call
+  any:
+  - pattern: '$OBJ.instance_variable_set($NAME, $VAL)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: '$OBJ.send($METHOD, $$$ARGS)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: '$OBJ.public_send($METHOD, $$$ARGS)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: 'eval($CODE)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: 'instance_eval($CODE)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: 'class_eval($CODE)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'

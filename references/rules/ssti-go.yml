@@ -1,0 +1,30 @@
+id: ssti-go
+language: go
+severity: warning
+message: 'SSTI服务端模板注入（Go） (CWE-1336)'
+name: SSTI服务端模板注入（Go）
+description: |
+  Go应用中使用text/template或html/template时，若将用户输入直接作为模板源码解析，
+  攻击者可能通过构造恶意模板表达式执行任意代码或访问敏感对象。
+cwe: CWE-1336
+remediation: |
+  避免直接解析用户提供的模板源码，改为解析受信任的固定模板文件并仅把用户输入作为数据传入：
+  ```go
+  // 不安全的代码 ❌
+  tmpl, _ := template.New("user").Parse(userInput)
+  tmpl.Execute(w, data)
+  
+  // 安全的代码 ✅
+  tmpl, _ := template.ParseFiles("safe_template.html")
+  tmpl.Execute(w, data)
+  ```
+  推荐措施：
+  - 不要把用户输入当作模板源码
+  - 仅解析受信任的静态模板文件
+  - 将用户数据作为模板数据而不是模板内容传入
+rule:
+  kind: call_expression
+  any:
+  - pattern: 'template.New($NAME).Parse($SRC)'
+  - pattern: 'template.Must(template.New($NAME).Parse($SRC))'
+  - pattern: '$TMPL.Parse($SRC)'

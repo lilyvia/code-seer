@@ -1,0 +1,34 @@
+id: ssti-php
+language: php
+severity: warning
+message: 'SSTI服务端模板注入（PHP） (CWE-1336)'
+name: SSTI服务端模板注入（PHP）
+description: |
+  PHP应用中若将用户输入直接传入模板引擎（如Smarty、Twig、Blade等），
+  攻击者可能通过构造恶意模板表达式执行任意代码或访问敏感对象。
+cwe: CWE-1336
+remediation: |
+  避免直接渲染用户提供的模板源码，改为渲染受信任的固定模板并仅把用户输入作为模板变量传入：
+  ```php
+  // 不安全的代码 ❌
+  $smarty->fetch("string:" . $userTemplate);
+  $twig->render($userTemplate, $data);
+  
+  // 安全的代码 ✅
+  $smarty->display("safe_template.tpl");
+  $twig->render("safe_template.html", $data);
+  ```
+  推荐措施：
+  - 不要把用户输入当作模板源码
+  - 仅渲染受信任的静态模板文件
+  - 将用户数据作为模板变量而不是模板内容传入
+rule:
+  any:
+  - kind: member_call_expression
+    pattern: '$SMARTY->fetch($TMPL)'
+  - kind: member_call_expression
+    pattern: '$TWIG->render($TMPL, $DATA)'
+  - kind: member_call_expression
+    pattern: '$BLADE->make($TMPL, $DATA)'
+  - kind: function_call_expression
+    pattern: 'view($TMPL, $DATA)'

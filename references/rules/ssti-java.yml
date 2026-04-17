@@ -1,0 +1,39 @@
+id: ssti-java
+language: java
+severity: warning
+message: 'SSTI服务端模板注入（Java） (CWE-1336)'
+name: SSTI服务端模板注入（Java）
+description: |
+  Java应用中若将用户输入直接传入模板引擎（如Thymeleaf、Freemarker、Velocity、JSP等），
+  攻击者可能通过构造恶意模板表达式执行任意代码或访问敏感对象。
+cwe: CWE-1336
+remediation: |
+  避免直接渲染用户提供的模板源码，改为渲染受信任的固定模板并仅把用户输入作为模板变量传入：
+  ```java
+  // 不安全的代码 ❌
+  Template template = new Template("user_template", userInput, cfg);
+  String result = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+  
+  // 安全的代码 ✅
+  Template template = cfg.getTemplate("safe_template.ftl");
+  String result = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+  ```
+  推荐措施：
+  - 不要把用户输入当作模板源码
+  - 仅渲染受信任的静态模板文件
+  - 将用户数据作为模板变量而不是模板内容传入
+rule:
+  any:
+  - kind: object_creation_expression
+    pattern: 'new Template($NAME, $SRC, $CONFIG)'
+  - kind: method_invocation
+    pattern: 'FreeMarkerTemplateUtils.processTemplateIntoString($TMPL, $MODEL)'
+  - kind: method_invocation
+    pattern: '$ENGINE.process($TMPL, $CONTEXT)'
+    regex: 'Thymeleaf|TemplateEngine'
+  - kind: method_invocation
+    pattern: '$CTX.setVariable($KEY, $VAL)'
+  - kind: method_invocation
+    pattern: 'Velocity.evaluate($CTX, $WRITER, $LOG, $TMPL)'
+  - kind: method_invocation
+    pattern: '$VELOCITY.mergeTemplate($NAME, $ENC, $CTX, $WRITER)'

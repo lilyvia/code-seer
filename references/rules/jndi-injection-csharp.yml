@@ -1,0 +1,31 @@
+id: jndi-injection-csharp
+language: csharp
+severity: warning
+message: 'LDAP/目录服务注入风险（C#） (CWE-917)'
+name: LDAP/目录服务注入风险（C#）
+description: |
+  C#应用中使用System.DirectoryServices时，若将用户输入直接拼接到LDAP查询或绑定操作中，
+  攻击者可能通过构造恶意输入执行未授权的LDAP操作或访问敏感目录信息。
+cwe: CWE-917
+remediation: |
+  避免将用户输入直接拼接到LDAP查询中，使用参数化查询或白名单校验：
+  ```csharp
+  // 不安全的代码 ❌
+  var filter = $"(uid={userInput})";
+  var searcher = new DirectorySearcher(new DirectoryEntry("LDAP://dc=example,dc=com"), filter);
+  
+  // 安全的代码 ✅
+  var safeInput = userInput.Replace("*", "\\*").Replace("(", "\\(").Replace(")", "\\)");
+  var filter = $"(uid={safeInput})";
+  var searcher = new DirectorySearcher(new DirectoryEntry("LDAP://dc=example,dc=com"), filter);
+  ```
+rule:
+  any:
+  - kind: object_creation_expression
+    pattern: 'new DirectorySearcher($ENTRY, $FILTER)'
+  - kind: object_creation_expression
+    pattern: 'new DirectoryEntry($PATH, $USER, $PWD)'
+  - kind: assignment_expression
+    pattern: '$SEARCHER.Filter = $FILTER'
+  - kind: invocation_expression
+    pattern: '$ENTRY.Children.Find($NAME, $SCHEMA)'

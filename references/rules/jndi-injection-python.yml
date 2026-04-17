@@ -1,0 +1,34 @@
+id: jndi-injection-python
+language: python
+severity: warning
+message: 'LDAP/目录服务注入风险（Python） (CWE-917)'
+name: LDAP/目录服务注入风险（Python）
+description: |
+  Python应用中使用ldap3或python-ldap库时，若将用户输入直接拼接到LDAP查询或绑定操作中，
+  攻击者可能通过构造恶意输入执行未授权的LDAP操作或访问敏感目录信息。
+cwe: CWE-917
+remediation: |
+  避免将用户输入直接拼接到LDAP查询中，使用参数化查询或白名单校验：
+  ```python
+  # 不安全的代码 ❌
+  conn.search('dc=example,dc=com', f'(uid={user_input})')
+  
+  # 安全的代码 ✅
+  from ldap3.utils.conv import escape_filter_chars
+  safe_input = escape_filter_chars(user_input)
+  conn.search('dc=example,dc=com', f'(uid={safe_input})')
+  ```
+rule:
+  any:
+  - kind: call
+    pattern: '$CONN.search($BASE, $FILTER)'
+    regex: '(user_|request|param|input|arg|query)'
+  - kind: call
+    pattern: '$CONN.bind($USER, $PWD)'
+    regex: '(user_|request|param|input|arg|query)'
+  - kind: call
+    pattern: 'ldap3.Connection($$$).search($BASE, $FILTER)'
+    regex: '(user_|request|param|input|arg|query)'
+  - kind: call
+    pattern: 'ldap.initialize($URL).search_s($BASE, $SCOPE, $FILTER)'
+    regex: '(user_|request|param|input|arg|query)'
