@@ -14,6 +14,9 @@ rule:
   any:
   - pattern: Runtime.getRuntime().exec($CMD)
     kind: method_invocation
+  - pattern: $RUNTIME.exec($CMD)
+    kind: method_invocation
+    regex: Runtime\s*\.\s*getRuntime\s*\(\s*\)\s*\.\s*exec
   - pattern: new ProcessBuilder($$$ARGS).start()
     kind: method_invocation
   - pattern: new ProcessBuilder().command($$$ARGS).start()
@@ -26,3 +29,12 @@ rule:
     kind: method_invocation
   - pattern: new ProcessBuilder("cmd", "/c", $CMD).start()
     kind: method_invocation
+  - pattern: $PB.command($$$ARGS).start()
+    kind: method_invocation
+  - pattern: $PB.command("sh", "-c", $CMD).start()
+    kind: method_invocation
+  - pattern: $PB.command("cmd", "/c", $CMD).start()
+    kind: method_invocation
+  - pattern: $PB.start()
+    kind: method_invocation
+    regex: ProcessBuilder

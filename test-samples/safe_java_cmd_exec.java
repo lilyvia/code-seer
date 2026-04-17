@@ -15,4 +15,10 @@ class SafeJavaCmdExec {
         builder.redirectErrorStream(true);
         return builder;
     }
+
+    public ProcessBuilder buildFixedCommand() throws java.io.IOException {
+        ProcessBuilder builder = new ProcessBuilder("date");
+        builder.redirectErrorStream(true);
+        return builder;
+    }
 }

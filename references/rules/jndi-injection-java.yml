@@ -17,3 +17,16 @@ rule:
     kind: method_invocation
   - pattern: new InitialDirContext($ENV).lookup($NAME)
     kind: method_invocation
+  - pattern: $CTX.lookup($NAME)
+    kind: method_invocation
+    regex: (InitialContext|InitialDirContext|Context|JndiTemplate|JndiLocatorDelegate)
+  - pattern: $OBJ.lookupLink($NAME)
+    kind: method_invocation
+    regex: (InitialContext|InitialDirContext|Context|JndiTemplate|JndiLocatorDelegate)
+  - pattern: $OBJ.doLookup($NAME)
+    kind: method_invocation
+    regex: (JndiTemplate|JndiLocatorDelegate|JndiCallback|NamingManager)
+  - pattern: javax.naming.InitialContext.doLookup($NAME)
+    kind: method_invocation
+  - pattern: NamingManager.getURLContext($SCHEME, $ENV).lookup($NAME)
+    kind: method_invocation

@@ -55,6 +55,11 @@ rule:
   - pattern: '$CURSOR.execute(text($SQL + $VAR))
 
       '
+  - all:
+    - pattern: '$MODEL.objects.raw($Q)
+
+        '
+    - regex: raw\(f\".*\{.*\}.*\"\)
   - pattern: '$MODEL.objects.raw($SQL % $VAR)
 
       '
@@ -64,6 +69,11 @@ rule:
   - pattern: '$MODEL.objects.raw($SQL + $VAR)
 
       '
+  - all:
+    - pattern: '$MODEL.objects.extra(where=[$Q])
+
+        '
+    - regex: extra\(where=\[f\".*\{.*\}.*\"\]\)
   - pattern: '$MODEL.objects.extra(where=[$SQL % $VAR])
 
       '
@@ -85,5 +95,47 @@ rule:
 
       '
   - pattern: '$EXECUTOR.execute(text($SQL + $VAR))
+
+      '
+  - all:
+    - pattern: '$SESSION.execute(text($Q))
+
+        '
+    - regex: execute\(text\(f\".*\{.*\}.*\"\)\)
+  - pattern: '$SESSION.execute(text($SQL % $VAR))
+
+      '
+  - pattern: '$SESSION.execute(text($SQL.format($$$ARGS)))
+
+      '
+  - pattern: '$SESSION.execute(text($SQL + $VAR))
+
+      '
+  - all:
+    - pattern: '$ENGINE.execute(text($Q))
+
+        '
+    - regex: execute\(text\(f\".*\{.*\}.*\"\)\)
+  - pattern: '$ENGINE.execute(text($SQL % $VAR))
+
+      '
+  - pattern: '$ENGINE.execute(text($SQL.format($$$ARGS)))
+
+      '
+  - pattern: '$ENGINE.execute(text($SQL + $VAR))
+
+      '
+  - all:
+    - pattern: '$CONN.execute($Q)
+
+        '
+    - regex: execute\(f\".*\{.*\}.*\"\)
+  - pattern: '$CONN.execute($SQL % $VAR)
+
+      '
+  - pattern: '$CONN.execute($SQL.format($$$ARGS))
+
+      '
+  - pattern: '$CONN.execute($SQL + $VAR)
 
       '

@@ -35,6 +35,9 @@ class Engine:
     def __init__(self, dsn):
         self.dsn = dsn
 
+    def execute(self, *args, **kwargs):
+        return args, kwargs
+
 
 class Session:
     def __init__(self, engine):
@@ -59,3 +62,5 @@ def safe_queries(user_id, user_name):
     connection.cursor().execute("SELECT * FROM users WHERE id = %s", [user_id])
     session.execute(text("SELECT * FROM accounts WHERE owner = :owner"), {"owner": user_name})
     session.execute(text("SELECT * FROM accounts WHERE id = :user_id"), {"user_id": user_id})
+    engine.execute(text("SELECT * FROM audit_logs WHERE actor = :actor"), {"actor": user_name})
+    conn.execute("SELECT * FROM users WHERE id = ?", (user_id,))

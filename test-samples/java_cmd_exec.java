@@ -7,6 +7,11 @@ class JavaCmdExec {
         Runtime.getRuntime().exec(userCmd);
     }
 
+    public void vulnerableRuntimeVar(String userCmd) throws IOException {
+        java.lang.Runtime r = Runtime.getRuntime();
+        r.exec(userCmd);
+    }
+
     public void vulnerableProcessBuilder(String userCmd) throws IOException {
         new ProcessBuilder("sh", "-c", userCmd).start();
     }
@@ -17,6 +22,21 @@ class JavaCmdExec {
 
     public void vulnerableBuilderCommandOnWindows(String userCmd) throws IOException {
         new ProcessBuilder().command("cmd", "/c", userCmd).start();
+    }
+
+    public void vulnerableBuilderCommandChain(String userCmd) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("sh", "-c", userCmd).start();
+    }
+
+    public void vulnerableBuilderCommandChainWindows(String userCmd) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("cmd", "/c", userCmd).start();
+    }
+
+    public void vulnerableBuilderStart(String userCmd) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("sh", "-c", userCmd);
+        pb.start();
     }
 
     public String safe(String userCmd) {
