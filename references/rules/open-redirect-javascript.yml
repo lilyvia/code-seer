@@ -31,11 +31,16 @@ rule:
   any:
   - kind: call_expression
     pattern: 'res.redirect($USER_URL)'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'reply.redirect($USER_URL)'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'ctx.redirect($USER_URL)'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
   - kind: assignment_expression
     pattern: 'location.href = $USER_URL'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
   - kind: assignment_expression
     pattern: 'window.location.href = $USER_URL'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
