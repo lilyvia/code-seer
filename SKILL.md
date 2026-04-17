@@ -113,7 +113,7 @@ ast-grep scan -r references/rules/sql-injection-csharp.yml /path/to/project --js
 - `auth-defects-{lang}.yml` - 鉴权缺陷
 - `hardcoded-secrets-{lang}.yml` - 硬编码密钥
 
-支持语言：python, java, go, php, csharp, javascript（Wave 1 同时用于 JavaScript/TypeScript 项目的首轮扫描）, ruby, rust
+支持语言：python, java, go, php, csharp, javascript（Wave 1 统一由 JavaScript 规则执行 JavaScript/TypeScript 项目的首轮扫描，当前未单独维护 TypeScript 规则矩阵）, ruby, rust
 
 ## 输出要求
 
