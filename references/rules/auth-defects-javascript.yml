@@ -33,6 +33,7 @@ remediation: |
   ```
 rule:
   any:
+    # === Mongoose/MongoDB Patterns ===
     - pattern: 'await $MODEL.findById(req.params.$KEY)'
     - pattern: 'await $MODEL.findOne({ _id: req.body.$KEY })'
     - pattern: 'await $MODEL.findByIdAndDelete(req.params.$KEY)'
@@ -53,3 +54,154 @@ rule:
     # NestJS / Koa direct resource exposure via ctx.body
     - pattern: 'ctx.body = await $MODEL.findById($$$)'
     - pattern: 'ctx.body = await $MODEL.findOne($$$)'
+
+    # === Express Route Handler Patterns (Direct Resource Exposure) ===
+    # Direct return of sensitive data in GET route
+    - pattern: |
+        app.get($PATH, async (req, res) => {
+          $$$
+          res.json(await $MODEL.findById(req.params.$ID))
+        })
+    - pattern: |
+        app.get($PATH, async (req, res) => {
+          $$$
+          res.json(await $MODEL.findOne($$$))
+        })
+    - pattern: |
+        app.get($PATH, async (req, res) => {
+          $$$
+          res.send(await $MODEL.findById(req.params.$ID))
+        })
+    # Direct modification in POST/PUT route
+    - pattern: |
+        app.post($PATH, async (req, res) => {
+          $$$
+          await $MODEL.create(req.body)
+          $$$
+        })
+    - pattern: |
+        app.put($PATH, async (req, res) => {
+          $$$
+          await $MODEL.findByIdAndUpdate(req.params.$ID, req.body)
+          $$$
+        })
+    - pattern: |
+        app.put($PATH, async (req, res) => {
+          $$$
+          await $MODEL.updateOne({ _id: req.params.$ID }, req.body)
+          $$$
+        })
+    # Direct deletion in DELETE route
+    - pattern: |
+        app.delete($PATH, async (req, res) => {
+          $$$
+          await $MODEL.findByIdAndDelete(req.params.$ID)
+          $$$
+        })
+    - pattern: |
+        app.delete($PATH, async (req, res) => {
+          $$$
+          await $MODEL.deleteOne({ _id: req.params.$ID })
+          $$$
+        })
+    - pattern: |
+        app.delete($PATH, async (req, res) => {
+          $$$
+          await $MODEL.findOneAndDelete({ _id: req.params.$ID })
+          $$$
+        })
+
+    # === Fastify Route Handler Patterns ===
+    # Direct resource exposure
+    - pattern: |
+        fastify.get($PATH, async (req, reply) => {
+          $$$
+          reply.send(await $MODEL.findById(req.params.$ID))
+        })
+    - pattern: |
+        fastify.get($PATH, async (req, reply) => {
+          $$$
+          reply.send(await $MODEL.findOne($$$))
+        })
+    # Direct modification
+    - pattern: |
+        fastify.post($PATH, async (req, reply) => {
+          $$$
+          await $MODEL.create(req.body)
+          $$$
+        })
+    - pattern: |
+        fastify.put($PATH, async (req, reply) => {
+          $$$
+          await $MODEL.findByIdAndUpdate(req.params.$ID, req.body)
+          $$$
+        })
+    # Direct deletion
+    - pattern: |
+        fastify.delete($PATH, async (req, reply) => {
+          $$$
+          await $MODEL.findByIdAndDelete(req.params.$ID)
+          $$$
+        })
+
+    # === NestJS Controller Patterns ===
+    # Match method definitions inside NestJS controllers that return direct DB results
+    - pattern: 'return await this.$SERVICE.findById($PARAMS.$ID)'
+      regex: '@Param'
+    - pattern: 'return await this.$SERVICE.findById($VAR)'
+      regex: '@Param'
+    - pattern: 'return await this.$SERVICE.create($BODY)'
+      regex: '@Body'
+    - pattern: 'return await this.$REPO.findOne($$$)'
+      regex: '@Param'
+
+    # === Router Instance Patterns (express.Router()) ===
+    - pattern: |
+        router.get($PATH, async (req, res) => {
+          $$$
+          res.json(await $MODEL.findById(req.params.$ID))
+        })
+    - pattern: |
+        router.post($PATH, async (req, res) => {
+          $$$
+          await $MODEL.create(req.body)
+          $$$
+        })
+    - pattern: |
+        router.put($PATH, async (req, res) => {
+          $$$
+          await $MODEL.findByIdAndUpdate(req.params.$ID, req.body)
+          $$$
+        })
+    - pattern: |
+        router.delete($PATH, async (req, res) => {
+          $$$
+          await $MODEL.findByIdAndDelete(req.params.$ID)
+          $$$
+        })
+
+    # === Generic Handler Patterns ===
+    # Any async function that directly returns DB query result from params
+    - pattern: |
+        async function $NAME(req, res) {
+          $$$
+          res.json(await $MODEL.findById(req.params.$ID))
+        }
+    - pattern: |
+        async function $NAME(req, res) {
+          $$$
+          res.json(await $MODEL.findOne({ _id: req.body.$ID }))
+        }
+    - pattern: |
+        async function $NAME(req, res) {
+          $$$
+          await $MODEL.findByIdAndDelete(req.params.$ID)
+          $$$
+        }
+
+    # === Prisma ORM Patterns ===
+    - pattern: 'await prisma.$MODEL.findUnique({ where: { id: req.params.$ID } })'
+    - pattern: 'await prisma.$MODEL.findFirst({ where: { id: req.params.$ID } })'
+    - pattern: 'await prisma.$MODEL.update({ where: { id: req.params.$ID }, data: req.body })'
+    - pattern: 'await prisma.$MODEL.delete({ where: { id: req.params.$ID } })'
+    - pattern: 'await prisma.$MODEL.create({ data: req.body })'
