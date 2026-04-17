@@ -1,0 +1,42 @@
+id: open-redirect-csharp
+language: csharp
+severity: warning
+message: '开放重定向（C#） (CWE-601)'
+name: 开放重定向（C#）
+description: |
+  将用户输入直接用于 HTTP 响应跳转目标，可能导致开放重定向漏洞，
+  攻击者可借此将用户引导至恶意站点。
+cwe: CWE-601
+remediation: |
+  对跳转目标执行白名单、同源或相对路径校验：
+  ```csharp
+  // 不安全的代码 ❌
+  Response.Redirect(userUrl);
+  return Redirect(userUrl);
+
+  // 安全的代码 ✅
+  var allowedPaths = new HashSet<string> { "/home", "/dashboard" };
+  if (!allowedPaths.Contains(target))
+  {
+      target = "/";
+  }
+  Response.Redirect(target);
+  ```
+rule:
+  any:
+  - all:
+    - kind: invocation_expression
+      pattern: 'Response.Redirect($USER_URL)'
+    - regex: '(user|request|param|input|arg|query|body|payload)'
+  - all:
+    - kind: invocation_expression
+      pattern: 'Response.Redirect($USER_URL, $END_RESPONSE)'
+    - regex: '(user|request|param|input|arg|query|body|payload)'
+  - all:
+    - kind: return_statement
+      pattern: 'return Redirect($USER_URL);'
+    - regex: '(user|request|param|input|arg|query|body|payload)'
+  - all:
+    - kind: return_statement
+      pattern: 'return RedirectPermanent($USER_URL);'
+    - regex: '(user|request|param|input|arg|query|body|payload)'

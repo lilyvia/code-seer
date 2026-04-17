@@ -1,0 +1,46 @@
+id: open-redirect-ruby
+language: ruby
+severity: warning
+message: '开放重定向（Ruby） (CWE-601)'
+name: 开放重定向（Ruby）
+description: |
+  将用户输入直接用于 HTTP 响应跳转目标，可能导致开放重定向漏洞，
+  攻击者可借此将用户引导至恶意站点。
+cwe: CWE-601
+remediation: |
+  对跳转目标执行白名单、同源或相对路径校验：
+  ```ruby
+  # 不安全的代码 ❌
+  redirect_to user_url
+  redirect_back fallback_location: user_url
+
+  # 安全的代码 ✅
+  def safe_redirect(target)
+    allowed_hosts = ['example.com']
+    uri = URI.parse(target)
+    if uri.host && !allowed_hosts.include?(uri.host)
+      raise '非法跳转目标'
+    end
+    target
+  end
+
+  redirect_to safe_redirect(user_url)
+  ```
+rule:
+  kind: call
+  any:
+  - all:
+    - pattern: 'redirect_to $USER_URL'
+    - not:
+        pattern: 'redirect_to $FUNC($$$)'
+    - regex: '(user_|request|param|input|arg|query|body|payload)'
+  - all:
+    - pattern: 'redirect_back fallback_location: $USER_URL'
+    - not:
+        pattern: 'redirect_back fallback_location: $FUNC($$$)'
+    - regex: '(user_|request|param|input|arg|query|body|payload)'
+  - all:
+    - pattern: 'response.redirect $USER_URL'
+    - not:
+        pattern: 'response.redirect $FUNC($$$)'
+    - regex: '(user_|request|param|input|arg|query|body|payload)'

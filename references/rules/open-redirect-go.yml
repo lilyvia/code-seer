@@ -1,0 +1,47 @@
+id: open-redirect-go
+language: go
+severity: warning
+message: '开放重定向（Go） (CWE-601)'
+name: 开放重定向（Go）
+description: |
+  将用户输入直接用于 HTTP 响应跳转目标，可能导致开放重定向漏洞，
+  攻击者可借此将用户引导至恶意站点。
+cwe: CWE-601
+remediation: |
+  对跳转目标执行白名单、同源或相对路径校验：
+  ```go
+  // 不安全的代码 ❌
+  http.Redirect(w, r, userUrl, http.StatusFound)
+  c.Redirect(userUrl)
+
+  // 安全的代码 ✅
+  func safeRedirect(target string) (string, error) {
+      allowedHosts := map[string]bool{"example.com": true}
+      u, err := url.Parse(target)
+      if err != nil {
+          return "", err
+      }
+      if u.Host != "" && !allowedHosts[u.Host] {
+          return "", fmt.Errorf("非法跳转目标")
+      }
+      return target, nil
+  }
+
+  safe, _ := safeRedirect(userUrl)
+  http.Redirect(w, r, safe, http.StatusFound)
+  ```
+rule:
+  kind: call_expression
+  any:
+  - all:
+    - pattern: 'http.Redirect($W, $R, $USER_URL, $STATUS)'
+    - regex: '(user|request|param|input|arg|query|body|payload)'
+  - all:
+    - pattern: '$CTX.Redirect($USER_URL)'
+    - regex: '(user|request|param|input|arg|query|body|payload)'
+  - all:
+    - pattern: '$CTX.Redirect($STATUS, $USER_URL)'
+    - regex: '(user|request|param|input|arg|query|body|payload)'
+  - all:
+    - pattern: '$C.Redirect($USER_URL, $STATUS)'
+    - regex: '(user|request|param|input|arg|query|body|payload)'

@@ -1,0 +1,45 @@
+id: open-redirect-php
+language: php
+severity: warning
+message: '开放重定向（PHP） (CWE-601)'
+name: 开放重定向（PHP）
+description: |
+  将用户输入直接用于 HTTP 响应跳转目标，可能导致开放重定向漏洞，
+  攻击者可借此将用户引导至恶意站点。
+cwe: CWE-601
+remediation: |
+  对跳转目标执行白名单、同源或相对路径校验：
+  ```php
+  <?php
+  // 不安全的代码 ❌
+  header("Location: " . $userUrl);
+  wp_redirect($userUrl);
+
+  // 安全的代码 ✅
+  function safeRedirect($target) {
+      $allowedHosts = ['example.com'];
+      $parsed = parse_url($target);
+      if (isset($parsed['host']) && !in_array($parsed['host'], $allowedHosts, true)) {
+          throw new Exception('非法跳转目标');
+      }
+      return $target;
+  }
+
+  $safe = safeRedirect($userUrl);
+  header("Location: " . $safe);
+  ?>
+  ```
+rule:
+  any:
+  - all:
+    - kind: function_call_expression
+      pattern: 'header("Location: " . $USER_URL)'
+    - regex: '(user|request|param|input|arg|query|body|payload|\$_[GETPOST])'
+  - all:
+    - kind: function_call_expression
+      pattern: 'header("Location: $USER_URL")'
+    - regex: '(user|request|param|input|arg|query|body|payload|\$_[GETPOST])'
+  - all:
+    - kind: function_call_expression
+      pattern: 'wp_redirect($USER_URL)'
+    - regex: '(user|request|param|input|arg|query|body|payload|\$_[GETPOST])'
