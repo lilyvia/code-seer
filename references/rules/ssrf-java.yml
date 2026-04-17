@@ -1,4 +1,4 @@
-id: java-ssrf
+id: ssrf-java
 language: java
 severity: warning
 message: 'SSRF服务器端请求伪造（Java） (CWE-918)'

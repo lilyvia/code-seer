@@ -1,4 +1,4 @@
-id: csharp-xxe
+id: xxe-csharp
 language: csharp
 severity: warning
 message: 'XXE XML外部实体注入（C#） (CWE-611)'

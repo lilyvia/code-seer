@@ -1,4 +1,4 @@
-id: php-auth-defects
+id: auth-defects-php
 language: php
 severity: warning
 message: '鉴权缺陷（PHP） (CWE-287)'

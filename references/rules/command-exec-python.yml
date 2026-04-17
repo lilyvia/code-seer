@@ -1,4 +1,4 @@
-id: python-command-exec
+id: command-exec-python
 language: python
 severity: error
 message: '命令执行漏洞（Python） (CWE-78)'

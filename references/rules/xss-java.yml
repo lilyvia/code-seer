@@ -1,4 +1,4 @@
-id: java-xss
+id: xss-java
 language: java
 severity: warning
 message: 'XSS跨站脚本攻击（Java） (CWE-79)'

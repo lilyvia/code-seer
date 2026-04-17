@@ -1,4 +1,4 @@
-id: python-xxe
+id: xxe-python
 language: python
 severity: warning
 message: 'XXE XML外部实体注入（Python） (CWE-611)'

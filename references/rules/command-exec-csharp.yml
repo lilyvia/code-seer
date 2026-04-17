@@ -1,4 +1,4 @@
-id: csharp-command-exec
+id: command-exec-csharp
 language: csharp
 severity: error
 message: '命令执行漏洞（C#） (CWE-78)'

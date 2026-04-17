@@ -1,4 +1,4 @@
-id: java-command-exec
+id: command-exec-java
 language: java
 severity: error
 message: '命令执行漏洞（Java） (CWE-78)'

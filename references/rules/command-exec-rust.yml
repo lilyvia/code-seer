@@ -1,4 +1,4 @@
-id: rust-command-exec
+id: command-exec-rust
 language: rust
 severity: error
 message: '命令执行漏洞（Rust） (CWE-78)'

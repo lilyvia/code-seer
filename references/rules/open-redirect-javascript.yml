@@ -1,4 +1,4 @@
-id: javascript-open-redirect
+id: open-redirect-javascript
 language: javascript
 severity: warning
 message: '开放重定向（JavaScript） (CWE-601)'

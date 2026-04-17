@@ -1,4 +1,4 @@
-id: ruby-auth-defects
+id: auth-defects-ruby
 language: ruby
 severity: warning
 message: '鉴权缺陷（Ruby） (CWE-287)'

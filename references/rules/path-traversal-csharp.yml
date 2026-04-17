@@ -1,4 +1,4 @@
-id: csharp-path-traversal
+id: path-traversal-csharp
 language: csharp
 severity: warning
 message: '路径穿越漏洞（C#） (CWE-22)'

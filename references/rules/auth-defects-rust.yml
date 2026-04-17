@@ -1,4 +1,4 @@
-id: rust-auth-defects
+id: auth-defects-rust
 language: rust
 severity: warning
 message: '鉴权缺陷（Rust） (CWE-287)'

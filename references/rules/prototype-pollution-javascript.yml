@@ -1,4 +1,4 @@
-id: javascript-prototype-pollution
+id: prototype-pollution-javascript
 language: javascript
 severity: warning
 message: 'Prototype Pollution 风险（JavaScript） (CWE-1321)'

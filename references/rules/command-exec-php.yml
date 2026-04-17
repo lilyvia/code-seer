@@ -1,4 +1,4 @@
-id: php-command-exec
+id: command-exec-php
 language: php
 severity: error
 message: '命令执行漏洞（PHP） (CWE-78)'

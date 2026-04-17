@@ -1,4 +1,4 @@
-id: ruby-ssrf
+id: ssrf-ruby
 language: ruby
 severity: warning
 message: 'SSRF服务器端请求伪造（Ruby） (CWE-918)'

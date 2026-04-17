@@ -1,4 +1,4 @@
-id: javascript-ssrf
+id: ssrf-javascript
 language: javascript
 severity: warning
 message: 'SSRF服务器端请求伪造（JavaScript） (CWE-918)'

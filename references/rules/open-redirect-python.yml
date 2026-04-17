@@ -1,4 +1,4 @@
-id: python-open-redirect
+id: open-redirect-python
 language: python
 severity: warning
 message: '开放重定向（Python） (CWE-601)'

@@ -1,4 +1,4 @@
-id: csharp-xss
+id: xss-csharp
 language: csharp
 severity: warning
 message: 'XSS跨站脚本攻击（C#） (CWE-79)'

@@ -1,4 +1,4 @@
-id: java-open-redirect
+id: open-redirect-java
 language: java
 severity: warning
 message: '开放重定向（Java） (CWE-601)'

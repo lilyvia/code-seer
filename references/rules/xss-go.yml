@@ -1,4 +1,4 @@
-id: go-xss
+id: xss-go
 language: go
 severity: warning
 message: 'XSS跨站脚本攻击（Go） (CWE-79)'

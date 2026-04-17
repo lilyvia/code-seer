@@ -1,4 +1,4 @@
-id: ruby-xss
+id: xss-ruby
 language: ruby
 severity: warning
 message: 'XSS跨站脚本攻击（Ruby） (CWE-79)'

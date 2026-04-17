@@ -1,4 +1,4 @@
-id: javascript-xxe
+id: xxe-javascript
 language: javascript
 severity: warning
 message: 'XXE XML外部实体注入（JavaScript） (CWE-611)'

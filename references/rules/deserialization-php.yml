@@ -1,4 +1,4 @@
-id: php-deserialization
+id: deserialization-php
 language: php
 severity: error
 message: '不安全的反序列化（PHP） (CWE-502)'

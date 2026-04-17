@@ -1,4 +1,4 @@
-id: rust-ssrf
+id: ssrf-rust
 language: rust
 severity: warning
 message: 'SSRF服务器端请求伪造（Rust） (CWE-918)'

@@ -1,4 +1,4 @@
-id: php-sql-injection
+id: sql-injection-php
 language: php
 severity: error
 message: 'SQL注入（PHP） (CWE-89)'

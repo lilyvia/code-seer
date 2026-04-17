@@ -1,4 +1,4 @@
-id: ruby-command-exec
+id: command-exec-ruby
 language: ruby
 severity: error
 message: '命令执行漏洞（Ruby） (CWE-78)'

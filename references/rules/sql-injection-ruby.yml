@@ -1,4 +1,4 @@
-id: ruby-sql-injection
+id: sql-injection-ruby
 language: ruby
 severity: error
 message: 'SQL注入（Ruby） (CWE-89)'

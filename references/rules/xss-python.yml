@@ -1,4 +1,4 @@
-id: python-xss
+id: xss-python
 language: python
 severity: warning
 message: 'XSS跨站脚本攻击（Python） (CWE-79)'

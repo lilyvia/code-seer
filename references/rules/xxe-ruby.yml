@@ -1,4 +1,4 @@
-id: ruby-xxe
+id: xxe-ruby
 language: ruby
 severity: warning
 message: 'XXE XML外部实体注入（Ruby） (CWE-611)'

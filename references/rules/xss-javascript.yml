@@ -1,4 +1,4 @@
-id: javascript-xss
+id: xss-javascript
 language: javascript
 severity: warning
 message: 'XSS跨站脚本攻击（JavaScript） (CWE-79)'

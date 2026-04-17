@@ -1,4 +1,4 @@
-id: python-ssti
+id: ssti-python
 language: python
 severity: warning
 message: 'Python 服务端模板注入（SSTI） (CWE-1336)'

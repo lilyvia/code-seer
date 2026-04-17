@@ -1,4 +1,4 @@
-id: php-ssrf
+id: ssrf-php
 language: php
 severity: warning
 message: 'SSRF服务器端请求伪造（PHP） (CWE-918)'

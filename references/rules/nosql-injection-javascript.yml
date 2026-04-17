@@ -1,4 +1,4 @@
-id: javascript-nosql-injection
+id: nosql-injection-javascript
 language: javascript
 severity: warning
 message: 'NoSQL 注入漏洞（JavaScript） (CWE-943)'

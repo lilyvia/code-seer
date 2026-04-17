@@ -1,4 +1,4 @@
-id: java-xxe
+id: xxe-java
 language: java
 severity: warning
 message: 'XXE XML外部实体注入（Java） (CWE-611)'

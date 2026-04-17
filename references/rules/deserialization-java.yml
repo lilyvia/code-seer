@@ -1,4 +1,4 @@
-id: java-deserialization
+id: deserialization-java
 language: java
 severity: error
 message: '不安全的反序列化（Java） (CWE-502)'

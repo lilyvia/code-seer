@@ -1,4 +1,4 @@
-id: javascript-auth-defects
+id: auth-defects-javascript
 language: javascript
 severity: warning
 message: '鉴权缺陷（JavaScript） (CWE-287)'

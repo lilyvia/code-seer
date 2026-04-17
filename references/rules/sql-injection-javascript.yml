@@ -1,4 +1,4 @@
-id: javascript-sql-injection
+id: sql-injection-javascript
 language: javascript
 severity: error
 message: 'SQL注入漏洞（JavaScript） (CWE-89)'

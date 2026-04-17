@@ -1,4 +1,4 @@
-id: php-xxe
+id: xxe-php
 language: php
 severity: warning
 message: 'XXE XML外部实体注入（PHP） (CWE-611)'

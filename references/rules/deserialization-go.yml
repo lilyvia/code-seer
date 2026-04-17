@@ -1,4 +1,4 @@
-id: go-deserialization
+id: deserialization-go
 language: go
 severity: error
 message: '反序列化风险（Go） (CWE-502)'

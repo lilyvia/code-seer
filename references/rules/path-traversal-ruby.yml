@@ -1,4 +1,4 @@
-id: ruby-path-traversal
+id: path-traversal-ruby
 language: ruby
 severity: warning
 message: '路径穿越漏洞（Ruby） (CWE-22)'

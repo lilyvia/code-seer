@@ -1,4 +1,4 @@
-id: python-sql-injection
+id: sql-injection-python
 language: python
 severity: error
 message: 'SQL注入（Python） (CWE-89)'

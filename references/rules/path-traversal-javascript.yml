@@ -1,4 +1,4 @@
-id: javascript-path-traversal
+id: path-traversal-javascript
 language: javascript
 severity: warning
 message: '路径穿越漏洞（JavaScript） (CWE-22)'

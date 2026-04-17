@@ -1,4 +1,4 @@
-id: java-auth-defects
+id: auth-defects-java
 language: java
 severity: warning
 message: '鉴权缺陷（Java） (CWE-287)'

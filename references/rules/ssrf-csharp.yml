@@ -1,4 +1,4 @@
-id: csharp-ssrf
+id: ssrf-csharp
 language: csharp
 severity: warning
 message: 'SSRF服务器端请求伪造（C#） (CWE-918)'

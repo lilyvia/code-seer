@@ -1,4 +1,4 @@
-id: go-sql-injection
+id: sql-injection-go
 language: go
 severity: error
 message: 'SQL注入（Go） (CWE-89)'

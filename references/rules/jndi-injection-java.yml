@@ -1,4 +1,4 @@
-id: java-jndi-injection
+id: jndi-injection-java
 language: java
 severity: warning
 message: 'JNDI 注入风险（Java） (CWE-917)'

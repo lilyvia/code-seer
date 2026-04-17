@@ -1,4 +1,4 @@
-id: python-path-traversal
+id: path-traversal-python
 language: python
 severity: warning
 message: '路径穿越漏洞（Python） (CWE-22)'

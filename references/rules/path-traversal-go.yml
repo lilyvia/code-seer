@@ -1,4 +1,4 @@
-id: go-path-traversal
+id: path-traversal-go
 language: go
 severity: warning
 message: '路径穿越漏洞（Go） (CWE-22)'

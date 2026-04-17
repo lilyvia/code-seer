@@ -1,4 +1,4 @@
-id: php-nosql-injection
+id: nosql-injection-php
 language: php
 severity: error
 message: 'NoSQL 注入漏洞（PHP） (CWE-943)'

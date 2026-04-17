@@ -1,4 +1,4 @@
-id: php-xss
+id: xss-php
 language: php
 severity: warning
 message: 'XSS跨站脚本攻击（PHP） (CWE-79)'

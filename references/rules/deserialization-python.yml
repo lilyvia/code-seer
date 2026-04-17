@@ -1,4 +1,4 @@
-id: python-deserialization
+id: deserialization-python
 language: python
 severity: error
 message: '不安全的反序列化（Python） (CWE-502)'

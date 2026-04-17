@@ -1,4 +1,4 @@
-id: php-path-traversal
+id: path-traversal-php
 language: php
 severity: warning
 message: '路径穿越漏洞（PHP） (CWE-22)'

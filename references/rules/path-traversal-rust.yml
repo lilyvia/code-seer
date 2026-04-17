@@ -1,4 +1,4 @@
-id: rust-path-traversal
+id: path-traversal-rust
 language: rust
 severity: warning
 message: '路径穿越漏洞（Rust） (CWE-22)'

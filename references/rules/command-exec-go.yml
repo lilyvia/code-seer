@@ -1,4 +1,4 @@
-id: go-command-exec
+id: command-exec-go
 language: go
 severity: error
 message: '命令执行漏洞（Go） (CWE-78)'

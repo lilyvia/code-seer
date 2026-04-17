@@ -1,4 +1,4 @@
-id: ruby-nosql-injection
+id: nosql-injection-ruby
 language: ruby
 severity: error
 message: 'NoSQL 注入漏洞（Ruby） (CWE-943)'

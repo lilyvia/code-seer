@@ -1,4 +1,4 @@
-id: rust-xxe
+id: xxe-rust
 language: rust
 severity: warning
 message: 'XXE XML外部实体注入（Rust） (CWE-611)'

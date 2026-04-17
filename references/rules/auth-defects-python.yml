@@ -1,4 +1,4 @@
-id: python-auth-defects
+id: auth-defects-python
 language: python
 severity: warning
 message: '鉴权缺陷（Python） (CWE-287)'

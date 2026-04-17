@@ -1,4 +1,4 @@
-id: ruby-deserialization
+id: deserialization-ruby
 language: ruby
 severity: error
 message: '不安全的反序列化（Ruby） (CWE-502)'

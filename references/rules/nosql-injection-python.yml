@@ -1,4 +1,4 @@
-id: python-nosql-injection
+id: nosql-injection-python
 language: python
 severity: error
 message: 'NoSQL 注入漏洞（Python） (CWE-943)'

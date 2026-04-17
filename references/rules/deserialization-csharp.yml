@@ -1,4 +1,4 @@
-id: csharp-deserialization
+id: deserialization-csharp
 language: csharp
 severity: error
 message: '不安全的反序列化（C#） (CWE-502)'

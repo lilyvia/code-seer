@@ -1,4 +1,4 @@
-id: go-xxe
+id: xxe-go
 language: go
 severity: warning
 message: 'XXE XML外部实体注入（Go） (CWE-611)'

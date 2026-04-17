@@ -1,4 +1,4 @@
-id: csharp-auth-defects
+id: auth-defects-csharp
 language: csharp
 severity: warning
 message: '鉴权缺陷（C#） (CWE-287)'

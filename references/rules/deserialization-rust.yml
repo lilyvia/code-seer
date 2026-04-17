@@ -1,4 +1,4 @@
-id: rust-deserialization
+id: deserialization-rust
 language: rust
 severity: error
 message: '不安全的反序列化（Rust） (CWE-502)'

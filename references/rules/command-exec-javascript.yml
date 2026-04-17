@@ -1,4 +1,4 @@
-id: javascript-command-exec
+id: command-exec-javascript
 language: javascript
 severity: error
 message: '命令执行漏洞（JavaScript） (CWE-78)'

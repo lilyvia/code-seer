@@ -1,4 +1,4 @@
-id: javascript-deserialization
+id: deserialization-javascript
 language: javascript
 severity: error
 message: '不安全的反序列化（JavaScript） (CWE-502)'

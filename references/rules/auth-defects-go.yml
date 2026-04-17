@@ -1,4 +1,4 @@
-id: go-auth-defects
+id: auth-defects-go
 language: go
 severity: warning
 message: '鉴权缺陷（Go） (CWE-287)'

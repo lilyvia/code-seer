@@ -1,4 +1,4 @@
-id: java-nosql-injection
+id: nosql-injection-java
 language: java
 severity: error
 message: 'NoSQL 注入漏洞（Java） (CWE-943)'

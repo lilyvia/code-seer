@@ -1,4 +1,4 @@
-id: java-path-traversal
+id: path-traversal-java
 language: java
 severity: warning
 message: '路径穿越漏洞（Java） (CWE-22)'

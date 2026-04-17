@@ -1,4 +1,4 @@
-id: python-ssrf
+id: ssrf-python
 language: python
 severity: warning
 message: 'SSRF服务器端请求伪造（Python） (CWE-918)'

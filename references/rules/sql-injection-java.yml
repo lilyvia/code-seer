@@ -1,4 +1,4 @@
-id: java-sql-injection
+id: sql-injection-java
 language: java
 severity: error
 message: 'SQL注入（Java） (CWE-89)'
