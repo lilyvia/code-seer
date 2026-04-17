@@ -1,0 +1,19 @@
+id: java-jndi-injection
+language: java
+severity: warning
+message: 'JNDI 注入风险（Java） (CWE-917)'
+name: JNDI 注入风险（Java）
+description: Java 中若将外部输入传入 JNDI lookup，可能触发远程资源解析、对象加载或敏感目录查询。
+cwe: CWE-917
+remediation: "避免将外部输入直接作为 JNDI 名称传入 lookup，优先改为固定资源名或显式白名单映射。\n```java\n// 不安全的代码 ❌\nContext ctx = new InitialContext();\nObject obj = ctx.lookup(userControlledName);\n// 更安全的代码 ✅\nMap<String, String> allowed = Map.of(\"jdbc/main\", \"java:comp/env/jdbc/main\");\nString resource = allowed.get(resourceKey);\nif (resource != null) {\n    Context ctx = new InitialContext();\n    DataSource ds = (DataSource) ctx.lookup(resource);\n}\n```\n"
+rule:
+  kind: method_invocation
+  any:
+  - pattern: new InitialContext().lookup($NAME)
+    kind: method_invocation
+  - pattern: new InitialContext($ENV).lookup($NAME)
+    kind: method_invocation
+  - pattern: new InitialDirContext().lookup($NAME)
+    kind: method_invocation
+  - pattern: new InitialDirContext($ENV).lookup($NAME)
+    kind: method_invocation

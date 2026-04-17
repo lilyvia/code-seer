@@ -1,0 +1,17 @@
+id: python-ssti
+language: python
+severity: warning
+message: 'Python 服务端模板注入（SSTI） (CWE-1336)'
+name: Python 服务端模板注入（SSTI）
+description: 动态拼接或直接渲染用户可控模板字符串时，模板引擎可能执行表达式或访问危险对象，导致服务端模板注入。
+cwe: CWE-1336
+remediation: "避免直接渲染用户提供的模板源码，改为渲染受信任的固定模板并仅把用户输入作为模板变量传入。\n```python\n# 不安全的代码 ❌\nrender_template_string(user_template, user=current_user)\nTemplate(user_template).render(context)\nEnvironment().from_string(user_template).render(context)\n# 安全的代码 ✅\nrender_template('profile.html', user=current_user)\nSAFE_TEMPLATE = 'Hello {{ user }}'\nTemplate(SAFE_TEMPLATE).render({'user': current_user})\n```\n推荐措施：\n- 不要把用户输入当作模板源码\n- 仅渲染受信任的静态模板\n- 将用户数据作为模板变量而不是模板内容传入\n"
+rule:
+  kind: call
+  any:
+  - pattern: render_template_string($TMPL, $$$ARGS)
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - pattern: Template($TMPL).render($$$ARGS)
+    regex: '(user_|request|param|input|arg|query|template|source)'
+  - pattern: Environment().from_string($TMPL).render($$$ARGS)
+    regex: '(user_|request|param|input|arg|query|template|source)'
