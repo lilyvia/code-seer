@@ -30,30 +30,43 @@ rule:
   any:
   - kind: call_expression
     pattern: 'fs.readFile($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.readFileSync($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.writeFile($UPLOAD_PATH, $CONTENT, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.writeFileSync($UPLOAD_PATH, $CONTENT, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.createReadStream($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.createWriteStream($UPLOAD_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.unlink($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.unlinkSync($USER_PATH)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.open($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.openSync($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.promises.readFile($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.promises.writeFile($UPLOAD_PATH, $CONTENT, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'fs.promises.unlink($USER_PATH)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'path.join($BASE_DIR, $USER_PATH)'
     regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
