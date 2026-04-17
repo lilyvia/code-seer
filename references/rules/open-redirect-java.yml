@@ -21,13 +21,16 @@ remediation: |
   }
   ```
 rule:
-  kind: method_invocation
   any:
-  - pattern: '$RESP.sendRedirect($USER_URL)'
+  - kind: method_invocation
+    pattern: '$RESP.sendRedirect($USER_URL)'
     regex: '(user_|request|param|input|arg|query)'
-  - pattern: '$RESPONSE.sendRedirect($USER_URL)'
+  - kind: method_invocation
+    pattern: '$RESPONSE.sendRedirect($USER_URL)'
     regex: '(user_|request|param|input|arg|query)'
-  - pattern: 'new RedirectView($USER_URL)'
+  - kind: object_creation_expression
+    pattern: 'new RedirectView($USER_URL)'
     regex: '(user_|request|param|input|arg|query)'
-  - pattern: 'new ModelAndView($VIEW).addObject($KEY, $USER_URL)'
+  - kind: object_creation_expression
+    pattern: 'new ModelAndView($VIEW)'
     regex: '(user_|request|param|input|arg|query)'
