@@ -49,6 +49,30 @@ rule:
 
     - regex: '(user_|request|param|input|arg|query)'
   - all:
+    - pattern: requests.Session().get($URL)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: requests.Session().post($URL, $$$ARGS)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: httpx.Client().get($URL)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: httpx.Client().post($URL, $$$ARGS)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: httpx.AsyncClient().get($URL)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: httpx.AsyncClient().post($URL, $$$ARGS)
+
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
     - pattern: aiohttp.ClientSession().get($URL)
 
     - regex: '(user_|request|param|input|arg|query)'

@@ -48,5 +48,10 @@ rule:
   kind: call
   any:
   - pattern: pickle.loads($USER_DATA)
+  - pattern: pickle.load($USER_DATA)
   - pattern: yaml.load($USER_DATA)
   - pattern: dill.loads($USER_DATA)
+  - pattern: dill.load($USER_DATA)
+  - pattern: marshal.loads($USER_DATA)
+  - pattern: marshal.load($USER_DATA)
+  - pattern: jsonpickle.decode($USER_DATA)

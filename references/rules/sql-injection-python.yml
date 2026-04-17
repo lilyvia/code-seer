@@ -41,3 +41,49 @@ rule:
   - pattern: '$CURSOR.execute($SQL + $VAR)
 
       '
+  - all:
+    - pattern: '$CURSOR.execute(text($Q))
+
+        '
+    - regex: execute\(text\(f\".*\{.*\}.*\"\)\)
+  - pattern: '$CURSOR.execute(text($SQL % $VAR))
+
+      '
+  - pattern: '$CURSOR.execute(text($SQL.format($$$ARGS)))
+
+      '
+  - pattern: '$CURSOR.execute(text($SQL + $VAR))
+
+      '
+  - pattern: '$MODEL.objects.raw($SQL % $VAR)
+
+      '
+  - pattern: '$MODEL.objects.raw($SQL.format($$$ARGS))
+
+      '
+  - pattern: '$MODEL.objects.raw($SQL + $VAR)
+
+      '
+  - pattern: '$MODEL.objects.extra(where=[$SQL % $VAR])
+
+      '
+  - pattern: '$MODEL.objects.extra(where=[$SQL.format($$$ARGS)])
+
+      '
+  - pattern: '$MODEL.objects.extra(where=[$SQL + $VAR])
+
+      '
+  - all:
+    - pattern: '$EXECUTOR.execute(text($Q))
+
+        '
+    - regex: execute\(text\(f\".*\{.*\}.*\"\)\)
+  - pattern: '$EXECUTOR.execute(text($SQL % $VAR))
+
+      '
+  - pattern: '$EXECUTOR.execute(text($SQL.format($$$ARGS)))
+
+      '
+  - pattern: '$EXECUTOR.execute(text($SQL + $VAR))
+
+      '

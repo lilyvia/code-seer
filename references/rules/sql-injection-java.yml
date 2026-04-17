@@ -27,53 +27,46 @@ remediation: '使用参数化查询（PreparedStatement）替代动态字符串�
 
   '
 rule:
-  kind: method_invocation
   any:
-  - pattern: '$STMT.executeQuery($SQL + $VAR)
-
-      '
+  - pattern: '$STMT.executeQuery($SQL + $VAR)'
     kind: method_invocation
-  - pattern: '$STMT.execute($SQL + $VAR)
-
-      '
+  - pattern: '$STMT.execute($SQL + $VAR)'
     kind: method_invocation
-  - pattern: '$STMT.executeUpdate($SQL + $VAR)
-
-      '
+  - pattern: '$STMT.executeUpdate($SQL + $VAR)'
     kind: method_invocation
-  - pattern: '$STMT.executeBatch($SQL + $VAR)
-
-      '
+  - pattern: '$STMT.executeBatch($SQL + $VAR)'
     kind: method_invocation
-  - pattern: '$STMT.executeQuery(String.format($FMT, $$$ARGS))
-
-      '
+  - pattern: '$STMT.executeQuery(String.format($FMT, $$$ARGS))'
     kind: method_invocation
-  - pattern: '$STMT.execute(String.format($FMT, $$$ARGS))
-
-      '
+  - pattern: '$STMT.execute(String.format($FMT, $$$ARGS))'
     kind: method_invocation
-  - pattern: '$STMT.executeUpdate(String.format($FMT, $$$ARGS))
-
-      '
+  - pattern: '$STMT.executeUpdate(String.format($FMT, $$$ARGS))'
     kind: method_invocation
-  - pattern: '$STMT.executeQuery(new StringBuilder().append($A).append($VAR).toString())
-
-      '
+  - pattern: '$STMT.executeQuery(new StringBuilder().append($A).append($VAR).toString())'
     kind: method_invocation
-  - pattern: '$STMT.execute(new StringBuilder().append($A).append($VAR).toString())
-
-      '
+  - pattern: '$STMT.execute(new StringBuilder().append($A).append($VAR).toString())'
     kind: method_invocation
-  - pattern: '$STMT.executeUpdate(new StringBuilder().append($A).append($VAR).toString())
-
-      '
+  - pattern: '$STMT.executeUpdate(new StringBuilder().append($A).append($VAR).toString())'
     kind: method_invocation
-  - pattern: '$STMT.executeQuery($SQL.concat($VAR))
-
-      '
+  - pattern: '$STMT.executeQuery($SQL.concat($VAR))'
     kind: method_invocation
-  - pattern: '$STMT.execute($SQL.concat($VAR))
-
-      '
+  - pattern: '$STMT.execute($SQL.concat($VAR))'
     kind: method_invocation
+  - pattern: '$JT.query($SQL + $VAR, $$$)'
+    kind: method_invocation
+  - pattern: '$JT.update($SQL + $VAR)'
+    kind: method_invocation
+  - pattern: '$JT.execute($SQL + $VAR)'
+    kind: method_invocation
+  - pattern: '$EM.createNativeQuery($SQL + $VAR)'
+    kind: method_invocation
+  - pattern: '$EM.createQuery($SQL + $VAR)'
+    kind: method_invocation
+  - pattern: '$EM.createNativeQuery(String.format($FMT, $$$ARGS))'
+    kind: method_invocation
+  - pattern: '$EM.createQuery(String.format($FMT, $$$ARGS))'
+    kind: method_invocation
+  - pattern: '@Query(nativeQuery = true, value = $SQL + $VAR)'
+    kind: annotation
+  - pattern: '@Query(nativeQuery = true, value = String.format($FMT, $$$ARGS))'
+    kind: annotation

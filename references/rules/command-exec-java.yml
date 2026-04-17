@@ -16,6 +16,12 @@ rule:
     kind: method_invocation
   - pattern: new ProcessBuilder($$$ARGS).start()
     kind: method_invocation
+  - pattern: new ProcessBuilder().command($$$ARGS).start()
+    kind: method_invocation
+  - pattern: new ProcessBuilder().command("sh", "-c", $CMD).start()
+    kind: method_invocation
+  - pattern: new ProcessBuilder().command("cmd", "/c", $CMD).start()
+    kind: method_invocation
   - pattern: new ProcessBuilder("sh", "-c", $CMD).start()
     kind: method_invocation
   - pattern: new ProcessBuilder("cmd", "/c", $CMD).start()

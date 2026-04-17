@@ -2,13 +2,21 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class JavaCmdExecSample {
+class JavaCmdExec {
     public void vulnerableRuntime(String userCmd) throws IOException {
         Runtime.getRuntime().exec(userCmd);
     }
 
     public void vulnerableProcessBuilder(String userCmd) throws IOException {
         new ProcessBuilder("sh", "-c", userCmd).start();
+    }
+
+    public void vulnerableBuilderCommand(String userCmd) throws IOException {
+        new ProcessBuilder().command("sh", "-c", userCmd).start();
+    }
+
+    public void vulnerableBuilderCommandOnWindows(String userCmd) throws IOException {
+        new ProcessBuilder().command("cmd", "/c", userCmd).start();
     }
 
     public String safe(String userCmd) {
