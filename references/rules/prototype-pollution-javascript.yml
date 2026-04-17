@@ -1,0 +1,39 @@
+id: javascript-prototype-pollution
+language: javascript
+severity: warning
+message: 'Prototype Pollution 风险（JavaScript） (CWE-1321)'
+name: Prototype Pollution（JavaScript）
+description: |
+  将用户输入直接用于深合并或动态对象键赋值时，攻击者可能注入 `__proto__`、`constructor.prototype`
+  等特殊属性，进而污染对象原型链并影响后续逻辑。
+cwe: CWE-1321
+remediation: |
+  对可写键名做允许名单校验，拒绝 `__proto__`、`prototype`、`constructor` 等危险属性，
+  并避免将未经校验的外部对象直接传入 `Object.assign`、`_.merge`、`lodash.merge` 等深合并 API：
+  ```javascript
+  // 不安全的代码 ❌
+  Object.assign(target, req.body);
+  _.merge(defaults, req.body);
+  target[req.query.key] = req.body.value;
+
+  // 安全的代码 ✅
+  const blockedKeys = new Set(['__proto__', 'prototype', 'constructor']);
+  if (blockedKeys.has(req.query.key)) {
+    throw new Error('invalid key');
+  }
+  target[req.query.key] = req.body.value;
+  ```
+rule:
+  any:
+    - kind: call_expression
+      pattern: 'Object.assign($TARGET, $SOURCE)'
+      regex: 'Object\.assign\([^\)]*,\s*(req\.|request\.|ctx\.|input|payload|body|user)'
+    - kind: call_expression
+      pattern: '_.merge($TARGET, $SOURCE)'
+      regex: '_\.merge\([^\)]*,\s*(req\.|request\.|ctx\.|input|payload|body|user)'
+    - kind: call_expression
+      pattern: 'merge($TARGET, $SOURCE)'
+      regex: '(merge|deepmerge)\([^\)]*,\s*(req\.|request\.|ctx\.|input|payload|body|user)'
+    - kind: assignment_expression
+      pattern: '$OBJ[$KEY] = $VALUE'
+      regex: '\[(req\.|request\.|ctx\.|input|payload|body|user)'

@@ -1,0 +1,48 @@
+id: javascript-nosql-injection
+language: javascript
+severity: warning
+message: 'NoSQL 注入漏洞（JavaScript） (CWE-943)'
+name: NoSQL 注入（JavaScript）
+description: |
+  在 Node.js / Mongoose / MongoDB 场景中，将用户输入直接放入 `$where` 表达式，
+  或直接把动态构造的过滤对象传给查询接口，可能导致 NoSQL 注入或绕过预期查询约束。
+cwe: CWE-943
+remediation: |
+  避免直接把用户输入拼入 `$where` 或动态 filter object，优先使用固定字段、允许名单与显式类型转换：
+  ```javascript
+  // 不安全的代码 ❌
+  User.find({ $where: req.query.expr });
+
+  const filter = {};
+  filter[req.query.field] = req.query.value;
+  User.find(filter);
+
+  // 安全的代码 ✅
+  const allowedFields = new Set(['email', 'status']);
+  const field = req.query.field;
+  if (!allowedFields.has(field)) {
+    throw new Error('invalid field');
+  }
+
+  User.find({ [field]: String(req.query.value) });
+  User.find({ email: String(req.query.email) });
+  ```
+rule:
+  any:
+    - kind: call_expression
+      pattern: '$MODEL.find({ $where: $EXPR })'
+    - kind: call_expression
+      pattern: '$MODEL.findOne({ $where: $EXPR })'
+    - kind: call_expression
+      pattern: '$MODEL.countDocuments({ $where: $EXPR })'
+    - kind: call_expression
+      pattern: '$COLL.find({ $where: $EXPR })'
+    - kind: assignment_expression
+      pattern: '$FILTER[$FIELD] = $VALUE'
+      regex: 'filter\[[^\]]+\]\s*='
+    - kind: call_expression
+      pattern: '$MODEL.find($FILTER)'
+      regex: 'find\(filter\)'
+    - kind: call_expression
+      pattern: '$MODEL.findOne($FILTER)'
+      regex: 'findOne\(filter\)'

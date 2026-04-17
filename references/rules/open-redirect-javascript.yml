@@ -1,0 +1,41 @@
+id: javascript-open-redirect
+language: javascript
+severity: warning
+message: '开放重定向（JavaScript） (CWE-601)'
+name: 开放重定向（JavaScript）
+description: |
+  将用户输入直接用于服务端或浏览器端跳转目标，可能导致开放重定向漏洞，
+  攻击者可借此将用户引导至恶意站点实施钓鱼或绕过安全校验。
+cwe: CWE-601
+remediation: |
+  对跳转目标执行白名单、同源或相对路径校验：
+  ```javascript
+  // 不安全的代码 ❌
+  res.redirect(userUrl);
+  reply.redirect(userUrl);
+  ctx.redirect(userUrl);
+  location.href = userUrl;
+
+  // 安全的代码 ✅
+  function safeRedirect(target) {
+    const url = new URL(target, 'https://example.com');
+    if (url.origin !== 'https://example.com') {
+      throw new Error('非法跳转目标');
+    }
+    return url.pathname + url.search;
+  }
+
+  res.redirect(safeRedirect(userUrl));
+  ```
+rule:
+  any:
+  - kind: call_expression
+    pattern: 'res.redirect($USER_URL)'
+  - kind: call_expression
+    pattern: 'reply.redirect($USER_URL)'
+  - kind: call_expression
+    pattern: 'ctx.redirect($USER_URL)'
+  - kind: assignment_expression
+    pattern: 'location.href = $USER_URL'
+  - kind: assignment_expression
+    pattern: 'window.location.href = $USER_URL'
