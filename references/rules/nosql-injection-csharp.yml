@@ -1,0 +1,54 @@
+id: csharp-nosql-injection
+language: csharp
+severity: error
+message: 'NoSQL 注入漏洞（C#） (CWE-943)'
+name: NoSQL 注入（C#）
+description: |
+  在 C# + MongoDB (MongoDB.Driver) 场景中，将用户输入直接放入 `$where` 表达式，
+  或直接把动态构造的过滤对象传给查询接口，可能导致 NoSQL 注入或绕过预期查询约束。
+cwe: CWE-943
+remediation: |
+  避免直接把用户输入拼入 `$where` 或动态 filter object，优先使用固定字段、允许名单与显式类型转换：
+  ```csharp
+  // 不安全的代码 ❌
+  collection.Find(new BsonDocument("$where", userInput));
+  
+  var filter = new BsonDocument();
+  filter[Request.Query["field"]] = Request.Query["value"];
+  collection.Find(filter);
+  
+  // 安全的代码 ✅
+  var allowedFields = new HashSet<string> { "email", "status" };
+  var field = Request.Query["field"];
+  if (!allowedFields.Contains(field))
+  {
+      throw new ArgumentException("invalid field");
+  }
+  
+  collection.Find(new BsonDocument(field, Request.Query["value"].ToString()));
+  collection.Find(new BsonDocument("email", Request.Query["email"].ToString()));
+  ```
+rule:
+  any:
+    # $where 表达式注入
+    - kind: invocation_expression
+      pattern: '$COLL.Find(new BsonDocument("$where", $EXPR))'
+    - kind: invocation_expression
+      pattern: '$COLL.FindOne(new BsonDocument("$where", $EXPR))'
+    - kind: invocation_expression
+      pattern: '$COLL.CountDocuments(new BsonDocument("$where", $EXPR))'
+    # 字符串拼接/插值构造 $where
+    - kind: invocation_expression
+      pattern: '$COLL.Find(new BsonDocument("$where", $SQL + $VAR))'
+    - kind: invocation_expression
+      pattern: '$COLL.Find(new BsonDocument("$where", String.Format($FMT, $$$ARGS)))'
+    # BsonDocument 动态字段赋值（来自 HTTP 请求）
+    - kind: element_access_expression
+      pattern: '$FILTER[$REQ.Query[$FIELD]] = $REQ.Query[$VALUE]'
+    - kind: element_access_expression
+      pattern: '$FILTER[$REQ.Form[$FIELD]] = $REQ.Form[$VALUE]'
+    # 直接从请求对象解析为 filter
+    - kind: invocation_expression
+      pattern: '$COLL.Find(BsonDocument.Parse($JSON))'
+    - kind: invocation_expression
+      pattern: '$COLL.FindOne(BsonDocument.Parse($JSON))'

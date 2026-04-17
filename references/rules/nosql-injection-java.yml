@@ -1,0 +1,53 @@
+id: java-nosql-injection
+language: java
+severity: error
+message: 'NoSQL 注入漏洞（Java） (CWE-943)'
+name: NoSQL 注入（Java）
+description: |
+  在 Java + MongoDB 场景中，将用户输入直接放入 `$where` 表达式，
+  或直接把动态构造的过滤对象传给查询接口，可能导致 NoSQL 注入或绕过预期查询约束。
+cwe: CWE-943
+remediation: |
+  避免直接把用户输入拼入 `$where` 或动态 filter object，优先使用固定字段、允许名单与显式类型转换：
+  ```java
+  // 不安全的代码 ❌
+  collection.find(new Document("$where", userInput));
+  
+  Document filter = new Document();
+  filter.put(req.getParameter("field"), req.getParameter("value"));
+  collection.find(filter);
+  
+  // 安全的代码 ✅
+  Set<String> allowedFields = new HashSet<>(Arrays.asList("email", "status"));
+  String field = req.getParameter("field");
+  if (!allowedFields.contains(field)) {
+      throw new IllegalArgumentException("invalid field");
+  }
+  
+  collection.find(new Document(field, String.valueOf(req.getParameter("value"))));
+  collection.find(new Document("email", String.valueOf(req.getParameter("email"))));
+  ```
+rule:
+  any:
+    # $where 表达式注入
+    - kind: method_invocation
+      pattern: '$COLL.find(new Document("$where", $EXPR))'
+    - kind: method_invocation
+      pattern: '$COLL.findOne(new Document("$where", $EXPR))'
+    - kind: method_invocation
+      pattern: '$COLL.countDocuments(new Document("$where", $EXPR))'
+    # 字符串拼接构造 $where
+    - kind: method_invocation
+      pattern: '$COLL.find(new Document("$where", $SQL + $VAR))'
+    - kind: method_invocation
+      pattern: '$COLL.find(new Document("$where", String.format($FMT, $$$ARGS)))'
+    # BasicDBObject/Document 动态字段赋值（来自外部输入）
+    - kind: method_invocation
+      pattern: '$DOC.put($REQ.getParameter($FIELD), $REQ.getParameter($VALUE))'
+    - kind: method_invocation
+      pattern: '$DOC.put($REQ.getParameter($FIELD), $VALUE)'
+    # 从 JSON 字符串直接解析为查询对象
+    - kind: method_invocation
+      pattern: '$COLL.find(Document.parse($JSON))'
+    - kind: method_invocation
+      pattern: '$COLL.findOne(Document.parse($JSON))'

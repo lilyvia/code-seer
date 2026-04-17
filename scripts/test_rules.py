@@ -9,7 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent
+PROJECT_ROOT = Path(__file__).parent.parent
 RULES_DIR = PROJECT_ROOT / "references" / "rules"
 SAMPLES_DIR = PROJECT_ROOT / "test-samples"
 
@@ -74,6 +74,13 @@ RULE_SAMPLE_MAP = {
     "hardcoded-secrets-csharp.yml": "hardcoded_secrets_csharp.cs",
     "hardcoded-secrets-javascript.yml": "hardcoded_secrets_javascript.js",
     "nosql-injection-javascript.yml": "nosql_injection_javascript.js",
+    "nosql-injection-java.yml": "nosql_injection_java.java",
+    "nosql-injection-python.yml": "nosql_injection_python.py",
+    "nosql-injection-php.yml": "nosql_injection_php.php",
+    "nosql-injection-go.yml": "nosql_injection_go.go",
+    "nosql-injection-csharp.yml": "nosql_injection_csharp.cs",
+    "nosql-injection-ruby.yml": "nosql_injection_ruby.rb",
+    "nosql-injection-rust.yml": "nosql_injection_rust.rs",
     "prototype-pollution-javascript.yml": "prototype_pollution_javascript.js",
     "sql-injection-ruby.yml": "sqli_ruby.rb",
     "command-exec-ruby.yml": "cmd_exec_ruby.rb",
@@ -103,8 +110,8 @@ SAFE_SAMPLE_MAP = {
 
 def run_ast_grep(rule_file: Path, sample_file: Path) -> list:
     cmd = [
-        "ast-grep", "scan",
-        "-r", str(rule_file),
+        "sg", "scan",
+        "--rule", str(rule_file),
         str(sample_file),
         "--json"
     ]

@@ -1,0 +1,63 @@
+id: python-nosql-injection
+language: python
+severity: error
+message: 'NoSQL 注入漏洞（Python） (CWE-943)'
+name: NoSQL 注入（Python）
+description: |
+  在 Python + PyMongo / MongoEngine 场景中，将用户输入直接放入 `$where` 表达式，
+  或直接把动态构造的过滤对象传给查询接口，可能导致 NoSQL 注入或绕过预期查询约束。
+cwe: CWE-943
+remediation: |
+  避免直接把用户输入拼入 `$where` 或动态 filter object，优先使用固定字段、允许名单与显式类型转换：
+  ```python
+  # 不安全的代码 ❌
+  collection.find({"$where": user_input})
+  
+  filter = {}
+  filter[request.args.get("field")] = request.args.get("value")
+  collection.find(filter)
+  
+  # 安全的代码 ✅
+  allowed_fields = {"email", "status"}
+  field = request.args.get("field")
+  if field not in allowed_fields:
+      raise ValueError("invalid field")
+  
+  collection.find({field: str(request.args.get("value"))})
+  collection.find({"email": str(request.args.get("email"))})
+  ```
+rule:
+  any:
+    # $where 表达式注入
+    - kind: call
+      pattern: '$COLL.find({"$where": $EXPR})'
+    - kind: call
+      pattern: '$COLL.find_one({"$where": $EXPR})'
+    - kind: call
+      pattern: '$COLL.count_documents({"$where": $EXPR})'
+    # 字符串拼接/格式化构造 $where
+    - kind: call
+      pattern: '$COLL.find({"$where": $SQL % $VAR})'
+    - kind: call
+      pattern: '$COLL.find({"$where": $SQL.format($$$ARGS)})'
+    - kind: call
+      pattern: '$COLL.find({"$where": f$Q})'
+    # 动态字段赋值（来自 request）
+    - kind: subscript
+      pattern: '$FILTER[$REQ.args.get($FIELD)] = $REQ.args.get($VALUE)'
+    - kind: subscript
+      pattern: '$FILTER[$REQ.json.get($FIELD)] = $REQ.json.get($VALUE)'
+    - kind: subscript
+      pattern: '$FILTER[$REQ.form.get($FIELD)] = $REQ.form.get($VALUE)'
+    # 直接从请求对象传入查询
+    - kind: call
+      pattern: '$COLL.find($REQ.json)'
+    - kind: call
+      pattern: '$COLL.find_one($REQ.json)'
+    - kind: call
+      pattern: '$COLL.find($REQ.args)'
+    # 从 JSON 字符串解析为查询对象
+    - kind: call
+      pattern: '$COLL.find(json.loads($JSON))'
+    - kind: call
+      pattern: '$COLL.find_one(json.loads($JSON))'

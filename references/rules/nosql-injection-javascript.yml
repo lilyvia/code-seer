@@ -37,6 +37,10 @@ rule:
       pattern: '$MODEL.countDocuments({ $where: $EXPR })'
     - kind: call_expression
       pattern: '$COLL.find({ $where: $EXPR })'
+    - kind: call_expression
+      pattern: '$COLL.findOne({ $where: $EXPR })'
+    - kind: call_expression
+      pattern: '$COLL.countDocuments({ $where: $EXPR })'
     - kind: assignment_expression
       pattern: '$FILTER[$FIELD] = $VALUE'
       regex: 'filter\[[^\]]+\]\s*='
@@ -46,3 +50,15 @@ rule:
     - kind: call_expression
       pattern: '$MODEL.findOne($FILTER)'
       regex: 'findOne\(filter\)'
+    - kind: call_expression
+      pattern: '$COLL.find($FILTER)'
+      regex: 'find\(filter\)'
+    - kind: call_expression
+      pattern: '$COLL.findOne($FILTER)'
+      regex: 'findOne\(filter\)'
+    - kind: call_expression
+      pattern: '$MODEL.aggregate($PIPELINE)'
+      regex: 'aggregate\(.*\)'
+    - kind: call_expression
+      pattern: '$COLL.aggregate($PIPELINE)'
+      regex: 'aggregate\(.*\)'

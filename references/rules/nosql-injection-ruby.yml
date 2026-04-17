@@ -1,0 +1,52 @@
+id: ruby-nosql-injection
+language: ruby
+severity: error
+message: 'NoSQL 注入漏洞（Ruby） (CWE-943)'
+name: NoSQL 注入（Ruby）
+description: |
+  在 Ruby + MongoDB (mongo gem / Mongoid) 场景中，将用户输入直接放入 `$where` 表达式，
+  或直接把动态构造的过滤对象传给查询接口，可能导致 NoSQL 注入或绕过预期查询约束。
+cwe: CWE-943
+remediation: |
+  避免直接把用户输入拼入 `$where` 或动态 filter object，优先使用固定字段、允许名单与显式类型转换：
+  ```ruby
+  # 不安全的代码 ❌
+  collection.find({ "$where" => params[:expr] })
+  
+  filter = {}
+  filter[params[:field]] = params[:value]
+  collection.find(filter)
+  
+  # 安全的代码 ✅
+  allowed_fields = %w[email status]
+  field = params[:field]
+  raise "invalid field" unless allowed_fields.include?(field)
+  
+  collection.find({ field => params[:value].to_s })
+  collection.find({ "email" => params[:email].to_s })
+  ```
+rule:
+  any:
+    # $where 表达式注入
+    - kind: call
+      pattern: '$COLL.find({ "$where" => $EXPR })'
+    - kind: call
+      pattern: '$COLL.find_one({ "$where" => $EXPR })'
+    - kind: call
+      pattern: '$COLL.count_documents({ "$where" => $EXPR })'
+    # 字符串插值构造 $where
+    - kind: call
+      pattern: '$COLL.find({ "$where" => "#{ $VAR }" })'
+    # Hash 动态字段赋值（来自 params）
+    - kind: assignment
+      pattern: '$FILTER[$PARAMS[$FIELD]] = $PARAMS[$VALUE]'
+    - kind: assignment
+      pattern: '$FILTER[$PARAMS[$FIELD]] = $VALUE'
+    # Mongoid where 直接传入 params
+    - kind: call
+      pattern: 'Model.where($PARAMS)'
+    # 从 JSON 解析为查询对象
+    - kind: call
+      pattern: '$COLL.find(BSON::Document.from_json($JSON))'
+    - kind: call
+      pattern: '$COLL.find_one(BSON::Document.from_json($JSON))'

@@ -3,7 +3,7 @@ name: security-audit
 description: |
   源码安全审计技能。AI作为主导审计者，通过LLM深度代码分析挖掘安全漏洞，ast-grep仅作为辅助筛选工具。
   适用于跨语言、跨项目的源码安全审计，输出中文报告供人工复核与落地修复。
-  兼容 Java、Go、Python、PHP、C#、JavaScript/TypeScript（Wave 1 由 JavaScript 规则覆盖 TS 代码库）、Ruby、Rust 等语言，覆盖 9 类漏洞类型。
+  兼容 Java、Go、Python、PHP、C#、JavaScript/TypeScript（由 JavaScript 规则覆盖 TS 代码库）、Ruby、Rust 等语言，覆盖 9 类漏洞类型。
   AI基于源代码深度分析生成带日期的最终审计报告。
 metadata:
   version: "0.0.1"
@@ -64,7 +64,7 @@ metadata:
 | **模式扩展** | ast-grep规则无法覆盖的变体写法、框架特定API、业务逻辑漏洞 |
 | **跨文件追踪** | 追踪变量和函数在多个文件间的传递 |
 | **配置审查** | 检查安全相关配置（CORS、认证中间件、路由权限、依赖版本） |
-| **依赖分析** | 检查package.json、requirements.txt等是否存在已知漏洞依赖 |
+| **依赖分析** | 检查pom.xml、package.json、requirements.txt等是否存在已知漏洞依赖 |
 
 ## LLM Call-Chain Backtracking Protocol
 
@@ -113,7 +113,7 @@ ast-grep scan -r references/rules/sql-injection-csharp.yml /path/to/project --js
 - `auth-defects-{lang}.yml` - 鉴权缺陷
 - `hardcoded-secrets-{lang}.yml` - 硬编码密钥
 
-支持语言：python, java, go, php, csharp, javascript（Wave 1 统一由 JavaScript 规则执行 JavaScript/TypeScript 项目的首轮扫描，当前未单独维护 TypeScript 规则矩阵）, ruby, rust
+支持语言：python, java, go, php, csharp, javascript（统一由 JavaScript 规则执行 JavaScript/TypeScript 项目的首轮扫描，当前未单独维护 TypeScript 规则矩阵）, ruby, rust
 
 ## 输出要求
 

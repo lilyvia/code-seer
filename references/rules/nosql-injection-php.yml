@@ -1,0 +1,58 @@
+id: php-nosql-injection
+language: php
+severity: error
+message: 'NoSQL 注入漏洞（PHP） (CWE-943)'
+name: NoSQL 注入（PHP）
+description: |
+  在 PHP + MongoDB 场景中，将用户输入直接放入 `$where` 表达式，
+  或直接把动态构造的过滤对象传给查询接口，可能导致 NoSQL 注入或绕过预期查询约束。
+  PHP 的数组语法特别容易被利用，例如 `username[$ne]=1` 会被解析为 `{"username": {"$ne": "1"}}`。
+cwe: CWE-943
+remediation: |
+  避免直接把用户输入拼入 `$where` 或动态 filter object，优先使用固定字段、允许名单与显式类型转换：
+  ```php
+  // 不安全的代码 ❌
+  $collection->find(['$where' => $_GET['expr']]);
+  
+  $filter = [];
+  $filter[$_GET['field']] = $_GET['value'];
+  $collection->find($filter);
+  
+  // 安全的代码 ✅
+  $allowedFields = ['email', 'status'];
+  $field = $_GET['field'];
+  if (!in_array($field, $allowedFields)) {
+      throw new Exception('invalid field');
+  }
+  
+  $collection->find([$field => (string)$_GET['value']]);
+  $collection->find(['email' => (string)$_GET['email']]);
+  ```
+rule:
+  any:
+    # $where 表达式注入
+    - pattern: '$COLL->find(["$where" => $EXPR])'
+    - pattern: '$COLL->findOne(["$where" => $EXPR])'
+    - pattern: '$COLL->countDocuments(["$where" => $EXPR])'
+    # 字符串拼接构造 $where
+    - pattern: '$COLL->find(["$where" => $SQL . $VAR])'
+    # 动态数组字段赋值（来自 $_GET/$_POST/$_REQUEST）
+    - pattern: '$FILTER[$_GET[$FIELD]] = $_GET[$VALUE]'
+    - pattern: '$FILTER[$_POST[$FIELD]] = $_POST[$VALUE]'
+    - pattern: '$FILTER[$_REQUEST[$FIELD]] = $_REQUEST[$VALUE]'
+    - pattern: '$FILTER[$_GET[$FIELD]] = $VALUE'
+    - pattern: '$FILTER[$_POST[$FIELD]] = $VALUE'
+    # 直接使用 $_GET/$_POST/$_REQUEST 作为查询参数
+    - pattern: '$COLL->find($VAR)'
+      regex: 'find\(\$_GET\)'
+    - pattern: '$COLL->find($VAR)'
+      regex: 'find\(\$_POST\)'
+    - pattern: '$COLL->find($VAR)'
+      regex: 'find\(\$_REQUEST\)'
+    - pattern: '$COLL->findOne($VAR)'
+      regex: 'findOne\(\$_GET\)'
+    - pattern: '$COLL->findOne($VAR)'
+      regex: 'findOne\(\$_POST\)'
+    # 从 JSON 解析为查询对象
+    - pattern: '$COLL->find(json_decode($JSON, true))'
+    - pattern: '$COLL->findOne(json_decode($JSON, true))'

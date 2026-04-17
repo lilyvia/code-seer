@@ -1,0 +1,63 @@
+id: go-nosql-injection
+language: go
+severity: error
+message: 'NoSQL 注入漏洞（Go） (CWE-943)'
+name: NoSQL 注入（Go）
+description: |
+  在 Go + MongoDB (mongo-driver) 场景中，将用户输入直接放入 `$where` 表达式，
+  或直接把动态构造的过滤对象传给查询接口，可能导致 NoSQL 注入或绕过预期查询约束。
+cwe: CWE-943
+remediation: |
+  避免直接把用户输入拼入 `$where` 或动态 filter object，优先使用固定字段、允许名单与显式类型转换：
+  ```go
+  // 不安全的代码 ❌
+  collection.Find(ctx, bson.M{"$where": userInput})
+  
+  filter := bson.M{}
+  filter[r.FormValue("field")] = r.FormValue("value")
+  collection.Find(ctx, filter)
+  
+  // 安全的代码 ✅
+  allowedFields := map[string]bool{"email": true, "status": true}
+  field := r.FormValue("field")
+  if !allowedFields[field] {
+      return errors.New("invalid field")
+  }
+  
+  collection.Find(ctx, bson.M{field: string(r.FormValue("value"))})
+  collection.Find(ctx, bson.M{"email": string(r.FormValue("email"))})
+  ```
+rule:
+  any:
+    # $where 表达式注入
+    - kind: call_expression
+      pattern: '$COLL.Find($CTX, bson.M{"$where": $EXPR})'
+    - kind: call_expression
+      pattern: '$COLL.FindOne($CTX, bson.M{"$where": $EXPR})'
+    - kind: call_expression
+      pattern: '$COLL.CountDocuments($CTX, bson.M{"$where": $EXPR})'
+    # 字符串拼接构造 $where
+    - kind: call_expression
+      pattern: '$COLL.Find($CTX, bson.M{"$where": $SQL + $VAR})'
+    # bson.M 动态字段赋值（来自 HTTP 请求）
+    - kind: assignment_statement
+      pattern: '$FILTER[$R.FormValue($FIELD)] = $R.FormValue($VALUE)'
+    - kind: assignment_statement
+      pattern: '$FILTER[$R.PostFormValue($FIELD)] = $R.PostFormValue($VALUE)'
+    - kind: assignment_statement
+      pattern: '$FILTER[$R.URL.Query().Get($FIELD)] = $R.URL.Query().Get($VALUE)'
+    # 直接从 HTTP 请求体解析为 filter
+    - kind: call_expression
+      pattern: 'json.Unmarshal($BODY, &$FILTER)'
+      inside:
+        kind: function_declaration
+        has:
+          kind: call_expression
+          pattern: '$COLL.Find($CTX, $FILTER)'
+    - kind: call_expression
+      pattern: 'json.Unmarshal($BODY, &$FILTER)'
+      inside:
+        kind: function_declaration
+        has:
+          kind: call_expression
+          pattern: '$COLL.FindOne($CTX, $FILTER)'
