@@ -19,3 +19,15 @@ function safePrisma(prisma, input) {
     prisma.$queryRaw`SELECT * FROM logs WHERE msg = ${input}`;
     prisma.$executeRaw`DELETE FROM sessions WHERE id = ${input}`;
 }
+
+function safeSequelizeParam(sequelize, userId) {
+    sequelize.query("SELECT * FROM users WHERE id = ?", { replacements: [userId] });
+}
+
+function safeKnexBuilder(knex, name) {
+    knex("products").where({ name: name });
+}
+
+function safePrismaOrm(prisma, input) {
+    prisma.log.findMany({ where: { msg: input } });
+}

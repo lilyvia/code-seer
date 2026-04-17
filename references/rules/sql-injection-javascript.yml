@@ -77,3 +77,27 @@ rule:
     pattern: '$PRISMA.$executeRawUnsafe(`$SQL${$VAR}`)'
   - kind: call_expression
     pattern: '$PRISMA.$executeRawUnsafe($SQL + $VAR)'
+  # Sequelize raw query replacements
+  - kind: call_expression
+    pattern: '$SEQUE.query($QUERY, { replacements: { $KEY: $VAL } })'
+    regex: 'query\(sql'
+  - kind: call_expression
+    pattern: '$SEQUE.query($QUERY, { bind: { $KEY: $VAL } })'
+    regex: 'query\(sql'
+  - kind: call_expression
+    pattern: '$MODEL.sequelize.query($QUERY)'
+    regex: 'query\(sql'
+  # Knex raw helpers variants
+  - kind: call_expression
+    pattern: '$KNEX.raw($QUERY)'
+    regex: 'raw\(sql\)'
+  - kind: call_expression
+    pattern: '$DB.raw(`$SQL${$VAR}`)'
+  - kind: call_expression
+    pattern: '$DB.raw($SQL + $VAR)'
+  # Prisma unsafe raw helpers variants
+  - kind: call_expression
+    pattern: '$PRISMA.$queryRawUnsafe(`$SQL${$VAR}`)'
+  - kind: call_expression
+    pattern: '$PRISMA.$executeRawUnsafe($QUERY)'
+    regex: 'executeRawUnsafe\(sql\)'
