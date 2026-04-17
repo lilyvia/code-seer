@@ -1,0 +1,33 @@
+id: java-open-redirect
+language: java
+severity: warning
+message: '开放重定向（Java） (CWE-601)'
+name: 开放重定向（Java）
+description: |
+  将用户输入直接用于服务端跳转目标，可能导致开放重定向漏洞，
+  攻击者可借此将用户引导至恶意站点。
+cwe: CWE-601
+remediation: |
+  对跳转目标执行白名单、同源或相对路径校验：
+  ```java
+  // 不安全的代码 ❌
+  response.sendRedirect(userUrl);
+  return new RedirectView(userUrl);
+
+  // 安全的代码 ✅
+  Set<String> allowed = Set.of("/home", "/dashboard");
+  if (allowed.contains(target)) {
+      response.sendRedirect(target);
+  }
+  ```
+rule:
+  kind: method_invocation
+  any:
+  - pattern: '$RESP.sendRedirect($USER_URL)'
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: '$RESPONSE.sendRedirect($USER_URL)'
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: 'new RedirectView($USER_URL)'
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: 'new ModelAndView($VIEW).addObject($KEY, $USER_URL)'
+    regex: '(user_|request|param|input|arg|query)'

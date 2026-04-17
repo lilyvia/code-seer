@@ -40,6 +40,8 @@ RULE_SAMPLE_MAP = {
     "path-traversal-csharp.yml": "path_traversal_csharp.cs",
     "path-traversal-javascript.yml": "path_traversal_javascript.js",
     "open-redirect-javascript.yml": "open_redirect_javascript.js",
+    "open-redirect-python.yml": "open_redirect_python.py",
+    "open-redirect-java.yml": "open_redirect_java.java",
     "ssrf-python.yml": "ssrf_python.py",
     "ssrf-java.yml": "ssrf_java.java",
     "ssrf-go.yml": "ssrf_go.go",

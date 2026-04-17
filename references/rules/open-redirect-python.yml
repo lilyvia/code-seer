@@ -1,0 +1,37 @@
+id: python-open-redirect
+language: python
+severity: warning
+message: '开放重定向（Python） (CWE-601)'
+name: 开放重定向（Python）
+description: |
+  将用户输入直接用于 HTTP 响应跳转目标，可能导致开放重定向漏洞，
+  攻击者可借此将用户引导至恶意站点。
+cwe: CWE-601
+remediation: |
+  对跳转目标执行白名单、同源或相对路径校验：
+  ```python
+  from urllib.parse import urlparse
+
+  # 不安全的代码 ❌
+  redirect(user_url)
+  HttpResponseRedirect(user_url)
+
+  # 安全的代码 ✅
+  def safe_redirect(target):
+      allowed_hosts = {'example.com'}
+      parsed = urlparse(target)
+      if parsed.netloc not in allowed_hosts:
+          raise ValueError('非法跳转目标')
+      return target
+
+  return redirect(safe_redirect(user_url))
+  ```
+rule:
+  kind: call
+  any:
+  - pattern: redirect($USER_URL)
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: HttpResponseRedirect($USER_URL)
+    regex: '(user_|request|param|input|arg|query)'
+  - pattern: HttpResponsePermanentRedirect($USER_URL)
+    regex: '(user_|request|param|input|arg|query)'
