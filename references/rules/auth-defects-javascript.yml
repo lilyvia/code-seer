@@ -41,3 +41,15 @@ rule:
     - pattern: 'res.send(await $MODEL.findById($$$))'
     - pattern: 'res.json(await $MODEL.findOne($$$))'
     - pattern: 'res.send(await $MODEL.findOne($$$))'
+    # Express delete route without guard middleware
+    - pattern: 'app.delete($PATH, $HANDLER)'
+      regex: 'findByIdAndDelete|deleteOne|remove|destroy'
+    # Express put route without guard middleware
+    - pattern: 'app.put($PATH, $HANDLER)'
+      regex: 'findByIdAndUpdate|updateOne|save'
+    # Fastify direct resource exposure via reply.send
+    - pattern: 'reply.send(await $MODEL.findById($$$))'
+    - pattern: 'reply.send(await $MODEL.findOne($$$))'
+    # NestJS / Koa direct resource exposure via ctx.body
+    - pattern: 'ctx.body = await $MODEL.findById($$$)'
+    - pattern: 'ctx.body = await $MODEL.findOne($$$)'

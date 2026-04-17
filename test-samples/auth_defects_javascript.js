@@ -47,3 +47,26 @@ app.get('/orders/safe/:id', async (req, res) => {
     }
     res.json(order);
 });
+
+// Pattern 7: Express delete without guard middleware
+app.delete('/items/:id', async (req, res) => {
+    await Item.findByIdAndDelete(req.params.id);
+    res.json({ deleted: true });
+});
+
+// Pattern 8: Express put without guard middleware
+app.put('/users/:id', async (req, res) => {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body);
+    res.json(user);
+});
+
+// Pattern 9: Fastify direct resource exposure
+const fastify = require('fastify')();
+fastify.get('/fastify/users/:id', async (req, reply) => {
+    reply.send(await User.findById(req.params.id));
+});
+
+// Pattern 10: NestJS style ctx.body direct resource exposure
+async function getUser(ctx) {
+    ctx.body = await User.findById(ctx.params.id);
+}

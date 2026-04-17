@@ -43,10 +43,17 @@ rule:
   - pattern: 'new Function($USER_INPUT)
 
       '
-  - all:
-    - pattern: 'location.href = $USER_INPUT'
-    - not:
-        regex: location\.href\s*=\s*["']https?://
+  - pattern: 'ref.current.innerHTML = $USER_INPUT
+
+      '
+  - pattern: 'window.postMessage($USER_INPUT, "*")
+
+      '
+  - pattern: "window.postMessage($USER_INPUT, '*')\n\n      "
+  - pattern: 'postMessage($USER_INPUT, "*")
+
+      '
+  - pattern: "postMessage($USER_INPUT, '*')\n\n      "
   - pattern: '<div v-html="$USER_INPUT">
 
       '

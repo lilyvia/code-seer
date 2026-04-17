@@ -49,6 +49,12 @@ rule:
   - kind: call_expression
     pattern: 'fs.openSync($USER_PATH, $$$)'
   - kind: call_expression
+    pattern: 'fs.promises.readFile($USER_PATH, $$$)'
+  - kind: call_expression
+    pattern: 'fs.promises.writeFile($UPLOAD_PATH, $CONTENT, $$$)'
+  - kind: call_expression
+    pattern: 'fs.promises.unlink($USER_PATH)'
+  - kind: call_expression
     pattern: 'path.join($BASE_DIR, $USER_PATH)'
   - kind: call_expression
     pattern: 'path.resolve($BASE_DIR, $USER_PATH)'

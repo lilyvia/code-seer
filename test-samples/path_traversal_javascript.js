@@ -8,3 +8,9 @@ function vulnerablePathTraversal(userPath, uploadPath, content) {
     fs.unlinkSync(userPath);
     path.join('/app/uploads', userPath);
 }
+
+async function vulnerableAsyncPathTraversal(userPath, content) {
+    await fs.promises.readFile(userPath);
+    await fs.promises.writeFile(userPath, content);
+    await fs.promises.unlink(userPath);
+}

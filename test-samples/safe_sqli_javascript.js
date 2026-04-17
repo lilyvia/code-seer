@@ -1,0 +1,21 @@
+function safeMySQL(conn, userId) {
+    conn.query("SELECT * FROM users WHERE id = ?", [userId]);
+}
+
+function safePostgres(db, userId) {
+    db.query("SELECT * FROM users WHERE id = $1", [userId]);
+}
+
+function safeSequelize(User, userId) {
+    User.findByPk(userId);
+    User.findOne({ where: { id: userId } });
+}
+
+function safeKnex(knex, name) {
+    knex.raw("SELECT * FROM products WHERE name = ?", [name]);
+}
+
+function safePrisma(prisma, input) {
+    prisma.$queryRaw`SELECT * FROM logs WHERE msg = ${input}`;
+    prisma.$executeRaw`DELETE FROM sessions WHERE id = ${input}`;
+}

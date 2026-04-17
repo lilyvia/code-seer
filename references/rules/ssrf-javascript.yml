@@ -45,3 +45,13 @@ rule:
     pattern: 'https.request($USER_URL, $$$)'
   - kind: call_expression
     pattern: 'nodeFetch($USER_URL)'
+  - kind: call_expression
+    pattern: 'axios({url: $USER_URL})'
+  - kind: call_expression
+    pattern: 'got($USER_URL)'
+  - kind: call_expression
+    pattern: 'http.request({hostname: $USER_HOST}, $$$)'
+  - kind: call_expression
+    pattern: 'https.request({hostname: $USER_HOST}, $$$)'
+  - kind: call_expression
+    pattern: 'axios.request({url: $USER_URL})'

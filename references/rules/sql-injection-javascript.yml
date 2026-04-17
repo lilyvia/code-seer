@@ -60,3 +60,20 @@ rule:
   - kind: call_expression
     pattern: '$DB.query($QUERY)'
     regex: 'query\(query\)'
+  - kind: call_expression
+    pattern: '$SEQUE.query(`$SQL${$VAR}`)'
+  - kind: call_expression
+    pattern: '$SEQUE.query($SQL + $VAR)'
+  - kind: call_expression
+    pattern: '$KNEX.raw(`$SQL${$VAR}`)'
+  - kind: call_expression
+    pattern: '$KNEX.raw($SQL + $VAR)'
+  - kind: call_expression
+    pattern: '$PRISMA.$queryRawUnsafe($QUERY)'
+    regex: 'queryRawUnsafe\(sql\)'
+  - kind: call_expression
+    pattern: '$PRISMA.$queryRawUnsafe($SQL + $VAR)'
+  - kind: call_expression
+    pattern: '$PRISMA.$executeRawUnsafe(`$SQL${$VAR}`)'
+  - kind: call_expression
+    pattern: '$PRISMA.$executeRawUnsafe($SQL + $VAR)'
