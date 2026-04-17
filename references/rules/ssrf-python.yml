@@ -83,31 +83,31 @@ rule:
   - all:
     - pattern: requests.put($URL, $$$ARGS)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - all:
     - pattern: requests.patch($URL, $$$ARGS)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - all:
     - pattern: requests.delete($URL, $$$ARGS)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - all:
     - pattern: requests.request($METHOD, $URL)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - all:
     - pattern: httpx.request($METHOD, $URL)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - all:
     - pattern: httpx.stream($METHOD, $URL)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - all:
     - pattern: urllib.request.urlopen($URL)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - pattern: urllib.request.urlopen("http://169.254.169.254$$$REST")
   - pattern: urllib.request.urlopen("http://localhost$$$REST")
   - pattern: urllib.request.urlopen("http://127.0.0.1$$$REST")
@@ -117,20 +117,20 @@ rule:
   - all:
     - pattern: urllib.request.Request($URL)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - all:
     - pattern: aiohttp.ClientSession().put($URL, $$$ARGS)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - all:
     - pattern: aiohttp.ClientSession().patch($URL, $$$ARGS)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - all:
     - pattern: aiohttp.ClientSession().delete($URL, $$$ARGS)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
   - all:
     - pattern: aiohttp.ClientSession().request($METHOD, $URL)
 
-    - regex: '(user_|request|param|input|arg|query)'
+    - regex: '(user_|param|input|arg|query)'
