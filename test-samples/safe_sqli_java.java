@@ -15,11 +15,15 @@ public class SafeSqliJava {
         jdbc.query("SELECT * FROM users WHERE id = ?", new Object[]{userId}, (rs, rowNum) -> rs.getString("name"));
         jdbc.update("UPDATE users SET name = ? WHERE id = ?", userId, 1);
         jdbc.execute("DELETE FROM users WHERE id = 1");
+        jdbc.queryForObject("SELECT name FROM users WHERE id = ?", String.class, userId);
+        jdbc.batchUpdate("UPDATE users SET name = ? WHERE id = ?", java.util.Collections.singletonList(new Object[]{userId, 1}));
     }
 
     public void safeJpa(EntityManager em, String userId) {
         em.createNativeQuery("SELECT * FROM users WHERE id = :id").setParameter("id", userId);
         em.createQuery("SELECT u FROM User u WHERE u.id = :id").setParameter("id", userId);
+        em.createNativeQuery("SELECT * FROM users WHERE id = ?").setParameter(1, userId);
+        em.createQuery("SELECT u FROM User u WHERE u.id = ?1").setParameter(1, userId);
     }
 }
 
@@ -29,4 +33,10 @@ interface SafeRepository {
 
     @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id = ?")
     Object safeNativeQuery();
+
+    @Query("SELECT u FROM User u WHERE u.name = ?1")
+    Object safeJpaQueryPositional();
+
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id = :id")
+    Object safeNativeQueryNamed();
 }

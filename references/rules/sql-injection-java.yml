@@ -58,6 +58,24 @@ rule:
     kind: method_invocation
   - pattern: '$JT.execute($SQL + $VAR)'
     kind: method_invocation
+  - pattern: '$JT.query(String.format($FMT, $$$ARGS), $$$)'
+    kind: method_invocation
+  - pattern: '$JT.update(String.format($FMT, $$$ARGS))'
+    kind: method_invocation
+  - pattern: '$JT.execute(String.format($FMT, $$$ARGS))'
+    kind: method_invocation
+  - pattern: '$JT.query(new StringBuilder().append($A).append($VAR).toString(), $$$)'
+    kind: method_invocation
+  - pattern: '$JT.update(new StringBuilder().append($A).append($VAR).toString())'
+    kind: method_invocation
+  - pattern: '$JT.execute(new StringBuilder().append($A).append($VAR).toString())'
+    kind: method_invocation
+  - pattern: '$JT.query($SQL.concat($VAR), $$$)'
+    kind: method_invocation
+  - pattern: '$JT.update($SQL.concat($VAR))'
+    kind: method_invocation
+  - pattern: '$JT.execute($SQL.concat($VAR))'
+    kind: method_invocation
   - pattern: '$EM.createNativeQuery($SQL + $VAR)'
     kind: method_invocation
   - pattern: '$EM.createQuery($SQL + $VAR)'
@@ -66,7 +84,19 @@ rule:
     kind: method_invocation
   - pattern: '$EM.createQuery(String.format($FMT, $$$ARGS))'
     kind: method_invocation
+  - pattern: '$EM.createNativeQuery(new StringBuilder().append($A).append($VAR).toString())'
+    kind: method_invocation
+  - pattern: '$EM.createQuery(new StringBuilder().append($A).append($VAR).toString())'
+    kind: method_invocation
+  - pattern: '$EM.createNativeQuery($SQL.concat($VAR))'
+    kind: method_invocation
+  - pattern: '$EM.createQuery($SQL.concat($VAR))'
+    kind: method_invocation
   - pattern: '@Query(nativeQuery = true, value = $SQL + $VAR)'
     kind: annotation
   - pattern: '@Query(nativeQuery = true, value = String.format($FMT, $$$ARGS))'
+    kind: annotation
+  - pattern: '@Query(nativeQuery = true, value = new StringBuilder().append($A).append($VAR).toString())'
+    kind: annotation
+  - pattern: '@Query(nativeQuery = true, value = $SQL.concat($VAR))'
     kind: annotation
