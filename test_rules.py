@@ -27,6 +27,10 @@ RULE_SAMPLE_MAP = {
     "command-exec-csharp.yml": "csharp_cmd_exec.cs",
     "command-exec-javascript.yml": "cmd_exec_javascript.js",
     "xss-javascript.yml": "xss_javascript.js",
+    "xss-python.yml": "xss_python.py",
+    "xss-java.yml": "xss_java.java",
+    "xss-go.yml": "xss_go.go",
+    "xss-csharp.yml": "xss_csharp.cs",
     "xss-php.yml": "xss_php.php",
     "path-traversal-python.yml": "path_traversal_python.py",
     "path-traversal-java.yml": "path_traversal_java.java",
@@ -42,6 +46,7 @@ RULE_SAMPLE_MAP = {
     "ssrf-javascript.yml": "ssrf_javascript.js",
     "xxe-python.yml": "xxe_python.py",
     "xxe-java.yml": "xxe_java.java",
+    "xxe-go.yml": "xxe_go.go",
     "xxe-php.yml": "xxe_php.php",
     "xxe-csharp.yml": "xxe_csharp.cs",
     "xxe-javascript.yml": "xxe_javascript.js",
@@ -83,6 +88,11 @@ RULE_SAMPLE_MAP = {
     "hardcoded-secrets-rust.yml": "hardcoded_secrets_rust.rs",
 }
 
+SAFE_SAMPLE_MAP = {
+    rule_name: f"safe_{sample_name}"
+    for rule_name, sample_name in RULE_SAMPLE_MAP.items()
+}
+
 
 def run_ast_grep(rule_file: Path, sample_file: Path) -> list:
     cmd = [
@@ -113,25 +123,40 @@ def main():
     for rule_file in all_rules:
         rule_name = rule_file.name
         sample_name = RULE_SAMPLE_MAP.get(rule_name)
+        safe_sample_name = SAFE_SAMPLE_MAP.get(rule_name)
 
-        if sample_name is None:
-            print(f"[SKIP] {rule_name:45s} -> 无对应测试样本")
+        if sample_name is None or safe_sample_name is None:
+            print(f"[SKIP] {rule_name:45s} -> 缺少正样本或负样本映射")
             skipped += 1
             continue
 
         sample_file = SAMPLES_DIR / sample_name
-        if not sample_file.exists():
-            print(f"[FAIL] {rule_name:45s} -> 样本缺失: {sample_name}")
+        safe_sample_file = SAMPLES_DIR / safe_sample_name
+
+        if not sample_file.exists() or not safe_sample_file.exists():
+            missing_samples = []
+            if not sample_file.exists():
+                missing_samples.append(sample_name)
+            if not safe_sample_file.exists():
+                missing_samples.append(safe_sample_name)
+            print(f"[FAIL] {rule_name:45s} -> 样本缺失: {', '.join(missing_samples)}")
             failed += 1
             continue
 
-        matches = run_ast_grep(rule_file, sample_file)
+        positive_matches = run_ast_grep(rule_file, sample_file)
+        negative_matches = run_ast_grep(rule_file, safe_sample_file)
 
-        if len(matches) > 0:
-            print(f"[PASS] {rule_name:45s} -> {len(matches):2d} 个匹配")
+        if len(positive_matches) > 0 and len(negative_matches) == 0:
+            print(
+                f"[PASS] {rule_name:45s} -> 正样本 {len(positive_matches):2d} 个匹配, "
+                f"负样本 {len(negative_matches):2d} 个匹配"
+            )
             passed += 1
         else:
-            print(f"[FAIL] {rule_name:45s} -> 0 个匹配")
+            print(
+                f"[FAIL] {rule_name:45s} -> 正样本 {len(positive_matches):2d} 个匹配, "
+                f"负样本 {len(negative_matches):2d} 个匹配"
+            )
             failed += 1
 
     print("-" * 60)
