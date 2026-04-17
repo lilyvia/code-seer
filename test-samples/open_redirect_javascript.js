@@ -4,4 +4,6 @@ function vulnerableOpenRedirect(userUrl, res, reply, ctx) {
     ctx.redirect(userUrl);
     location.href = userUrl;
     window.location.href = userUrl;
+    location.replace(userUrl);
+    window.location.replace(userUrl);
 }

@@ -18,3 +18,11 @@ function safeOpenRedirect(userUrl, res, reply, ctx, allowedOrigin) {
 
     return redirectTarget;
 }
+
+function safeLocationAssignment(allowedPaths, userPath) {
+    if (!allowedPaths.includes(userPath)) {
+        throw new Error('invalid path');
+    }
+    location.href = userPath;
+    window.location.href = userPath;
+}

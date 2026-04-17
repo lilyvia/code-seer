@@ -5,4 +5,7 @@ function vulnerableXSS(userInput) {
     ref.current.innerHTML = userInput;
     document.write(userInput);
     window.postMessage(userInput, '*');
+    eval(userInput);
+    setTimeout(userInput, 1000);
+    new Function(userInput);
 }

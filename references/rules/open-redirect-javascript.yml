@@ -44,3 +44,9 @@ rule:
   - kind: assignment_expression
     pattern: 'window.location.href = $USER_URL'
     regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
+  - kind: call_expression
+    pattern: 'location.replace($USER_URL)'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
+  - kind: call_expression
+    pattern: 'window.location.replace($USER_URL)'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'

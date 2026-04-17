@@ -56,5 +56,7 @@ rule:
     pattern: 'fs.promises.unlink($USER_PATH)'
   - kind: call_expression
     pattern: 'path.join($BASE_DIR, $USER_PATH)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
   - kind: call_expression
     pattern: 'path.resolve($BASE_DIR, $USER_PATH)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'

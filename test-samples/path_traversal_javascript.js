@@ -14,3 +14,13 @@ async function vulnerableAsyncPathTraversal(userPath, content) {
     await fs.promises.writeFile(userPath, content);
     await fs.promises.unlink(userPath);
 }
+
+function vulnerablePathTraversalMore(userPath, uploadPath) {
+    fs.readFile(userPath, (err, data) => {});
+    fs.writeFile(uploadPath, 'data', (err) => {});
+    fs.createWriteStream(uploadPath);
+    fs.unlink(userPath, (err) => {});
+    fs.open(userPath, 'r', (err, fd) => {});
+    fs.openSync(userPath, 'r');
+    path.resolve('/app/uploads', userPath);
+}
