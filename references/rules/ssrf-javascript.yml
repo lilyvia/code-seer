@@ -55,3 +55,21 @@ rule:
     pattern: 'https.request({hostname: $USER_HOST}, $$$)'
   - kind: call_expression
     pattern: 'axios.request({url: $USER_URL})'
+  - kind: call_expression
+    pattern: 'got.get($USER_URL)'
+  - kind: call_expression
+    pattern: 'got.post($USER_URL, $$$)'
+  - kind: call_expression
+    pattern: 'got.stream($USER_URL)'
+  - kind: call_expression
+    pattern: 'http.get({hostname: $USER_HOST}, $$$)'
+  - kind: call_expression
+    pattern: 'https.get({hostname: $USER_HOST}, $$$)'
+  - kind: call_expression
+    pattern: 'http.request({host: $USER_HOST}, $$$)'
+  - kind: call_expression
+    pattern: 'https.request({host: $USER_HOST}, $$$)'
+  - kind: call_expression
+    pattern: 'http.request({path: $USER_PATH}, $$$)'
+  - kind: call_expression
+    pattern: 'https.request({path: $USER_PATH}, $$$)'

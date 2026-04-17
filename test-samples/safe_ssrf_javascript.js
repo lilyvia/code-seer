@@ -13,7 +13,7 @@ async function safeRequests() {
     await fetch(SAFE_URL, {method: 'POST'});
     await axios({baseURL: SAFE_URL, url: '/path'});
     await axios.request({baseURL: SAFE_URL, url: '/path'});
-    await got.get(SAFE_URL);
+    await got.extend({prefixUrl: SAFE_URL})('/path');
     http.request({host: SAFE_HOST, path: '/'});
     https.request({host: SAFE_HOST, path: '/'});
 }
@@ -21,4 +21,20 @@ async function safeRequests() {
 function safeWebhookHandler() {
     const callbackUrl = SAFE_URL;
     axios({baseURL: callbackUrl, url: '/notify'});
+}
+
+function safeWebhookWithValidation(req) {
+    const userUrl = req.body.callbackUrl;
+    const allowedHosts = ['api.example.com', 'hooks.example.com'];
+    const parsed = new URL(userUrl);
+    if (!allowedHosts.includes(parsed.hostname)) {
+        throw new Error('Invalid callback host');
+    }
+    axios({baseURL: 'https://api.example.com', url: '/notify'});
+}
+
+function safePathWithPrefix(req) {
+    const userPath = req.query.path;
+    const safePath = '/api/v1' + userPath;
+    http.request({host: SAFE_HOST, path: safePath});
 }

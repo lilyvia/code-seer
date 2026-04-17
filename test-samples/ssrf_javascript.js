@@ -19,4 +19,20 @@ async function vulnerableSSRF(userUrl, userHost) {
 function webhookHandler(req, res) {
     const callbackUrl = req.body.callbackUrl;
     axios({url: callbackUrl});
+    got.post(callbackUrl, {json: {status: 'ok'}});
+    http.request({host: req.query.target}, res => {});
+    https.get({hostname: req.headers['x-internal-host']}, res => {});
+}
+
+function callbackSSRF(req) {
+    const hook = req.body.webhook;
+    fetch(hook);
+    axios.request({url: hook});
+    got.stream(hook);
+}
+
+function pathBasedSSRF(req) {
+    const targetPath = req.query.path;
+    http.request({path: targetPath}, res => {});
+    https.request({path: targetPath}, res => {});
 }
