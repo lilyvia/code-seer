@@ -1,7 +1,7 @@
 ---
-name: security-audit
+name: code-seer
 description: |
-  源码安全审计技能。AI作为主导审计者，通过LLM深度代码分析挖掘安全漏洞，ast-grep仅作为辅助筛选工具。
+  Code Seer - 源码安全审计技能。AI作为主导审计者，通过LLM深度代码分析挖掘安全漏洞，ast-grep仅作为辅助筛选工具。
   适用于跨语言、跨项目的源码安全审计，输出中文报告供人工复核与落地修复。
   兼容 Java、Go、Python、PHP、C#、JavaScript/TypeScript（由 JavaScript 规则覆盖 TS 代码库）、Ruby、Rust 等语言，覆盖 14 类漏洞类型。
   AI基于源代码深度分析生成带日期的最终审计报告。
@@ -12,7 +12,7 @@ metadata:
   vulnerabilities: "SQL注入, XSS, 命令执行, 反序列化, 路径穿越, SSRF, XXE, 鉴权缺陷, 硬编码密钥, SSTI, NoSQL注入, 原型污染, JNDI注入, 开放重定向"
 ---
 
-# 源码安全审计
+# Code Seer - 源码安全审计
 
 安全审计顾问与执行器。通过对代码、依赖与配置的综合分析，识别漏洞、验证证据与评估风险。
 
@@ -25,11 +25,68 @@ metadata:
 ## 审计流程
 
 1. **目标识别**：确定分析对象、范围与关键文件
-2. **ast-grep辅助扫描**：使用 `ast-grep scan --json` 快速定位可疑模式
+2. **语言检测与ast-grep辅助扫描**：识别项目语言，仅加载对应语言的ast-grep规则进行扫描
 3. **LLM主动代码审查**：AI主动阅读源代码，基于安全知识挖掘漏洞
 4. **漏洞验证**：对可疑代码进行数据流分析、调用链追踪、上下文验证
 5. **误报自动确认**：对疑似误报进行深度复核，自动分析代码上下文和数据流
 6. **生成AI审计报告**：输出 `security_audit_report_YYYYMMDD.md`，包含6个必需字段。报告先列**确认的真实漏洞**，再单独列**疑似误报项**。如果目标是git仓库，报告需写明git commit hash
+
+## 语言检测与ast-grep扫描规范
+
+**ast-grep仅作为辅助工具，不能替代LLM主动分析。**
+
+### 语言检测
+
+扫描前检测目标项目的主要编程语言，避免全量规则扫描：
+
+```bash
+# 检测项目语言分布
+find /path/to/project -type f | sed 's/.*\.//' | sort | uniq -c | sort -rn | head -20
+```
+
+### 语言到ast-grep规则的映射
+
+| 检测到的语言 | 文件扩展名 | ast-grep语言标识 | 对应规则文件 |
+|-------------|-----------|-----------------|-------------|
+| Python | `.py` | python | `*-python.yml` |
+| Java | `.java` | java | `*-java.yml` |
+| Go | `.go` | go | `*-go.yml` |
+| PHP | `.php` | php | `*-php.yml` |
+| C# | `.cs` | csharp | `*-csharp.yml` |
+| JavaScript/TypeScript | `.js`, `.ts`, `.tsx` | javascript | `*-javascript.yml` |
+| Ruby | `.rb` | ruby | `*-ruby.yml` |
+| Rust | `.rs` | rust | `*-rust.yml` |
+
+### 按语言扫描命令
+
+```bash
+# 检测项目语言
+PROJECT="/path/to/project"
+find "$PROJECT" -type f | grep -oE '\.(py|java|go|php|cs|js|ts|tsx|rb|rs)$' | sed 's/^\.//' | sort | uniq -c | sort -rn
+
+# 根据检测到的语言，仅加载对应规则扫描
+# Python示例：ast-grep scan -r references/rules/sql-injection-python.yml "$PROJECT" --json
+# Java示例：ast-grep scan -r references/rules/sql-injection-java.yml "$PROJECT" --json
+# JS/TS示例：ast-grep scan -r references/rules/xss-javascript.yml "$PROJECT" --json
+```
+
+### 规则文件
+
+规则位于 `references/rules/` 目录，按语言分类：
+- `sql-injection-{lang}.yml` - SQL注入
+- `command-exec-{lang}.yml` - 命令执行
+- `xss-{lang}.yml` - XSS
+- `path-traversal-{lang}.yml` - 路径穿越
+- `ssrf-{lang}.yml` - SSRF
+- `xxe-{lang}.yml` - XXE
+- `deserialization-{lang}.yml` - 反序列化
+- `auth-defects-{lang}.yml` - 鉴权缺陷
+- `hardcoded-secrets-{lang}.yml` - 硬编码密钥
+- `ssti-{lang}.yml` - SSTI
+- `nosql-injection-{lang}.yml` - NoSQL注入
+- `prototype-pollution-{lang}.yml` - 原型污染
+- `jndi-injection-{lang}.yml` - JNDI注入
+- `open-redirect-{lang}.yml` - 开放重定向
 
 ## LLM主动安全审计方法论
 
@@ -44,7 +101,7 @@ metadata:
 
 ### 2. 调用链追踪
 
-分析从漏洞入口到危险操作的完整调用链。逐层阅读相关函数实现，确认数据在传递过程中是否被净化，确认调用链是否可达（是否存在提前返回、条件分支阻止到达sink）。
+分析从漏洞入口到危险操作的完整调用链。逐层阅读相关函数实现，确认数据在传递过程中是否被净化，确认调用链是否可达。
 
 ### 3. 上下文验证
 
@@ -77,49 +134,6 @@ metadata:
 5. **深度控制**：最大回溯深度为5层，超过时记录并停止
 6. **路径合并**：将所有层级按从入口到sink的顺序整理为完整调用链
 
-## ast-grep 扫描规范
-
-**ast-grep仅作为辅助工具，不能替代LLM主动分析。**
-
-ast-grep的局限性：只能匹配语法模式无法理解业务逻辑；容易产生误报（如硬编码测试密钥）；容易漏报（如框架特定API、间接调用、复杂条件绕过）；无法进行跨文件的数据流和调用链分析。
-
-### 项目配置
-
-创建 `sgconfig.yml`（相对于审计项目根目录）：
-```yaml
-ruleDirs:
-  - references/rules
-```
-或使用绝对路径：`~/.config/opencode/skills/security-audit/references/rules`
-
-### 扫描命令
-
-```bash
-cd /path/to/project && ast-grep scan --json > /tmp/scan_results.json
-ast-grep scan -c /path/to/sgconfig.yml /path/to/project --json
-ast-grep scan -r references/rules/sql-injection-csharp.yml /path/to/project --json
-```
-
-### 规则文件
-
-规则位于 `references/rules/` 目录：
-- `sql-injection-{lang}.yml` - SQL注入
-- `command-exec-{lang}.yml` - 命令执行
-- `xss-{lang}.yml` - XSS
-- `path-traversal-{lang}.yml` - 路径穿越
-- `ssrf-{lang}.yml` - SSRF
-- `xxe-{lang}.yml` - XXE
-- `deserialization-{lang}.yml` - 反序列化
-- `auth-defects-{lang}.yml` - 鉴权缺陷
-- `hardcoded-secrets-{lang}.yml` - 硬编码密钥
-- `ssti-{lang}.yml` - SSTI（服务端模板注入）
-- `nosql-injection-{lang}.yml` - NoSQL注入
-- `prototype-pollution-{lang}.yml` - 原型污染/对象属性注入
-- `jndi-injection-{lang}.yml` - JNDI注入/LDAP目录服务注入
-- `open-redirect-{lang}.yml` - 开放重定向
-
-支持语言：python, java, go, php, csharp, javascript（统一由 JavaScript 规则执行 JavaScript/TypeScript 项目的首轮扫描，当前未单独维护 TypeScript 规则矩阵）, ruby, rust
-
 ## 输出要求
 
 - **输出语言**：中文
@@ -129,22 +143,53 @@ ast-grep scan -r references/rules/sql-injection-csharp.yml /path/to/project --js
   1. **确认的真实漏洞**：按风险等级排序
   2. **疑似误报项**：单独成章，不得与真实漏洞混排
 - **报告字段（每处均须包含）**：
-  1. **复现步骤**：包含HTTP请求包
+  1. **复现步骤**：包含完整HTTP请求包（方法、完整URL、Host头、Content-Type、其他必要Header、请求体）
   2. **漏洞入口**：入口点和攻击向量
   3. **调用链**：从入口到危险操作的完整调用链
   4. **风险等级**：严重/高危/中危/低危
   5. **修复建议**：具体的修复代码示例
   6. **疑似误报说明**：误报可能性分析和判断依据
 
-## HTTP请求包规范
+## HTTP请求包规范（强制要求）
 
+**所有确认的真实漏洞必须在复现步骤中提供完整HTTP请求包，仅提供攻击payload不符合要求。**
+
+完整请求包必须包含：请求方法、完整URL（含协议/域名/端口/路径）、Host头、Content-Type（如有body）、其他必要Header（认证/Cookie等）、请求体。
+
+**SQL注入示例：**
 ```http
-POST /api/users HTTP/1.1
+POST http://target.com/api/login HTTP/1.1
 Host: target.com
 Content-Type: application/x-www-form-urlencoded
+Cookie: session=abc123
 
-username=admin' OR '1'='1'--&password=test
+username=admin' UNION SELECT * FROM users--&password=x
 ```
+
+**命令执行示例：**
+```http
+GET http://target.com:8080/api/exec?cmd=whoami;cat%20/etc/passwd HTTP/1.1
+Host: target.com
+Authorization: Bearer xxx
+```
+
+**SSRF示例：**
+```http
+POST http://target.com/api/fetch HTTP/1.1
+Host: target.com
+Content-Type: application/json
+
+{"url": "http://169.254.169.254/latest/meta-data/"}
+```
+
+❌ 仅提供payload：`payload: admin' OR '1'='1'--`
+❌ 缺少Host或URL：
+```http
+POST /api/login
+Content-Type: application/json
+{"user": "admin'--"}
+```
+✅ 必须提供完整请求包，包含完整URL、所有必要Header和请求体。
 
 ## 误报判定
 
@@ -154,7 +199,7 @@ username=admin' OR '1'='1'--&password=test
 
 ## 能力边界
 
-- **ast-grep扫描**：仅作为辅助工具，用于快速定位可疑代码模式
+- **ast-grep扫描**：仅作为辅助工具，用于快速定位可疑代码模式。必须按语言选择性加载规则，禁止全量扫描
 - **LLM主动分析**：AI必须主动阅读代码、追踪数据流、分析调用链、验证漏洞
 - **AI生成最终报告**：AI基于源代码深度分析+规则库参考生成报告
 - **自动化原则**：疑似误报的深度复核自动完成，不得要求人工介入确认
@@ -162,13 +207,16 @@ username=admin' OR '1'='1'--&password=test
 ## 使用示例
 
 ```bash
-cat > /path/to/project/sgconfig.yml << 'EOF'
-ruleDirs:
-  - references/rules
-EOF
-cd /path/to/project && ast-grep scan --json > /tmp/scan_results.json
-rg -n "execute|query|raw" --type cs /path/to/project
-cd /path/to/project && git rev-parse HEAD
+# 检测项目语言
+PROJECT="/path/to/project"
+find "$PROJECT" -type f | grep -oE '\.(py|java|go|php|cs|js|ts|rb|rs)$' | sed 's/^\.//' | sort | uniq -c | sort -rn
+
+# 根据检测到的语言，仅加载对应规则扫描
+ast-grep scan -r references/rules/sql-injection-python.yml "$PROJECT" --json
+ast-grep scan -r references/rules/command-exec-python.yml "$PROJECT" --json
+
+# 获取git commit hash
+cd "$PROJECT" && git rev-parse HEAD
 ```
 
-**报告输出**：AI最终审计报告保存为 `security_audit_report_YYYYMMDD.md`，ast-grep扫描结果输出到 `/tmp/scan_results.json`。如果目标是git仓库，报告头部必须包含 `Git Commit Hash: <hash>`。
+**报告输出**：AI最终审计报告保存为 `security_audit_report_YYYYMMDD.md`。如果目标是git仓库，报告头部必须包含 `Git Commit Hash: <hash>`。
