@@ -1,8 +1,18 @@
 # Code Seer
 
-Code Seer - 基于 AST-grep 规则库与 LLM 深度分析的自动化源码安全审计工具。当前提供 100 条检测规则，支持 8 种编程语言，覆盖 14 类常见安全漏洞。
+Code Seer - 基于 ast-grep 规则库与 LLM 深度分析的自动化源码安全审计技能。
 
 > **定位**：Code Seer 是 AI 助手的安全审计技能，通过 OpenCode 等 AI 工具调用，实现从扫描到报告的全自动化流程。
+
+---
+
+## 核心设计
+
+**LLM 主导，ast-grep 辅助**
+
+- ast-grep 仅用于快速定位可疑模式，无法理解业务逻辑
+- LLM 主动阅读代码、追踪数据流、分析调用链、验证漏洞真实性
+- 所有 ast-grep 命中结果必须经过 LLM 上下文审查
 
 ---
 
@@ -89,7 +99,7 @@ cp SKILL.md ~/.claude/skills/code-seer/
 cp -r references/ ~/.claude/skills/code-seer/
 ```
 
-#### Codex (OpenAI)
+#### Codex
 
 ```bash
 # 克隆仓库
@@ -177,32 +187,6 @@ code-seer/
 
 ## 规则说明
 
-### 规则格式
-
-规则使用 YAML 格式，适配 ast-grep 引擎：
-
-```yaml
-id: sql-injection-python
-severity: CRITICAL
-cwe: CWE-89
-language: python
-message: 发现潜在的SQL注入漏洞
-description: |
-  用户输入直接拼接到SQL查询字符串中，存在SQL注入风险。
-  攻击者可能通过构造特殊输入操控SQL查询逻辑。
-remediation: |
-  使用参数化查询替代字符串拼接：
-  ```python
-  cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
-  ```
-rule:
-  pattern: |
-    cursor.execute($QUERY)
-  constraints:
-    QUERY:
-      contains: "f'"
-```
-
 ### 规则字段
 
 | 字段 | 说明 | 示例 |
@@ -220,16 +204,6 @@ rule:
 
 - 格式：`{vulnerability-type}-{language}.yml`
 - 示例：`sql-injection-python.yml`, `command-exec-java.yml`
-
----
-
-## 核心设计
-
-**LLM 主导，ast-grep 辅助**
-
-- ast-grep 仅用于快速定位可疑模式，无法理解业务逻辑
-- LLM 主动阅读代码、追踪数据流、分析调用链、验证漏洞真实性
-- 所有 ast-grep 命中结果必须经过 LLM 上下文审查
 
 ---
 
