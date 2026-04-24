@@ -191,6 +191,78 @@ Content-Type: application/json
 ```
 ✅ 必须提供完整请求包，包含完整URL、所有必要Header和请求体。
 
+## 多文件漏洞报告规范（强制要求）
+
+**如果发现同一个漏洞存在于多个文件中，必须逐一列出每个受影响的文件及其详细信息，严禁使用"以此类推"、"其他文件类似"等模糊表述。**
+
+### 必须逐条列出的信息
+
+每个受影响的文件都需单独完整报告：
+
+| 信息项 | 要求 |
+|--------|------|
+| **文件路径** | 完整相对路径，如 `src/main/java/com/example/UserController.java` |
+| **行号** | 具体的漏洞代码行号，如 `第 45 行` |
+| **漏洞代码** | 该行具体的漏洞代码片段 |
+| **HTTP请求包** | 完整HTTP请求包（适用于该文件漏洞的复现） |
+
+### ❌ 错误示例（禁止使用）
+
+```
+文件: src/controller/UserController.java
+行号: 45
+漏洞: SQL注入
+
+其他文件以此类推:
+- src/controller/OrderController.java
+- src/controller/ProductController.java
+- src/controller/AdminController.java
+```
+
+### ✅ 正确示例（必须遵循）
+
+```
+【漏洞 1-1】
+文件: src/controller/UserController.java
+行号: 45
+漏洞代码: String sql = "SELECT * FROM users WHERE id = " + userId;
+
+复现步骤（HTTP请求包）:
+POST http://target.com/api/user?id=1' UNION SELECT * FROM admin-- HTTP/1.1
+Host: target.com
+Content-Type: application/x-www-form-urlencoded
+
+---
+
+【漏洞 1-2】
+文件: src/controller/OrderController.java
+行号: 78
+漏洞代码: String query = "SELECT * FROM orders WHERE order_id = " + orderId;
+
+复现步骤（HTTP请求包）:
+POST http://target.com/api/order?id=1' OR '1'='1 HTTP/1.1
+Host: target.com
+Content-Type: application/x-www-form-urlencoded
+
+---
+
+【漏洞 1-3】
+文件: src/controller/ProductController.java
+行号: 52
+漏洞代码: ResultSet rs = stmt.executeQuery("SELECT * FROM products WHERE name = '" + name + "'");
+
+复现步骤（HTTP请求包）:
+GET http://target.com/api/product?name=' UNION SELECT password FROM admin-- HTTP/1.1
+Host: target.com
+```
+
+### 重要原则
+
+- **完整性**：每个文件都必须有独立的漏洞条目，不得省略
+- **准确性**：每个文件的行号必须精确，不得估算
+- **可追溯性**：审计人员必须能够根据报告定位到每一行漏洞代码
+- **复现性**：每个文件漏洞都必须有对应的 HTTP 请求包用于验证
+
 ## 误报判定
 
 - **确认为误报**：数据验证/过滤逻辑、参数化查询、输出编码、调用链不可达、硬编码仅用于测试环境
