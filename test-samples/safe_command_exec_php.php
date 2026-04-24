@@ -9,3 +9,8 @@ function safeListFiles($dir) {
 function safeFileInfo($path) {
     return pathinfo($path);
 }
+
+// Safe: Backtick uses a fixed command and hardcoded path
+function safeBacktick() {
+    return `ls /var/log`;
+}

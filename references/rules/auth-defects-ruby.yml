@@ -44,3 +44,7 @@ rule:
     regex: params\[|:id\]|:user_id\]|:order_id\]|:post_id\]
   - pattern: $MODEL.where($PARAMS).take
     regex: params\[|:id\]|:user_id\]|:order_id\]|:post_id\]
+
+  # false-negative coverage expansion
+  - kind: call
+    pattern: 'skip_before_action :authenticate_user!'

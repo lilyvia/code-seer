@@ -39,3 +39,15 @@ rule:
   - pattern: '$WEBCLIENT.get().uri($USER_URL)'
   - pattern: '$CLIENT.newCall($REQUEST)'
     regex: '(?i)(user|input|param|request|query|url)'
+  # false-negative coverage expansion - additional HTTP client sinks
+  - kind: method_invocation
+    pattern: 'HttpClients.createDefault().execute($REQUEST)'
+    regex: '(?i)(user|input|param|request|query|url)'
+  - kind: method_invocation
+    pattern: '$CLIENT.execute($REQUEST)'
+    regex: '(?i)(HttpClient|CloseableHttpClient)'
+  - kind: method_invocation
+    pattern: '$URL.openConnection()'
+    regex: '(?i)(user|input|param|request|query|url)'
+  - kind: method_invocation
+    pattern: '$CONN.setRequestProperty("Host", $USER_HOST)'

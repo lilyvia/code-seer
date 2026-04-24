@@ -26,3 +26,11 @@ function safeLocationAssignment(allowedPaths, userPath) {
     location.href = userPath;
     window.location.href = userPath;
 }
+
+function safeRedirectWithValidatedPath(userPath) {
+    const allowedPaths = ['/home', '/dashboard'];
+    if (!allowedPaths.includes(userPath)) {
+        throw new Error('invalid path');
+    }
+    return NextResponse.redirect(userPath);
+}

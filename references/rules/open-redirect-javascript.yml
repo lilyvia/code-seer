@@ -60,3 +60,7 @@ rule:
     regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
   - pattern: '$CTX.redirect($USER_URL)'
     regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
+  - pattern: 'NextResponse.redirect($USER_URL)'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
+  - pattern: 'navigateTo($USER_URL)'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'

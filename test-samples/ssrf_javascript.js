@@ -1,6 +1,8 @@
 const axios = require('axios');
 const fetch = require('node-fetch');
 const got = require('got');
+const unirest = require('unirest');
+const needle = require('needle');
 
 async function vulnerableSSRF(userUrl, userHost) {
     await axios.get(userUrl);
@@ -44,4 +46,14 @@ function false_negative_expansion_ssrf_js(nodeFetch, undici, superagent, got, ht
     got(userUrl);
     http.get(userUrl);
     https.get(userUrl);
+}
+
+function false_negative_expansion_additional_clients(userUrl, userInput, superagent) {
+    // Vulnerable: user-controlled URLs reach additional HTTP clients.
+    unirest.get(userUrl);
+    unirest.post(userInput, { json: { status: 'ok' } });
+    needle.get(userInput, { timeout: 2000 });
+    needle.post(userUrl, { ok: true });
+    superagent.put(userInput);
+    superagent.delete(userUrl);
 }

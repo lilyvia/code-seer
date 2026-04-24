@@ -47,3 +47,23 @@ rule:
       regex: '(req\.|request\.|ctx\.|input|payload|body|user)'
     - pattern: 'Object.defineProperty($TARGET, $KEY, $DESC)'
       regex: '(req\.|request\.|ctx\.|input|payload|body|user)'
+    # false-negative coverage expansion - additional prototype pollution sinks
+    - kind: call_expression
+      pattern: '_.mergeWith($TARGET, $SOURCE, $CUSTOMIZER)'
+      regex: '(req\.|request\.|ctx\.|input|payload|body|user)'
+    - kind: call_expression
+      pattern: '_.defaultsDeep($TARGET, $SOURCE)'
+      regex: '(req\.|request\.|ctx\.|input|payload|body|user)'
+    - kind: call_expression
+      pattern: 'Object.create(null, $USER_PROPS)'
+      regex: '(req\.|request\.|ctx\.|input|payload|body|user)'
+    - kind: call_expression
+      pattern: '$OBJ.__defineGetter__($KEY, $FN)'
+    - kind: call_expression
+      pattern: '$OBJ.__defineSetter__($KEY, $FN)'
+    - kind: call_expression
+      pattern: '_.unset($OBJ, $PATH)'
+      regex: '__proto__|constructor|prototype'
+    - kind: call_expression
+      pattern: '_.omit($OBJ, $PATH)'
+      regex: '__proto__|constructor|prototype'

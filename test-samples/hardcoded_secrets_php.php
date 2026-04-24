@@ -25,3 +25,7 @@ $mysqlUrl = "mysql://user:pass@localhost/db";
 
 // Match: $token = "..." (24+ chars base64-like)
 $token = "d2hhdGV2ZXI6eW91OnR5cGU6aGVyZQ==";
+
+$openAiToken = "sk-123456789012345678901234";
+$googleApiKey = "AIza12345678901234567890123456789012345";
+$mongoUri = "mongodb://appuser:apppass@localhost/appdb";

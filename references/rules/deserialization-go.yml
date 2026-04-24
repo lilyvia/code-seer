@@ -21,3 +21,6 @@ rule:
   - pattern: 'proto.Unmarshal($DATA, $OBJ)'
   - pattern: 'xml.NewDecoder($READER).Decode($OBJ)'
   - pattern: 'msgpack.Unmarshal($DATA, $OBJ)'
+  - kind: call_expression
+    pattern: 'json.Unmarshal($DATA, &$VAR)'
+    regex: 'interface\{\}|map\[string\]interface'

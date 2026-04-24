@@ -15,4 +15,9 @@ public class SafeXss
     {
         return HttpUtility.HtmlAttributeEncode(userInput);
     }
+
+    public dynamic SafeHtmlHelper(dynamic Html, string userContent)
+    {
+        return Html.Encode(userContent);
+    }
 }

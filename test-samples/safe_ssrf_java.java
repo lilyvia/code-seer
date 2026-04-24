@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 
 // Safe: Validate URLs against allowlist before fetching
-public class SafeSsrfJava {
+class SafeSsrfJava {
     private static final List<String> ALLOWED_HOSTS = Arrays.asList("api.example.com", "files.example.com");
 
     public boolean isSafeUrl(String url) {
@@ -21,4 +21,15 @@ public class SafeSsrfJava {
         }
         return "fetched: " + url;
     }
+
+    public Object safeHttpClient(CloseableHttpClient client) throws Exception {
+        URI uri = URI.create("https://api.example.com/users");
+        if (!ALLOWED_HOSTS.contains(uri.getHost())) {
+            throw new IllegalArgumentException("URL not allowed");
+        }
+        return client.execute(new ClassicHttpRequest(uri.toString()));
+    }
 }
+
+class ClassicHttpRequest { ClassicHttpRequest(String url) {} }
+class CloseableHttpClient { Object execute(ClassicHttpRequest request) { return null; } }

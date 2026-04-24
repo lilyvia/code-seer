@@ -1,4 +1,5 @@
 const { URL } = require('url');
+const unirest = require('unirest');
 
 const ALLOWED_HOSTS = new Set(['api.example.com', 'files.example.com']);
 
@@ -17,4 +18,10 @@ async function safeFetch(url) {
         throw new Error('URL not allowed');
     }
     return `fetching ${url}`;
+}
+
+function safeFalseNegativeExpansion() {
+    // Safe: outbound URL is a hardcoded trusted endpoint.
+    const trustedGet = unirest.get;
+    return trustedGet('https://api.example.com/status');
 }

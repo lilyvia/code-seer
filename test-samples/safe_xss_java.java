@@ -1,8 +1,7 @@
 import java.io.PrintWriter;
-import org.springframework.web.util.HtmlUtils;
 
 // Safe: Escape HTML output before writing to response
-public class SafeXssJava {
+class SafeXssJava {
     public void safeOutput(PrintWriter out, String userInput) {
         String escaped = HtmlUtils.htmlEscape(userInput);
         out.println("<div>" + escaped + "</div>");
@@ -12,4 +11,8 @@ public class SafeXssJava {
         String safe = HtmlUtils.htmlEscape(userInput);
         return "<script>var name = '" + safe + "';</script>";
     }
+
+    // <c:out value="${param.name}" escapeXml="true"/>
 }
+
+class HtmlUtils { static String htmlEscape(String value) { return value; } }

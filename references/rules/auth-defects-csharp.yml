@@ -48,3 +48,10 @@ rule:
         inside:
           kind: if_statement
           regex: IsAuthenticated
+
+    # false-negative coverage expansion
+    - kind: attribute
+      pattern: '[AllowAnonymous]'
+    - kind: class_declaration
+      pattern: 'class $NAME : Controller'
+      regex: '(Admin|Manage|Api)'

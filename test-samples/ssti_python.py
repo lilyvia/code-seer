@@ -33,3 +33,6 @@ def false_negative_expansion_ssti_python(user_template):
     mako.template.Template(user_template).render()
     django.template.Template(user_template).render(Context({}))
     jinja2.Environment().from_string(user_template)
+
+def false_negative_additional_ssti_python(userInput):
+    jinja2.Environment().compile_expression(userInput)

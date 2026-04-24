@@ -41,3 +41,7 @@ rule:
   any:
   - pattern: unserialize($USER_DATA)
   - pattern: unserialize($USER_DATA, $$$OPTIONS)
+
+  # false-negative coverage expansion
+  - pattern: 'igbinary_unserialize($USER_DATA)'
+  - pattern: 'msgpack_unpack($USER_DATA)'

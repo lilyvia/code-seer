@@ -8,6 +8,14 @@ class SafeSecrets
     ENV.fetch('DB_PASSWORD', nil)
   end
 
+  def service_tokens
+    {
+      openai: ENV['OPENAI_API_KEY'],
+      google: ENV['GOOGLE_API_KEY'],
+      mongo: ENV['MONGODB_URI']
+    }
+  end
+
   def secret_from_vault(name)
     "vault://#{name}"
   end

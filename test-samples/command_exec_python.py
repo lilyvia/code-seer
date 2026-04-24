@@ -1,4 +1,5 @@
 import os
+import pty
 import subprocess
 
 
@@ -29,3 +30,10 @@ def false_negative_expansion_ssh(ssh, conn, pexpect, user_cmd):
     ssh.exec_command(user_cmd)
     conn.run(user_cmd)
     pexpect.spawn(user_cmd)
+
+
+def false_negative_expansion_additional_sinks(user_input, user_cmd):
+    # Vulnerable: user-controlled command reaches shell helpers.
+    subprocess.getoutput(user_input)
+    subprocess.getstatusoutput(user_input)
+    pty.spawn(user_cmd)

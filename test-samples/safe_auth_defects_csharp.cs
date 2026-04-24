@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api")]
+[Authorize(Roles="Admin")]
 public class SafeAuthController : ControllerBase
 {
     [Authorize(Roles = "Admin")]

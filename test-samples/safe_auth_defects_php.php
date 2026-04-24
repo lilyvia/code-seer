@@ -10,6 +10,6 @@ function showOrder($orderId, $currentUserId) {
 }
 
 // Safe: Admin routes with middleware
-Route::middleware(['auth', 'can:admin'])->group(function () {
-    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
-});
+Route::middleware(['auth', 'can:admin'])->group([AdminController::class, 'routes']);
+
+Route::middleware('auth')->delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);

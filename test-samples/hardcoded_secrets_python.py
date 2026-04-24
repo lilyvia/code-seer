@@ -32,3 +32,7 @@ token = "d2hhdGV2ZXI6eW91OnR5cGU6aGVyZQ=="
 
 false_negative_expansion_secret = os.environ.get("JWT_SECRET", "fallback-secret-token")
 SECRET_KEY = "django-hardcoded-secret-value"
+
+openai_token = "sk-123456789012345678901234"
+google_api_key = "AIza12345678901234567890123456789012345"
+mongo_uri = "mongodb://appuser:apppass@localhost/appdb"

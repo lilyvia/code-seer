@@ -7,4 +7,7 @@ fn test_hardcoded_secrets() {
     let token = "xoxb-123456789012-1234567890123-AbCdEfGhIjKlMnOpQrStUvWx";
     let private_key = "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA...";
     let jwt_secret = "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6";
+    let openai_token = "sk-123456789012345678901234";
+    let google_api_key = "AIza12345678901234567890123456789012345";
+    let mongo_uri = "mongodb://appuser:apppass@localhost/appdb";
 }

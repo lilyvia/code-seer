@@ -13,4 +13,9 @@ public class xss_csharp : ControllerBase
     {
         return new ContentResult { Content = "<div>" + userInput + "</div>" };
     }
+
+    public void FalseNegativeExpansion(dynamic Html, string userContent)
+    {
+        Html.Raw(userContent);
+    }
 }

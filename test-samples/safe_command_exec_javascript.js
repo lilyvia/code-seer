@@ -1,4 +1,4 @@
-const { execFile } = require('child_process');
+const { execFile, spawn } = require('child_process');
 
 // Safe: Use execFile with argument array
 function safeLs() {
@@ -19,4 +19,9 @@ function safeRun(cmd) {
         if (err) return;
         console.log(stdout);
     });
+}
+
+// Safe: spawn uses a fixed executable with user data isolated as argv
+function safeFalseNegativeExpansion(filename) {
+    return spawn('cat', [filename], { shell: false });
 }

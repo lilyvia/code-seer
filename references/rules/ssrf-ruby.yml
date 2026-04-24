@@ -42,3 +42,14 @@ rule:
   - all:
     - pattern: 'HTTParty.get($URL)'
     - regex: '(user_|request|param|input|arg|query|params)'
+
+  # false-negative coverage expansion - additional HTTP client sinks
+  - all:
+    - pattern: 'Typhoeus.get($URL)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'Typhoeus.post($URL, $$$ARGS)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'Typhoeus.put($URL, $$$ARGS)'
+    - regex: '(user_|request|param|input|arg|query|params)'

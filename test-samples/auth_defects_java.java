@@ -76,4 +76,11 @@ class FalseNegativeExpansionAuthJava {
     public Product false_negative_expansion_create(@RequestBody Product product) { return repo.save(product); }
     @PatchMapping("/products/{id}")
     public Product false_negative_expansion_patch(@PathVariable Long id, @RequestBody Product product) { return repo.save(product); }
+
+    public void insecureSecurityConfig(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests().anyRequest().permitAll();
+    }
+
+    @GetMapping("/admin")
+    public String adminDashboard() { return "admin"; }
 }

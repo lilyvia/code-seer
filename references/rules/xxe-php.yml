@@ -52,3 +52,7 @@ rule:
     pattern: '$READER->XML($XML)'
   - kind: member_call_expression
     pattern: '$READER->open($XML_PATH)'
+
+  # false-negative coverage expansion
+  - pattern: 'simplexml_load_string($XML)'
+  - pattern: '$DOC->loadXML($XML, LIBXML_NOENT)'

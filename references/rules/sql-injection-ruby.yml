@@ -54,4 +54,11 @@ rule:
       '
   - pattern: 'ActiveRecord::Base.connection.exec_query($SQL)
 
-      '
+       '
+
+  # false-negative coverage expansion - additional ORM sinks
+  - pattern: '$MODEL.select_all($SQL)'
+  - pattern: '$REPO.select_values($SQL)'
+  - pattern: '$CONN.select_all($SQL)'
+  - pattern: '$DB.fetch($SQL)'
+  - pattern: '$DB.run($SQL)'

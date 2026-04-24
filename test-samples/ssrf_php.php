@@ -8,3 +8,8 @@ function vulnerable($userUrl) {
     curl_setopt($ch, CURLOPT_URL, $userUrl);
     curl_exec($ch);
 }
+
+function false_negative_expansion_http_clients($client, $userUrl) {
+    $client->get($userUrl);
+    HttpClient::create()->get($userUrl);
+}

@@ -40,3 +40,11 @@ rule:
       sqlx::query($SQL).bind($ID).bind($ID2).execute($DB).await
   - pattern: |
       $DB.query($SQL, &[$$$]).await
+
+  # false-negative coverage expansion
+  - kind: call_expression
+    pattern: 'App::new().route($PATH, web::$METHOD().to($HANDLER))'
+    regex: '(admin|delete|remove)'
+  - kind: call_expression
+    pattern: 'Router::new().route($PATH, $METHOD($HANDLER))'
+    regex: '(admin|delete|remove)'

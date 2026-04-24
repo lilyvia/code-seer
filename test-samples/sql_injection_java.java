@@ -1,11 +1,7 @@
 import java.sql.Connection;
 import java.sql.Statement;
-import org.springframework.jdbc.core.JdbcTemplate;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import org.springframework.data.jpa.repository.Query;
 
-public class SqliJava {
+class SqliJava {
     public void vulnerable(Connection conn, String userId, String name) throws Exception {
         Statement stmt = conn.createStatement();
         stmt.executeQuery("SELECT * FROM users WHERE id = " + userId);
@@ -45,22 +41,66 @@ interface VulnerableRepository {
     @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id = " + "1")
     Object nativeQueryConcat();
 
-    @Query(nativeQuery = true, value = String.format("SELECT * FROM users WHERE name = '%s'", "admin"))
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE name = '" + "admin" + "'")
     Object nativeQueryFormat();
 
-    @Query(nativeQuery = true, value = new StringBuilder().append("SELECT * FROM users WHERE id = ").append("1").toString())
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id = " + "1")
     Object nativeQueryStringBuilder();
 
-    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id = ".concat("1"))
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id = 1")
     Object nativeQueryConcatMethod();
 }
 
 class FalseNegativeExpansionSqlJava {
-    void false_negative_expansion_hibernate(org.hibernate.Session session, String userId) {
+    void false_negative_expansion_hibernate(Session session, String userId) {
         session.createSQLQuery("SELECT * FROM users WHERE id = " + userId).list();
     }
-    void false_negative_expansion_jdbc(org.springframework.jdbc.core.JdbcTemplate jdbc, String userId) {
+    void false_negative_expansion_jdbc(JdbcTemplate jdbc, String userId) {
         jdbc.queryForObject("SELECT name FROM users WHERE id = " + userId, String.class);
         jdbc.queryForList("SELECT * FROM users WHERE id = " + userId);
     }
+
+    void false_negative_expansion_additional_orm(NamedParameterJdbcTemplate template, Session session, String userInput) {
+        template.query("SELECT * FROM users WHERE name = '" + userInput + "'", null);
+        session.createQuery("FROM User WHERE name = '" + userInput + "'");
+        PathBuilder pathBuilder = new PathBuilder();
+        new OrderSpecifier("ASC", pathBuilder.get(userInput));
+    }
 }
+
+interface MyBatisMapper {
+    @Select("SELECT * FROM users WHERE id = ${id}")
+    Object findByUnsafeId(String id);
+}
+
+class NamedParameterJdbcTemplate {
+    Object query(String sql, Object args) { return null; }
+}
+
+class Session {
+    QueryResult createSQLQuery(String sql) { return new QueryResult(); }
+    Object createQuery(String hql) { return null; }
+}
+
+class QueryResult { Object list() { return null; } }
+
+class PathBuilder { Object get(String input) { return input; } }
+
+class OrderSpecifier { OrderSpecifier(String order, Object path) {} }
+
+class JdbcTemplate {
+    Object query(String sql, RowMapper mapper) { return null; }
+    int update(String sql, Object... args) { return 0; }
+    void execute(String sql) {}
+    Object queryForObject(String sql, Class<?> type) { return null; }
+    Object queryForList(String sql) { return null; }
+}
+
+interface RowMapper { Object map(Row rs, int rowNum); }
+class Row { String getString(String name) { return ""; } }
+class EntityManager { Object createNativeQuery(String sql) { return null; } Object createQuery(String sql) { return null; } }
+
+@interface Select { String value(); }
+@interface Update { String value(); }
+@interface Delete { String value(); }
+@interface Query { String value() default ""; boolean nativeQuery() default false; }

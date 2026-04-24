@@ -65,3 +65,9 @@ rule:
     # false-negative coverage expansion
     - pattern: '$COLLECTION.aggregate($PIPELINE)'
       regex: '(?i)(user|input|param|request|query|body|payload|\$where|\$expr)'
+    # false-negative coverage expansion - additional NoSQL sinks
+    - pattern: 'redis.execute_command($USER_CMD)'
+    - pattern: '$ES.search(body=$USER_QUERY)'
+    - pattern: 'table.query(KeyConditionExpression=$USER_EXPR)'
+    - pattern: 'Document.find($FILTER)'
+      regex: '(?i)(mongoengine|beanie)'

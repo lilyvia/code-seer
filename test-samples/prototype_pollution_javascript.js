@@ -17,3 +17,9 @@ function false_negative_expansion_proto_js(_, req, target) {
     target = { ...req.body };
     Object.defineProperty(target, req.query.key, { value: req.body.value });
 }
+
+function false_negative_additional_proto_js(_, req, target, defaults, userInput, obj) {
+    _.mergeWith(target, req.body);
+    _.defaultsDeep(defaults, userInput);
+    _.unset(obj, '__proto__.toString');
+}

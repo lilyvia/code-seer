@@ -5,8 +5,10 @@
 """
 
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -136,13 +138,25 @@ SAFE_SAMPLE_MAP = {
 
 
 def run_ast_grep(rule_file: Path, sample_file: Path) -> list:
+    # ast-grep's HTML parser skips .xml files; copy to .html temporarily
+    temp_file = None
+    target_file = sample_file
+    if sample_file.suffix == ".xml":
+        temp_file = Path(tempfile.gettempdir()) / f"{sample_file.stem}.html"
+        shutil.copy(str(sample_file), str(temp_file))
+        target_file = temp_file
+
     cmd = [
         "ast-grep", "scan",
         "--rule", str(rule_file),
-        str(sample_file),
+        str(target_file),
         "--json"
     ]
     result = subprocess.run(cmd, capture_output=True, text=True)
+
+    if temp_file and temp_file.exists():
+        temp_file.unlink()
+
     if result.returncode not in (0, 1):
         return []
     try:

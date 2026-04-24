@@ -18,3 +18,9 @@ rule:
     pattern: 'return Content("<$$$HTML>" + $USER_INPUT + "</$$$HTML>");'
   - kind: return_statement
     pattern: 'return new ContentResult { Content = "<$$$HTML>" + $USER_INPUT + "</$$$HTML>" };'
+
+  # false-negative coverage expansion - additional XSS sinks
+  - kind: invocation_expression
+    pattern: 'Html.Raw($USER_INPUT)'
+  - kind: invocation_expression
+    pattern: 'new HtmlString($USER_INPUT)'

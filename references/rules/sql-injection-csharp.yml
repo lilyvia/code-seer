@@ -49,3 +49,22 @@ rule:
   - kind: invocation_expression
     pattern: '$DB.ExecuteSqlRaw($SQL)'
     regex: '(?i)(user|input|param|request|query|sql)'
+
+  # false-negative coverage expansion - additional ORM sinks
+  - kind: invocation_expression
+    pattern: '$CONN.Execute($SQL, $$$)'
+    regex: '(?i)(\+|String\.Format|\$)'
+  - kind: invocation_expression
+    pattern: '$CONN.QueryFirst<T>($SQL, $$$)'
+    regex: '(?i)(\+|String\.Format|\$)'
+  - kind: invocation_expression
+    pattern: '$CONN.QuerySingle<T>($SQL, $$$)'
+    regex: '(?i)(\+|String\.Format|\$)'
+  - kind: invocation_expression
+    pattern: '$CONN.QueryMultiple($SQL, $$$)'
+    regex: '(?i)(\+|String\.Format|\$)'
+  - kind: invocation_expression
+    pattern: '$CONN.QueryAsync<T>($SQL, $$$)'
+    regex: '(?i)(\+|String\.Format|\$)'
+  - kind: invocation_expression
+    pattern: 'new NpgsqlCommand($SQL, $CONN)'

@@ -33,3 +33,12 @@ rule:
 
   # false-negative coverage expansion
   - pattern: '$DIR.search($BASE, $FILTER, $$$)'
+  # false-negative coverage expansion - additional JNDI sinks
+  - kind: method_invocation
+    pattern: '$ENV.put(Context.PROVIDER_URL, $USER_URL)'
+  - kind: method_invocation
+    pattern: 'new InitialContext($ENV)'
+    regex: '(?i)(PROVIDER_URL|user|input|param)'
+  - kind: method_invocation
+    pattern: '$CTX.lookup($NAME)'
+    regex: '(?i)(user|input|param|request|query|url)'

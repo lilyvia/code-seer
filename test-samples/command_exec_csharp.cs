@@ -30,5 +30,13 @@ class FalseNegativeExpansionCommandCSharp {
         psi.FileName = userCmd;
         psi.Arguments = userArgs;
         System.Diagnostics.Process.Start(userCmd);
+        PowerShell.Create().AddScript(userCmd);
+        var process = new Process();
+        process.StartInfo.FileName = userCmd;
     }
+}
+
+class PowerShell {
+    public static PowerShell Create() { return new PowerShell(); }
+    public PowerShell AddScript(string script) { return this; }
 }

@@ -3,6 +3,10 @@ function safeParse(data) {
     return JSON.parse(data);
 }
 
+function safeParseWithoutReviver(data) {
+    return JSON.parse(data);
+}
+
 // Safe: Validate schema before using parsed data
 function safeParseUser(data) {
     const obj = JSON.parse(data);

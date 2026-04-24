@@ -51,3 +51,8 @@ rule:
       pattern: '$COLL.find(Document.parse($JSON))'
     - kind: method_invocation
       pattern: '$COLL.findOne(Document.parse($JSON))'
+
+    # false-negative coverage expansion
+    - kind: method_invocation
+      pattern: '$REPO.findBy$FIELD($USER_INPUT)'
+      regex: '(?i)(MongoRepository|Repository)'

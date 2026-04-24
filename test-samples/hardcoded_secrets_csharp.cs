@@ -27,5 +27,9 @@ public class HardcodedSecretsCSharp
 
         // Match: string token = "..." (24+ chars)
         string token = "d2hhdGV2ZXI6eW91OnR5cGU6aGVyZQ==";
+
+        string openAiToken = "sk-123456789012345678901234";
+        string googleApiKey = "AIza12345678901234567890123456789012345";
+        string mongoUri = "mongodb://appuser:apppass@localhost/appdb";
     }
 }

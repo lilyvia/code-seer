@@ -24,3 +24,10 @@ func adminOnly(next http.HandlerFunc) http.HandlerFunc {
 		next(w, r)
 	}
 }
+
+func registerSafeAdminRoutes(r *Router, app *FiberApp) {
+	admin := r.Group("/admin", AuthMiddleware())
+	admin.Delete("/users/:id", deleteAdminUser)
+	app.Use(AuthMiddleware())
+	app.Delete("/secure/users/:id", deleteAdminUser)
+}

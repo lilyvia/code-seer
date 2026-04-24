@@ -61,3 +61,8 @@ rule:
         has:
           kind: call_expression
           pattern: '$COLL.FindOne($CTX, $FILTER)'
+
+    # false-negative coverage expansion
+    - kind: call_expression
+      pattern: '$SESSION.DB($DB).C($COLL).$METHOD($FILTER)'
+      regex: '(?i)(user|input|param|request|query)'

@@ -32,3 +32,21 @@ rule:
   - pattern: 'tokio::process::Command::new($CMD).spawn()'
   - pattern: 'tokio::process::Command::new($CMD).output()'
   - pattern: 'Command::new("sh").arg("-c").arg($CMD).output()'
+  - kind: call_expression
+    pattern: 'Command::new("sh").arg("-c").arg($CMD).spawn()'
+  - kind: call_expression
+    pattern: 'Command::new("sh").arg("-c").arg($CMD).status()'
+  - kind: call_expression
+    pattern: 'Command::new("cmd").arg("/c").arg($CMD).spawn()'
+  - kind: call_expression
+    pattern: 'Command::new("cmd").arg("/c").arg($CMD).status()'
+  - kind: call_expression
+    pattern: 'duct::cmd($CMD, $$$)'
+    regex: '(?i)(user|input|param|request|query)'
+  - kind: call_expression
+    pattern: 'duct::cmd!($CMD, $$$)'
+  - kind: call_expression
+    pattern: 'duct::sh($CMD)'
+    regex: '(?i)(user|input|param|request|query)'
+  - kind: call_expression
+    pattern: 'duct::sh!($CMD)'

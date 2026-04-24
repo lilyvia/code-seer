@@ -41,3 +41,5 @@ rule:
   - pattern: '$USER_INPUT.html_safe'
   - kind: program
     regex: '<%==.*(user|input|param|request|query|body|payload).*%>'
+  - pattern: 'ERB.new($TEMPLATE).result(binding)'
+    regex: '(user_|param|request|input|query|body|payload)'

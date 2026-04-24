@@ -18,3 +18,13 @@ func safeFetch(target string) (string, error) {
 	}
 	return fmt.Sprintf("fetching %s", target), nil
 }
+
+func safeRestyFetch(client *safeRestyClient) {
+	client.R().Get("https://api.example.com/status")
+}
+
+type safeRestyClient struct{}
+type safeRestyRequest struct{}
+
+func (c *safeRestyClient) R() *safeRestyRequest { return &safeRestyRequest{} }
+func (r *safeRestyRequest) Get(url string) {}

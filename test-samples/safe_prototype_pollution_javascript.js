@@ -24,3 +24,16 @@ function safeMergeKnownShape(defaults, req, _) {
         }
     });
 }
+
+function safeMergeWithFilteredKeys(defaults, userInput, _) {
+    const blocked = new Set(['__proto__', 'constructor', 'prototype']);
+    const filtered = {};
+
+    for (const [key, value] of Object.entries(userInput)) {
+        if (!blocked.has(key)) {
+            filtered[key] = value;
+        }
+    }
+
+    return _.merge(defaults, filtered);
+}

@@ -213,3 +213,7 @@ rule:
       regex: 'findById|findOne|update|delete|remove|destroy|prisma'
     - pattern: 'server.route({ method: $METHOD, path: $PATH, handler: $HANDLER })'
       regex: 'findById|findOne|update|delete|remove|destroy|prisma'
+
+    # false-negative coverage expansion - Next.js/Nuxt/Remix auth gaps
+    - pattern: 'export const config = { matcher: ["/:path*"] }'
+    - pattern: 'definePageMeta({ layout: $X })'

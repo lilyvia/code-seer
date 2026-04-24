@@ -23,3 +23,11 @@ def view_order(order_id, current_user_id):
     if order.user_id != current_user_id:
         raise PermissionDenied("Not your order")
     return order
+
+
+@app.api_route("/admin/users/{id}", methods=["DELETE"], dependencies=[Depends(get_current_user)])
+def safe_delete_admin_user(id: int, current_user=Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise PermissionDenied("Admin required")
+    User.objects.filter(id=id).delete()
+    return {"status": "deleted"}

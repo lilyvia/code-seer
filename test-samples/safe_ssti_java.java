@@ -19,4 +19,9 @@ class SafeSstiJava {
         template.process(model, out);
         return out.toString();
     }
+
+    public Template safeTemplateFromFile() throws Exception {
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
+        return cfg.getTemplate("reports/summary.ftl");
+    }
 }

@@ -113,3 +113,32 @@ rule:
   - kind: method_invocation
     pattern: '$SQLSESSION.selectOne($ID, $PARAM)'
     regex: '(?i)(mybatis|sqlSession|selectOne|selectList|user|param|input)'
+  # false-negative coverage expansion - additional ORM sinks
+  - kind: method_invocation
+    pattern: '$TEMPLATE.query($SQL, $$$)'
+    regex: '(?i)(\+|\.format\(|\.concat\(|StringBuilder)'
+  - kind: method_invocation
+    pattern: '$TEMPLATE.update($SQL, $$$)'
+    regex: '(?i)(\+|\.format\(|\.concat\(|StringBuilder)'
+  - kind: method_invocation
+    pattern: '$TEMPLATE.execute($SQL)'
+    regex: '(?i)(\+|\.format\(|\.concat\(|StringBuilder)'
+  - kind: method_invocation
+    pattern: '$SESSION.createQuery($HQL + $VAR)'
+  - kind: method_invocation
+    pattern: '$SESSION.createQuery(String.format($FMT, $$$))'
+  - kind: annotation
+    pattern: '@Select($SQL)'
+    regex: '\$\{'
+  - kind: annotation
+    pattern: '@Update($SQL)'
+    regex: '\$\{'
+  - kind: annotation
+    pattern: '@Delete($SQL)'
+    regex: '\$\{'
+  - kind: method_invocation
+    pattern: '$PATHBUILDER.get($USER_INPUT)'
+    regex: '(?i)(user|input|param|request|query)'
+  - kind: method_invocation
+    pattern: 'new OrderSpecifier($ORDER, $PATHBUILDER.get($INPUT))'
+    regex: '(?i)(user|input|param|request|query)'

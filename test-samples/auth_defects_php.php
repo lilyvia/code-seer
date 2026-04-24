@@ -27,3 +27,5 @@ if (Auth::check()) {
 // Safe patterns (should NOT match)
 $admin = Admin::where('role', 'admin')->first();
 $static = User::find(1);
+
+Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);

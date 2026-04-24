@@ -46,3 +46,10 @@ def safe_schema_validation(collection, data):
     
     query = UserQuery(**data)
     collection.find({"username": query.username})
+
+def safe_redis_execute(redis, user_cmd):
+    allowed_commands = {"GET", "TTL"}
+    command = str(user_cmd).upper()
+    if command not in allowed_commands:
+        raise ValueError("invalid redis command")
+    return redis.execute_command(command, "safe:key")

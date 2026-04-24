@@ -15,4 +15,9 @@ class SafeSsrf
     raise 'URL not allowed' unless safe?(url)
     "fetching #{url}"
   end
+
+  def fetch_with_typhoeus(url)
+    raise 'URL not allowed' unless safe?(url)
+    Typhoeus.get(url)
+  end
 end

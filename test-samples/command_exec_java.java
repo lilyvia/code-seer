@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 
 class JavaCmdExec {
     public void vulnerableRuntime(String userCmd) throws IOException {
@@ -46,4 +48,14 @@ class JavaCmdExec {
         }
         return "拒绝执行";
     }
+
+    public void falseNegativeExpansionScripting(ScriptEngine engine, String userInput, String userCode) throws Exception {
+        engine.eval(userInput);
+        new ScriptEngineManager().getEngineByName("nashorn").eval(userCode);
+        new GroovyShell().evaluate(userCode);
+        Ognl.getValue(userInput, new Object(), new Object());
+    }
 }
+
+class GroovyShell { Object evaluate(String code) { return null; } }
+class Ognl { static Object getValue(String expr, Object context, Object root) { return null; } static void setValue(String expr, Object context, Object root, Object value) {} }

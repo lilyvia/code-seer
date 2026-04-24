@@ -208,3 +208,10 @@ app.get('/health', async (req, res) => {
 
 // Safe: Static file serving
 app.get('/public/*', express.static('public'));
+
+export const safeConfig = { matcher: ["/admin/:path*"] };
+
+definePageMeta({
+    middleware: ['auth'],
+    layout: 'admin'
+});

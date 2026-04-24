@@ -14,3 +14,8 @@ function false_negative_expansion_redirect_js(res, ctx, userUrl) {
     res.setHeader("Location", userUrl);
     ctx.redirect(userUrl);
 }
+
+function false_negative_additional_redirect_js(userInput, userUrl) {
+    NextResponse.redirect(userInput);
+    navigateTo(userUrl);
+}

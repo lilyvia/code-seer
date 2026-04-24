@@ -38,3 +38,20 @@ rule:
   - pattern: $PB.start()
     kind: method_invocation
     regex: ProcessBuilder
+
+  # false-negative coverage expansion - additional command execution sinks
+  - kind: method_invocation
+    pattern: '$ENGINE.eval($CODE)'
+    regex: '(?i)(ScriptEngine|Nashorn|nashorn|bsh\.|GroovyShell|groovy)'
+  - kind: method_invocation
+    pattern: 'new ScriptEngineManager().getEngineByName($NAME).eval($CODE)'
+  - kind: method_invocation
+    pattern: 'new Interpreter().eval($CODE)'
+  - kind: method_invocation
+    pattern: 'new bsh.Interpreter().eval($CODE)'
+  - kind: method_invocation
+    pattern: 'new GroovyShell().evaluate($CODE)'
+  - kind: method_invocation
+    pattern: 'Ognl.getValue($EXPR, $CONTEXT, $ROOT)'
+  - kind: method_invocation
+    pattern: 'Ognl.setValue($EXPR, $CONTEXT, $ROOT, $VALUE)'

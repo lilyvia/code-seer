@@ -11,3 +11,8 @@ def safe_lxml_parse(xml_data):
     from lxml import etree
     parser = etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False)
     return etree.fromstring(xml_data, parser=parser)
+
+
+def safe_lxml_parser():
+    from lxml import etree
+    return etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False)

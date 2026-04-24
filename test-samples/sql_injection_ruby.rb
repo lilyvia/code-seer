@@ -7,3 +7,7 @@ User.find_by_sql("SELECT * FROM users WHERE id = #{user_id}")
 User.where("name = '#{name}'")
 ActiveRecord::Base.connection.execute("DELETE FROM posts WHERE id = #{user_id}")
 ActiveRecord::Base.connection.exec_query("UPDATE users SET name = '#{name}' WHERE id = #{user_id}")
+ActiveRecord::Base.connection.select_all("SELECT * FROM users WHERE id = #{user_id}")
+
+DB = Sequel.connect('sqlite://blog.db') if defined?(Sequel)
+DB.fetch("SELECT * FROM users WHERE name = '#{name}'") if defined?(DB)

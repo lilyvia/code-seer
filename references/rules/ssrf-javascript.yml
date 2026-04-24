@@ -81,3 +81,19 @@ rule:
   - pattern: 'got($USER_URL)'
   - pattern: 'http.get($USER_URL)'
   - pattern: 'https.get($USER_URL)'
+  - kind: call_expression
+    pattern: 'unirest.get($USER_URL)'
+  - kind: call_expression
+    pattern: 'unirest.post($USER_URL, $$$)'
+  - kind: call_expression
+    pattern: 'needle.get($USER_URL, $$$)'
+  - kind: call_expression
+    pattern: 'needle.post($USER_URL, $$$)'
+  - kind: call_expression
+    pattern: '$SUPERAGENT.put($USER_URL)'
+  - kind: call_expression
+    pattern: '$SUPERAGENT.delete($USER_URL)'
+  - kind: call_expression
+    pattern: 'superagent.put($USER_URL)'
+  - kind: call_expression
+    pattern: 'superagent.delete($USER_URL)'

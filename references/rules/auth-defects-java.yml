@@ -85,3 +85,12 @@ rule:
     - pattern: |
         @RequestMapping($PATH)
         public $RET $METHOD($$$) { $$$ }
+
+    # false-negative coverage expansion - Spring Security gaps
+    - kind: method_invocation
+      pattern: 'http.permitAll()'
+    - kind: method_invocation
+      pattern: 'web.ignoring().requestMatchers($PATH)'
+    - kind: annotation
+      pattern: '@GetMapping($PATH)'
+      regex: '(admin|delete|remove|configure)'

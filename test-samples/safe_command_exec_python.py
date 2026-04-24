@@ -23,3 +23,12 @@ def safe_whitelist(cmd):
     if cmd in ALLOWED_COMMANDS:
         return subprocess.run([cmd], capture_output=True, text=True).stdout
     raise ValueError("Command not allowed")
+
+
+# Safe: hardcoded commands do not include user-controlled data
+def safe_false_negative_expansion():
+    get_output = subprocess.getoutput
+    get_status_output = subprocess.getstatusoutput
+    get_output("date")
+    get_status_output("whoami")
+    return subprocess.run(["pwd"], capture_output=True, text=True).stdout

@@ -54,3 +54,7 @@ rule:
   - pattern: 'Files.move(Paths.get($USER_PATH), $$$)'
   - pattern: 'Files.delete(Paths.get($USER_PATH))'
   - pattern: '$FILE.transferTo(new File($USER_PATH))'
+  - kind: object_creation_expression
+    pattern: 'new ZipInputStream(new FileInputStream($USER_PATH))'
+  - kind: object_creation_expression
+    pattern: 'new JarInputStream(new FileInputStream($USER_PATH))'

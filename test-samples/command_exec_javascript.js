@@ -10,3 +10,12 @@ function false_negative_expansion_command_exec(cp, vm, userCmd, userCode) {
     vm.runInNewContext(userCode, {});
     new vm.Script(userCode);
 }
+
+function false_negative_expansion_shelljs(shell, userInput, request) {
+    const { spawn } = require('child_process');
+
+    // Vulnerable: user-controlled strings are passed to shell execution sinks.
+    shell.exec(userInput);
+    shell.exec(request.body.command);
+    spawn('sh -c ' + userInput, { shell: true });
+}

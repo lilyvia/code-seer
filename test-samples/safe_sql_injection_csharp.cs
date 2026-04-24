@@ -12,4 +12,9 @@ public class SafeSqli
             return cmd.ExecuteReader();
         }
     }
+
+    public void SafeDapper(dynamic conn, string userId)
+    {
+        conn.Execute("SELECT * FROM Users WHERE Id = @id", new { id = userId });
+    }
 }

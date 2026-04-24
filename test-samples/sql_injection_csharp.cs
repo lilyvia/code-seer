@@ -16,5 +16,13 @@ class FalseNegativeExpansionSqlCSharp {
         conn.Query<User>(userSql);
         context.Users.FromSqlRaw(userSql);
         context.Database.ExecuteSqlRaw(userSql);
+        conn.Execute("UPDATE Users SET Name = '" + userId + "'");
+        var cmd = new NpgsqlCommand("SELECT * FROM Users WHERE Id = " + userId, conn);
     }
+}
+
+class User { }
+
+class NpgsqlCommand {
+    public NpgsqlCommand(string sql, dynamic conn) { }
 }

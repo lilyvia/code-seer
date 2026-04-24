@@ -1,4 +1,6 @@
 class OrdersController < ApplicationController
+  before_action :authenticate_user!, except: [:public_action]
+
   def show
     @order = Order.find(params[:id])
   end

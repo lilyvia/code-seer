@@ -1,10 +1,8 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import org.springframework.jdbc.core.JdbcTemplate;
-import javax.persistence.EntityManager;
-import org.springframework.data.jpa.repository.Query;
+import java.util.Collections;
 
-public class SafeSqliJava {
+class SafeSqliJava {
     public void safePreparedStatement(Connection conn, String userId) throws Exception {
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
         ps.setString(1, userId);
@@ -26,6 +24,32 @@ public class SafeSqliJava {
         em.createQuery("SELECT u FROM User u WHERE u.id = ?1").setParameter(1, userId);
     }
 }
+
+class SafeAdditionalOrmSqlJava {
+    void safeNamedParameter(NamedParameterJdbcTemplate jdbc, String userId) {
+        jdbc.query("SELECT * FROM users WHERE id = :id", Collections.singletonMap("id", userId));
+    }
+
+    void safeHibernate(Session session, String userId) {
+        session.createQuery("FROM User WHERE id = :id");
+    }
+}
+
+class JdbcTemplate {
+    Object query(String sql, Object[] args, RowMapper mapper) { return null; }
+    int update(String sql, Object... args) { return 0; }
+    void execute(String sql) {}
+    Object queryForObject(String sql, Class<?> type, Object... args) { return null; }
+    void batchUpdate(String sql, java.util.List<Object[]> args) {}
+}
+
+interface RowMapper { Object map(Row rs, int rowNum); }
+class Row { String getString(String name) { return ""; } }
+class NamedParameterJdbcTemplate { Object query(String sql, Object args) { return null; } }
+class EntityManager { QueryObject createNativeQuery(String sql) { return new QueryObject(); } QueryObject createQuery(String sql) { return new QueryObject(); } }
+class QueryObject { QueryObject setParameter(String name, String value) { return this; } QueryObject setParameter(int index, String value) { return this; } }
+@interface Query { String value() default ""; boolean nativeQuery() default false; }
+class Session { Object createQuery(String hql) { return null; } }
 
 interface SafeRepository {
     @Query("SELECT u FROM User u WHERE u.id = :id")

@@ -31,3 +31,11 @@ async fn get_item(Path(id): Path<i32>, client: Client) -> Json<Item> {
     let row = client.query("SELECT * FROM items WHERE id = $1", &[&id]).await.unwrap();
     Json(row)
 }
+
+fn insecure_actix_routes() -> App {
+    App::new().route("/admin/users/{id}", web::delete().to(delete_user))
+}
+
+fn insecure_axum_routes() -> Router {
+    Router::new().route("/admin/users/:id", delete(delete_user))
+}

@@ -53,3 +53,10 @@ rule:
   - kind: member_call_expression
     pattern: '$CONN->executeQuery($SQL)'
     regex: '(?i)(user|input|param|request|query|sql|_GET|_POST)'
+
+  # false-negative coverage expansion - additional ORM sinks
+  - pattern: 'DB::select($SQL, $$$)'
+  - pattern: 'DB::insert($SQL, $$$)'
+  - pattern: 'DB::update($SQL, $$$)'
+  - pattern: 'DB::delete($SQL, $$$)'
+  - pattern: '$EM->createQuery($DQL)'

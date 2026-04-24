@@ -10,6 +10,14 @@ def get_db_password():
     return os.getenv("DB_PASSWORD")
 
 
+def get_service_tokens():
+    return {
+        "openai": os.getenv("OPENAI_API_KEY"),
+        "google": os.getenv("GOOGLE_API_KEY"),
+        "mongo": os.getenv("MONGODB_URI"),
+    }
+
+
 # Safe: Use placeholder that won't match regex patterns
 API_KEY_REF = "env:API_KEY"
 SECRET_REF = "vault:secret/api-key"

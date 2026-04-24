@@ -34,3 +34,8 @@ rule:
   - kind: object_creation_expression
     pattern: 'new ModelAndView($VIEW)'
     regex: '(user_|request|param|input|arg|query)'
+
+  # false-negative coverage expansion
+  - kind: return_statement
+    pattern: 'return "redirect:" + $USER_URL'
+    regex: '(?i)(user|request|param|input|arg|query)'

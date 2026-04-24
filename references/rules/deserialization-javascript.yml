@@ -35,3 +35,12 @@ rule:
   - pattern: '$V8.deserialize($DATA)'
   - pattern: '$BSON.deserialize($DATA)'
   - pattern: '$MSGPACK.decode($DATA)'
+  - kind: call_expression
+    pattern: 'JSON.parse($USER_DATA, $REVIVER)'
+  - kind: call_expression
+    pattern: 'serialize($USER_DATA)'
+    regex: 'eval|Function'
+  - kind: call_expression
+    pattern: 'require("javascript-serializer").deserialize($DATA)'
+  - kind: call_expression
+    pattern: 'funcster.evaluate($USER_DATA)'

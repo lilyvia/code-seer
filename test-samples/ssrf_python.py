@@ -45,6 +45,38 @@ class httpx:
         return args, kwargs
 
 
+class treq:
+    @staticmethod
+    def get(*args, **kwargs):
+        return args, kwargs
+
+    @staticmethod
+    def post(*args, **kwargs):
+        return args, kwargs
+
+
+class pycurl:
+    URL = 10002
+
+
+class Curl:
+    def setopt(self, *args, **kwargs):
+        return args, kwargs
+
+
+class curl_cffi:
+    class requests:
+        @staticmethod
+        def get(*args, **kwargs):
+            return args, kwargs
+
+
+class wget:
+    @staticmethod
+    def download(*args, **kwargs):
+        return args, kwargs
+
+
 class aiohttp:
     class ClientSession:
         def get(self, *args, **kwargs):
@@ -92,3 +124,12 @@ def false_negative_expansion_ssrf_python(user_url, user_host, httpx, urllib, htt
     urllib.request.urlopen(user_url)
     httpx.get(user_url)
     http.client.HTTPConnection(user_host)
+
+
+def false_negative_expansion_additional_clients(user_url, user_input, request_url):
+    # Vulnerable: user-controlled URLs reach additional HTTP clients.
+    treq.get(user_url)
+    treq.post(request_url, data={"ping": True})
+    Curl().setopt(pycurl.URL, user_input)
+    curl_cffi.requests.get(user_url)
+    wget.download(user_input)

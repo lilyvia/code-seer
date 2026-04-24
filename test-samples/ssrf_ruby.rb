@@ -3,6 +3,7 @@ require 'open-uri'
 require 'rest-client'
 require 'faraday'
 require 'httparty'
+require 'typhoeus'
 
 user_url = params[:url]
 Net::HTTP.get(URI(user_url))
@@ -13,3 +14,4 @@ Faraday.get(user_url)
 HTTParty.get(user_url)
 Net::HTTP.get_response(URI(user_url))
 Net::HTTP.post_form(URI(user_url), {})
+Typhoeus.get(params[:url])

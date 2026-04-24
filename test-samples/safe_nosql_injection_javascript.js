@@ -15,3 +15,10 @@ function safeAllowlistedField(User, req) {
 function safeMongoCount(users, req) {
     return users.countDocuments({ status: String(req.query.status) });
 }
+
+function safeQueryWithoutOperators(User, req) {
+    return User.find({
+        name: String(req.query.name || ''),
+        status: 'active'
+    });
+}

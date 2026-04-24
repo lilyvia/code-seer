@@ -22,3 +22,14 @@ rule:
   - all:
     - pattern: $CLIENT.GetAsync($URL)
     - regex: GetAsync\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)
+
+  # false-negative coverage expansion - additional HTTP client sinks
+  - kind: invocation_expression
+    pattern: 'new WebClient().DownloadString($USER_URL)'
+  - kind: invocation_expression
+    pattern: 'new WebClient().DownloadFile($USER_URL, $$$)'
+  - kind: invocation_expression
+    pattern: 'new RestClient($USER_URL).Execute($REQUEST)'
+  - kind: invocation_expression
+    pattern: 'new RestClient($BASE_URL).Execute($REQUEST)'
+    regex: '(?i)(user|request|param|input|arg|query|url)'

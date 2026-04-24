@@ -118,3 +118,18 @@ rule:
     pattern: '$KNEX.fromRaw($QUERY)'
   - kind: call_expression
     pattern: '$OBJECTION.raw($QUERY)'
+  - kind: call_expression
+    pattern: '$REPO.createQueryBuilder($ALIAS).where($COND, $PARAM)'
+    regex: '(?i)(user|input|param|request|query|sql|\+|`.*\$\{.*)'
+  - kind: call_expression
+    pattern: '$REPO.createQueryBuilder($ALIAS).where($COND).getMany()'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call_expression
+    pattern: '$CLIENT.query($QUERY, $VALUES)'
+    regex: '(?i)(\+|`.*\$\{.*)'
+  - kind: call_expression
+    pattern: 'new $CLIENT().query($QUERY)'
+    regex: '(?i)(\+|`.*\$\{.*)'
+  - kind: call_expression
+    pattern: 'pool.query($QUERY, $VALUES)'
+    regex: '(?i)(\+|`.*\$\{.*)'

@@ -10,6 +10,14 @@ public class SafeHardcodedSecretsJava {
         return System.getProperty("db.password");
     }
 
+    public Map<String, String> getServiceTokens() {
+        return Map.of(
+            "openai", System.getenv("OPENAI_API_KEY"),
+            "google", System.getenv("GOOGLE_API_KEY"),
+            "mongo", System.getenv("MONGODB_URI")
+        );
+    }
+
     public String getSecretFromVault(String name) {
         return "vault://" + name;
     }

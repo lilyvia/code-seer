@@ -39,3 +39,9 @@ def get_profile_flask():
 
 def false_negative_expansion_auth_python(request, User):
     return User.objects.get(id=request.GET['id'])
+
+
+@app.delete("/admin/users/{id}")
+def delete_admin_user(id: int):
+    User.objects.filter(id=id).delete()
+    return {"status": "deleted"}

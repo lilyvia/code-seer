@@ -14,4 +14,16 @@ public class SafeSsrf
         }
         return false;
     }
+
+    public string SafeWebClientFetch(string url)
+    {
+        if (!IsSafeUrl(url))
+        {
+            throw new ArgumentException("URL not allowed", nameof(url));
+        }
+        using (var webClient = new WebClient())
+        {
+            return webClient.DownloadString(url);
+        }
+    }
 }

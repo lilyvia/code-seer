@@ -139,7 +139,7 @@ AI: 我将使用 Code Seer 为您进行安全审计：
 
      [AI 自动执行...]
 
-     审计完成！生成报告: security_audit_report_20260421.md
+     审计完成！生成报告: code_seer_report_20260421.md
 ```
 
 AI 自动完成以下流程：
@@ -160,7 +160,7 @@ code-seer/
 ├── scripts/
 │   └── test_rules.py           # 规则测试脚本
 ├── references/
-│   ├── rules/                  # AST-grep 规则文件 (100 条)
+│   ├── rules/                  # AST-grep 规则文件
 │   │   ├── sql-injection-*.yml
 │   │   ├── command-exec-*.yml
 │   │   ├── xss-*.yml

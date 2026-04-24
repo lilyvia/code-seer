@@ -16,3 +16,8 @@ def safe(user_url):
 
 def safe_django():
     return {"redirect": "/dashboard", "status": 302}
+
+
+def safe_validated_redirect(user_url):
+    validated = safe_redirect(user_url)
+    return {"url": validated, "status": 302}

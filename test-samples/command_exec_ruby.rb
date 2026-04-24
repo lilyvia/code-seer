@@ -21,4 +21,6 @@ def false_negative_expansion_ruby_command(user_cmd)
   Open3.pipeline_start(user_cmd)
   spawn(user_cmd)
   %x{#{user_cmd}}
+  %x{cat #{user_cmd}}
+  Kernel.system(user_cmd)
 end

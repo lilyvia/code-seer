@@ -53,3 +53,7 @@ rule:
   - pattern: 'shutil.rmtree($USER_INPUT)'
   - pattern: '$ZIP.extractall($USER_INPUT)'
   - pattern: '$TAR.extractall($USER_INPUT)'
+  - pattern: 'os.listdir($USER_INPUT)'
+  - pattern: 'gzip.open($USER_INPUT, $MODE)'
+  - pattern: 'lzma.open($USER_INPUT, $MODE)'
+  - pattern: 'shutil.unpack_archive($USER_INPUT, $$$)'

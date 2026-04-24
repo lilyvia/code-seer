@@ -35,4 +35,9 @@ class FalseNegativeExpansionSstiJava {
         handlebars.compileInline(userTemplate);
         velocity.evaluate(context, writer, "log", userTemplate);
     }
+
+    void false_negative_additional(VelocityEngine velocity, Configuration cfg, Object ctx, Object writer, Object log, String userTemplate) throws Exception {
+        velocity.evaluate(ctx, writer, log, userTemplate);
+        Template template = new Template("user", userTemplate, cfg);
+    }
 }

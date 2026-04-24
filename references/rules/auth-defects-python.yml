@@ -49,3 +49,7 @@ rule:
 
     # false-negative coverage expansion
     - pattern: '$MODEL.objects.get(id=request.GET[$KEY])'
+
+    # false-negative coverage expansion - framework auth checks
+    - kind: decorator
+      pattern: '@app.delete($PATH)'

@@ -1,7 +1,23 @@
-// Safe Rust patterns that avoid SQL injection
+mod sqlx {
+    pub struct Query<'a> {
+        sql: &'a str,
+    }
 
-fn safe_sqli() {
-    // Use ORM or prepared statements with bind parameters
-    // This sample intentionally avoids any raw query patterns
-    println!("Use sqlx::query(\"SELECT ...\").bind(val).execute(pool)");
+    pub fn query_as(sql: &str) -> Query<'_> {
+        Query { sql }
+    }
+
+    impl<'a> Query<'a> {
+        pub fn bind(self, value: i32) -> Self {
+            let _ = (self.sql, value);
+            self
+        }
+    }
 }
+
+fn safe_sqli(id: i32) {
+    let prepared = sqlx::query_as;
+    let _statement = prepared("SELECT * FROM users WHERE id = $1").bind(id);
+}
+
+fn main() {}

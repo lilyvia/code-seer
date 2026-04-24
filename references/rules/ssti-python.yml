@@ -20,3 +20,5 @@ rule:
   - pattern: 'mako.template.Template($TMPL).render($$$)'
   - pattern: 'django.template.Template($TMPL).render($$$)'
   - pattern: 'jinja2.Environment().from_string($TMPL)'
+  - pattern: 'Environment().compile_expression($TMPL)'
+    regex: '(user_|request|param|input|arg|query|template|source)'

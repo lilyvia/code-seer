@@ -58,3 +58,5 @@ rule:
     regex: 'echo\s+\$(_GET|_POST|user|input|param|request|query|body|payload)'
   - kind: program
     regex: 'print\s+\$(_GET|_POST|user|input|param|request|query|body|payload)'
+  - kind: expression_statement
+    regex: '\{\!!.*\}'

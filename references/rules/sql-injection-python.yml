@@ -92,3 +92,29 @@ rule:
   - kind: call
     pattern: '$MODEL.raw($QUERY)'
     regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call
+    pattern: 'pd.read_sql_query($QUERY, $$$)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call
+    pattern: 'pandas.read_sql_query($QUERY, $$$)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call
+    pattern: 'pd.read_sql_table($TABLE, $$$)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call
+    pattern: 'pandas.read_sql_table($TABLE, $$$)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call
+    pattern: 'RawSQL($SQL, $$$)'
+  - kind: call
+    pattern: '$QS.filter(**$KWARGS)'
+    regex: '(?i)(request\.|req\.|params|body|args)'
+  - kind: call
+    pattern: '$QS.annotate(**$KWARGS)'
+    regex: '(?i)(request\.|req\.|params|body|args)'
+  - kind: call
+    pattern: 'asyncpg.connect($$).$METHOD($QUERY)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call
+    pattern: '$CURSOR.mogrify($QUERY, $$$)'
+    regex: '(?i)(user|input|param|request|query|sql)'

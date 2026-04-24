@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"io"
 	"net/http"
 )
@@ -13,6 +14,8 @@ func vulnerableXSS(w http.ResponseWriter, r *http.Request, userInput string, c *
 	w.Write([]byte("<div>" + userInput + "</div>"))
 	c.String(200, "<div>"+userInput+"</div>")
 	c.HTML(200, "<div>"+userInput+"</div>")
+	_ = template.HTML(userInput)
+	_ = template.JS(userInput)
 }
 
 type ginContext struct{}

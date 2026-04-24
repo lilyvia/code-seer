@@ -42,3 +42,9 @@ rule:
   - pattern: '$JINJAVA.render($TMPL, $DATA)'
   - pattern: '$HANDLEBARS.compileInline($TMPL)'
   - pattern: '$VELOCITY.evaluate($CTX, $WRITER, $LOG, $TMPL)'
+  - kind: method_invocation
+    pattern: '$ENGINE.evaluate($CTX, $WRITER, $LOG, $TEMPLATE)'
+    regex: '(?i)(Velocity|velocity\.app)'
+  - kind: method_invocation
+    pattern: 'new Template($NAME, $SRC, $CONFIG)'
+    regex: '(?i)(request|user|input|param)'

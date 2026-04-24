@@ -16,6 +16,13 @@ class JndiInjectionJava {
         return new InitialContext(env).lookup(userControlledName);
     }
 
+    public Object vulnerableProviderUrl(String userUrl, String userControlledName) throws NamingException {
+        Hashtable<String, String> env = new Hashtable<>();
+        env.put(Context.PROVIDER_URL, userUrl);
+        Context ctx = new InitialContext(env);
+        return ctx.lookup(userControlledName);
+    }
+
     public Object vulnerableDirContextLookup(String userControlledName) throws NamingException {
         return new InitialDirContext().lookup(userControlledName);
     }

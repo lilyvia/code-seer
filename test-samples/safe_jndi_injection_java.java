@@ -21,4 +21,9 @@ class SafeJndiInjectionJava {
         Context ctx = new InitialContext();
         return ctx.lookup("java:comp/env/jdbc/main");
     }
+
+    public Object safeFixedResourceLookup() throws NamingException {
+        Context ctx = new InitialContext();
+        return ctx.lookup("java:comp/env/jms/auditQueue");
+    }
 }

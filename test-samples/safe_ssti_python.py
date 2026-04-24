@@ -31,3 +31,6 @@ def render_static_template(context):
     html2 = Template(SAFE_TEMPLATE).render(context)
     html3 = Environment().from_string(SAFE_TEMPLATE).render(context)
     return html1, html2, html3
+
+def safe_render_template_static(context):
+    return render_template("account/profile.html", user=context["user"])

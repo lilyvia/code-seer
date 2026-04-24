@@ -28,3 +28,23 @@ rule:
     pattern: 'os.StartProcess($CMD, $$$)'
   - kind: call_expression
     pattern: 'syscall.Exec($CMD, $$$)'
+  # false-negative coverage expansion - additional command execution sinks
+  - kind: call_expression
+    pattern: '$CMD.Start()'
+    regex: '(?i)(exec\.Command)'
+  - kind: call_expression
+    pattern: '$CMD.Output()'
+    regex: '(?i)(exec\.Command)'
+  - kind: call_expression
+    pattern: '$CMD.CombinedOutput()'
+    regex: '(?i)(exec\.Command)'
+  - kind: call_expression
+    pattern: 'syscall.Syscall($TRAP, $$$)'
+  - kind: call_expression
+    pattern: 'syscall.Syscall6($TRAP, $$$)'
+  - kind: call_expression
+    pattern: 'syscall.RawSyscall($TRAP, $$$)'
+  - kind: call_expression
+    pattern: 'syscall.RawSyscall6($TRAP, $$$)'
+  - kind: call_expression
+    pattern: 'syscall.ForkExec($PATH, $ARGV, $ATTR)'

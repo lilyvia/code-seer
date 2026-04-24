@@ -42,3 +42,7 @@ rule:
         if (Auth::check()) {
             $MODEL::where($$$)->forceDelete();
         }
+
+    # false-negative coverage expansion
+    - pattern: 'Route::$METHOD($PATH, $HANDLER)'
+      regex: '(admin|api|users|orders)'

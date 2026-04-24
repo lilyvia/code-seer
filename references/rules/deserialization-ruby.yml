@@ -37,3 +37,6 @@ rule:
   - pattern: Oj.object_load($USER_DATA)
   - pattern: MessagePack.unpack($USER_DATA)
   - pattern: MessagePack.load($USER_DATA)
+
+  # false-negative coverage expansion - additional deserialization sinks
+  - pattern: 'JSON.parse($USER_DATA, create_additions: true)'

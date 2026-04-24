@@ -21,3 +21,5 @@ rule:
   - pattern: 'proc_open($CMD, $$$)'
   - pattern: 'popen($CMD, $MODE)'
   - pattern: 'pcntl_exec($CMD, $$$)'
+  - kind: expression_statement
+    regex: '`[^`]+`'

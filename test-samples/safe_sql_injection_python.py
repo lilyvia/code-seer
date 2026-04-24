@@ -31,6 +31,10 @@ class User:
     objects = RawManager()
 
 
+def RawSQL(*args, **kwargs):
+    return args, kwargs
+
+
 class Engine:
     def __init__(self, dsn):
         self.dsn = dsn
@@ -64,3 +68,13 @@ def safe_queries(user_id, user_name):
     session.execute(text("SELECT * FROM accounts WHERE id = :user_id"), {"user_id": user_id})
     engine.execute(text("SELECT * FROM audit_logs WHERE actor = :actor"), {"actor": user_name})
     conn.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+
+
+def safe_false_negative_expansion(pd, conn, user_id):
+    # Safe: pandas query uses placeholders with separate parameters.
+    read_query = pd.read_sql_query
+    read_query("SELECT * FROM users WHERE id = ?", conn, params=(user_id,))
+
+    # Safe: RawSQL uses a static query with no user-controlled concatenation.
+    static_raw_sql = RawSQL
+    return static_raw_sql("SELECT id FROM users WHERE is_active = TRUE", [])

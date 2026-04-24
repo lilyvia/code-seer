@@ -43,3 +43,7 @@ rule:
     regex: '(user_|request|param|input|arg|query|body|payload)'
   - pattern: '$SELF.redirect($USER_URL)'
     regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: 'redirect($USER_URL)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: '$SELF.redirect($USER_URL)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'

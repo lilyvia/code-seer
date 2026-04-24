@@ -140,3 +140,18 @@ rule:
   - pattern: 'httpx.get($USER_URL)'
   - pattern: 'aiohttp.ClientSession().get($USER_URL)'
   - pattern: 'http.client.HTTPConnection($USER_HOST)'
+  - all:
+    - pattern: 'treq.get($URL)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'treq.post($URL, $$$ARGS)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: '$CURL.setopt(pycurl.URL, $URL)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'curl_cffi.requests.get($URL)'
+    - regex: '(user_|request|param|input|arg|query)'
+  - all:
+    - pattern: 'wget.download($URL)'
+    - regex: '(user_|request|param|input|arg|query)'

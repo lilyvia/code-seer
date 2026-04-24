@@ -61,3 +61,15 @@ function false_negative_expansion_knex(knex, input) {
     knex.whereRaw(`name = ${input}`);
     knex.fromRaw("users where id = " + input);
 }
+
+function false_negative_expansion_typeorm_builder(repo, userId, request) {
+    // Vulnerable: user-controlled template literal is passed into TypeORM where().
+    repo.createQueryBuilder('user').where(`user.id = ${userId}`).getMany();
+    repo.createQueryBuilder('user').where('user.name = ' + request.query.name, {});
+}
+
+function false_negative_expansion_pg_pool(pool, client, input) {
+    // Vulnerable: SQL is concatenated before reaching pg query sinks.
+    pool.query('SELECT * FROM users WHERE name = ' + input, []);
+    client.query(`SELECT * FROM audit WHERE actor = ${input}`, []);
+}

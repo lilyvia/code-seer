@@ -15,3 +15,9 @@ rule:
     - kind: macro_invocation
       pattern: 'format!($FMT, $$$)'
     - regex: 'format!\s*\(\s*".*<.*>.*"'
+
+  # false-negative coverage expansion
+  - kind: call_expression
+    pattern: 'maud::PreEscaped($USER_INPUT)'
+  - kind: call_expression
+    pattern: 'askama::Html($USER_INPUT)'

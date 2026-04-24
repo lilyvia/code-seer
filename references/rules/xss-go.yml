@@ -27,3 +27,13 @@ rule:
   - all:
     - pattern: 'w.Write($DATA)'
     - regex: 'w\.Write\(\[\]byte\(.*".*<.*>"\s*\+\s*.*\s*\+\s*".*</.*>.*"'
+
+  # false-negative coverage expansion - additional XSS sinks
+  - kind: call_expression
+    pattern: 'template.HTML($USER_INPUT)'
+  - kind: call_expression
+    pattern: 'template.JS($USER_INPUT)'
+  - kind: call_expression
+    pattern: 'template.CSS($USER_INPUT)'
+  - kind: call_expression
+    pattern: 'template.URL($USER_INPUT)'

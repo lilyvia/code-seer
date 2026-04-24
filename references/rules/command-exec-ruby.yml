@@ -28,3 +28,12 @@ rule:
   - pattern: 'spawn($CMD)'
   - kind: program
     regex: '%x\{.*(user|input|param|cmd|command).*\}'
+  - pattern: '%x{$CMD}'
+  - pattern: '%x[$CMD]'
+  - pattern: '%x($CMD)'
+  - pattern: '%x!$CMD!'
+  - pattern: '%x<$CMD>'
+  - pattern: '%x/$CMD/'
+  - pattern: 'Kernel.system($CMD)'
+  - pattern: 'Kernel.exec($CMD)'
+  - pattern: 'Kernel.spawn($CMD)'

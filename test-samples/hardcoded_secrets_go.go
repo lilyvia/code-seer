@@ -27,5 +27,8 @@ var privateKey = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCB
 func main() {
 	// Match: token := "..." (24+ chars)
 	token := "d2hhdGV2ZXI6eW91OnR5cGU6aGVyZQ=="
-	_ = token
+	openAIToken := "sk-123456789012345678901234"
+	googleAPIKey := "AIza12345678901234567890123456789012345"
+	mongoURI := "mongodb://appuser:apppass@localhost/appdb"
+	_, _, _, _ = token, openAIToken, googleAPIKey, mongoURI
 }

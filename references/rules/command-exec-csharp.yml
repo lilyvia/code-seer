@@ -21,3 +21,15 @@ rule:
   - pattern: '$PSI.FileName = $CMD'
   - pattern: '$PSI.Arguments = $ARGS'
   - pattern: 'System.Diagnostics.Process.Start($CMD)'
+
+  # false-negative coverage expansion - PowerShell and process sinks
+  - kind: invocation_expression
+    pattern: 'PowerShell.Create().AddScript($SCRIPT)'
+  - kind: invocation_expression
+    pattern: 'PowerShell.Create().AddCommand($CMD).AddArgument($ARG)'
+  - kind: invocation_expression
+    pattern: 'new RunspaceInvoke().Invoke($SCRIPT)'
+  - kind: invocation_expression
+    pattern: '$PROCESS.StartInfo.FileName = $CMD'
+  - kind: invocation_expression
+    pattern: '$PROCESS.StartInfo.Arguments = $ARGS'

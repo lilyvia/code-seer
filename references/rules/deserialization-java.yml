@@ -58,3 +58,17 @@ rule:
   - pattern: '$MAPPER.enableDefaultTyping()'
   - pattern: '$MAPPER.readValue($DATA, Object.class)'
   - pattern: '$HESSIAN.readObject()'
+  - kind: object_creation_expression
+    pattern: 'new XMLDecoder($INPUT)'
+  - kind: object_creation_expression
+    pattern: 'new JSONDeserializer().deserialize($DATA)'
+  - kind: method_invocation
+    pattern: 'new Gson().fromJson($DATA, Object.class)'
+  - kind: method_invocation
+    pattern: '$MAPPER.readValue($DATA, Object.class)'
+  - kind: method_invocation
+    pattern: '$KRYO.readClassAndObject($INPUT)'
+  - kind: method_invocation
+    pattern: '$KRYO.readObject($INPUT, $CLASS)'
+  - kind: method_invocation
+    pattern: 'new Yaml().loadAll($DATA)'

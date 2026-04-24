@@ -56,3 +56,19 @@ rule:
   - kind: call_expression
     pattern: '$CONN.QueryRowContext($CTX, $QUERY)'
     regex: '(?i)(user|input|param|query|sql)'
+  # false-negative coverage expansion - additional SQL sinks
+  - kind: call_expression
+    pattern: '$DB.Get($DEST, $QUERY, $ARGS)'
+    regex: '(?i)(user|input|param|request|query|sql|\+)'
+  - kind: call_expression
+    pattern: '$DB.Select($DEST, $QUERY, $ARGS)'
+    regex: '(?i)(user|input|param|request|query|sql|\+)'
+  - kind: call_expression
+    pattern: 'sqlx.In($QUERY, $ARGS)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call_expression
+    pattern: '$DB.MustExec($QUERY, $ARGS)'
+    regex: '(?i)(user|input|param|request|query|sql|\+)'
+  - kind: call_expression
+    pattern: '$DB.QueryRow($QUERY, $ARGS)'
+    regex: '(?i)(user|input|param|request|query|sql|\+)'

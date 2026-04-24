@@ -17,3 +17,9 @@ function false_negative_expansion_nosql_js(Model, db, req) {
     db.collection('users').aggregate([{ $match: req.query }]);
     const filter = { ...req.body };
 }
+
+function false_negative_additional_nosql_js(Model, db, req) {
+    Model.find().populate({path: 'profile', match: { $where: req.query.expression }});
+    db.collection('users').find({ name: { $regex: req.query.name } });
+    new Query({ ...req.query });
+}

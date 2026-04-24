@@ -44,3 +44,11 @@ rule:
   - pattern: 'new DataContractSerializer($TYPE).ReadObject($DATA)'
   - pattern: 'JsonConvert.DeserializeObject($DATA, $SETTINGS)'
     regex: 'TypeNameHandling'
+  - kind: invocation_expression
+    pattern: 'new ObjectStateFormatter().Deserialize($DATA)'
+  - kind: invocation_expression
+    pattern: 'new NetDataContractSerializer().ReadObject($STREAM)'
+  - kind: invocation_expression
+    pattern: 'new JavaScriptSerializer().Deserialize($DATA)'
+  - kind: invocation_expression
+    pattern: 'JSON.ToObject($DATA)'

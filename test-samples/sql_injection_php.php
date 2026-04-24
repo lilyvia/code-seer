@@ -12,3 +12,9 @@ function false_negative_expansion_pdo($pdo) {
     $pdo->query($userSql);
     $pdo->exec($userSql);
 }
+
+function false_negative_expansion_orm($em) {
+    DB::select("SELECT * FROM users WHERE id = " . $_GET['id']);
+    DB::update("UPDATE users SET name = '" . $_POST['name'] . "' WHERE id = " . $_GET['id']);
+    $em->createQuery("SELECT u FROM User u WHERE u.name = '" . $_GET['name'] . "'");
+}

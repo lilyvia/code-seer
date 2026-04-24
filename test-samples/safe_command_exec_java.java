@@ -21,4 +21,8 @@ class SafeJavaCmdExec {
         builder.redirectErrorStream(true);
         return builder;
     }
+
+    public Object evaluateTrustedScript(javax.script.ScriptEngine engine) throws Exception {
+        return engine.eval("1 + 1");
+    }
 }

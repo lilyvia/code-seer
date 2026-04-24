@@ -15,3 +15,10 @@ function safeFetch($url) {
     // In production, use a dedicated HTTP client with timeout
     return 'fetching ' . $url;
 }
+
+function safeGuzzleFetch($client, $url) {
+    if (!isSafeUrl($url)) {
+        throw new Exception('URL not allowed');
+    }
+    return $client->send(new Request('GET', $url));
+}

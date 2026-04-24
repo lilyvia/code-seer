@@ -42,3 +42,13 @@ rule:
   - all:
     - pattern: '$CLIENT.get($USER_URL).send()'
     - regex: '(user_|request|param|input|arg|query)'
+
+  # false-negative coverage expansion - additional HTTP client sinks
+  - all:
+    - kind: call_expression
+      pattern: 'hyper::Client::new().get($USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'hyper::Client::new().request($METHOD, $USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'

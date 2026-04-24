@@ -68,3 +68,15 @@ rule:
   - pattern: 'React.createElement($TAG, { dangerouslySetInnerHTML: { __html: $USER_INPUT } })'
   - kind: program
     regex: 'x-html=.*(user|input|param|request|query|body|payload)'
+  - pattern: '$SCE.bypassSecurityTrustHtml($USER_INPUT)'
+  - pattern: '$SCE.bypassSecurityTrustScript($USER_INPUT)'
+  - pattern: '$SCE.bypassSecurityTrustStyle($USER_INPUT)'
+  - pattern: '$SCE.bypassSecurityTrustUrl($USER_INPUT)'
+  - pattern: '$ELEMENT.append($USER_INPUT)'
+  - pattern: '$ELEMENT.prepend($USER_INPUT)'
+  - pattern: '$(...).append($USER_INPUT)'
+  - pattern: '$(...).prepend($USER_INPUT)'
+  - kind: program
+    regex: '\{@html\s+.*(user|input|param|request|query|body|payload)'
+  - pattern: 'unsafeHTML($USER_INPUT)'
+  - pattern: 'React.createElement($TAG, { $$$, dangerouslySetInnerHTML: { __html: $USER_INPUT } })'

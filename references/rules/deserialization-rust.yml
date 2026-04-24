@@ -44,3 +44,6 @@ rule:
   - pattern: 'serde_pickle::from_slice($DATA)'
   - pattern: 'ron::de::from_str($DATA)'
   - pattern: 'ciborium::from_reader($DATA)'
+  - kind: call_expression
+    pattern: 'rmp_serde::from_read($READER)'
+    regex: '(?i)(user|input|param|request|query)'

@@ -25,3 +25,8 @@ function false_negative_expansion_php_command($userCmd) {
     popen($userCmd, 'r');
     pcntl_exec($userCmd, []);
 }
+
+function false_negative_expansion_php_backtick($userInput) {
+    $backtick = `ls {$userInput}`;
+    return $backtick;
+}

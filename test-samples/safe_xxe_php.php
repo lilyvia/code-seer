@@ -13,3 +13,7 @@ function safeLoadXML($xml) {
 function safeSimpleXML($xml) {
     return simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NONET);
 }
+
+function safeSimpleXMLWithOptions($xml) {
+    return simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOCDATA);
+}

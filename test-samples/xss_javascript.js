@@ -16,3 +16,15 @@ function false_negative_expansion_xss_js(element, userInput, $sce, React) {
     $sce.trustAsHtml(userInput);
     React.createElement('div', { dangerouslySetInnerHTML: { __html: userInput } });
 }
+
+function false_negative_expansion_additional_xss(element, userInput, $sce, unsafeHTML, React) {
+    // Vulnerable: trust bypasses and DOM insertion APIs receive user input.
+    $sce.bypassSecurityTrustHtml(userInput);
+    $sce.bypassSecurityTrustScript(userInput);
+    element.append(userInput);
+    element.prepend(userInput);
+    unsafeHTML(userInput);
+    React.createElement('section', { className: 'profile', dangerouslySetInnerHTML: { __html: userInput } });
+}
+
+const svelteTemplate = `{@html userInput}`;

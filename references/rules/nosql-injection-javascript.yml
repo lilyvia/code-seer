@@ -69,3 +69,10 @@ rule:
     - pattern: '$DB.collection($NAME).aggregate($PIPELINE)'
       regex: '(?i)(user|input|param|request|query|body|payload|\$where|\$expr|\$function)'
     - pattern: '$FILTER = { ...$USER_INPUT }'
+    # false-negative coverage expansion - additional NoSQL sinks
+    - kind: call_expression
+      pattern: '$MODEL.find().populate({path: $PATH, match: $MATCH})'
+    - kind: call_expression
+      pattern: '{ $regex: req.query.$FIELD }'
+    - kind: call_expression
+      pattern: 'new Query({ ...req.query })'

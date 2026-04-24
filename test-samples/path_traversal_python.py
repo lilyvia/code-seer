@@ -8,3 +8,8 @@ def false_negative_expansion_path_python(user_path, content, shutil, archive):
     shutil.move(user_path, '/tmp/out')
     shutil.rmtree(user_path)
     archive.extractall(user_path)
+
+def false_negative_additional_path_python(os, gzip, shutil, userDir, userPath, userArchive):
+    os.listdir(userDir)
+    gzip.open(userPath, 'rb')
+    shutil.unpack_archive(userArchive, '/tmp/out')

@@ -11,3 +11,7 @@ def false_negative_expansion_redirect_python(user_url, self):
     RedirectResponse(user_url)
     web.HTTPFound(user_url)
     self.redirect(user_url)
+
+def false_negative_additional_redirect_python(userUrl, self):
+    redirect(userUrl)
+    self.redirect(userUrl)

@@ -11,4 +11,9 @@ class SafeSqli
   def delete_post(id)
     Post.find(id).destroy
   end
+
+  def safe_select_all(id)
+    sql = ActiveRecord::Base.sanitize_sql_array(['SELECT * FROM users WHERE id = ?', id])
+    ActiveRecord::Base.connection.public_send(:select_all, sql)
+  end
 end

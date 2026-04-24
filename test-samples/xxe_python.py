@@ -52,3 +52,7 @@ def false_negative_expansion_xxe_python(user_xml, xmltodict):
     xmltodict.parse(user_xml)
     etree.XMLParser(resolve_entities=True)
     ET.iterparse(user_xml)
+
+def false_negative_additional_xxe_python(xml, BeautifulSoup):
+    etree.HTMLParser(resolve_entities=True)
+    BeautifulSoup(xml, 'lxml-xml')

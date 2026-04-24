@@ -14,3 +14,15 @@ function getUserMysqli($mysqli, $id) {
     $stmt->execute();
     return $stmt->get_result()->fetch_assoc();
 }
+
+// Safe: Use Laravel bindings instead of SQL concatenation
+function getUserWithBindings($id) {
+    return DB::select('SELECT * FROM users WHERE id = ?', [$id]);
+}
+
+// Safe: Use Doctrine named parameters instead of DQL concatenation
+function getUserWithDoctrine($em, $name) {
+    $query = $em->createQuery('SELECT u FROM User u WHERE u.name = :name');
+    $query->setParameter('name', $name);
+    return $query->getResult();
+}

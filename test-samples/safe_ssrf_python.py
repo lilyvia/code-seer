@@ -29,6 +29,18 @@ class httpx:
             return args, kwargs
 
 
+class treq:
+    @staticmethod
+    def get(*args, **kwargs):
+        return args, kwargs
+
+
+class wget:
+    @staticmethod
+    def download(*args, **kwargs):
+        return args, kwargs
+
+
 ALLOWED_HOSTS = {"api.example.com", "files.example.com"}
 
 
@@ -45,3 +57,9 @@ def fetch_profile(url):
     http_client.put(url, timeout=3)
     with httpx.Client(timeout=3) as client:
         return client.get(url), client.stream("GET", url)
+
+
+def safe_false_negative_expansion():
+    # Safe: outbound targets are hardcoded trusted URLs.
+    treq.get("https://api.example.com/status")
+    wget.download("https://files.example.com/manual.pdf")

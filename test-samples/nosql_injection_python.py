@@ -43,3 +43,9 @@ def vulnerable_json_parse(collection):
 def false_negative_expansion_nosql_python(collection, request):
     collection.aggregate([{ '$match': request.json }])
     collection.find(request.args)
+
+def false_negative_additional_nosql_python(redis, es, table, Document, userCmd, userQuery, userExpr, userFilter):
+    redis.execute_command(userCmd)
+    es.search(body=userQuery)
+    table.query(KeyConditionExpression=userExpr)
+    Document.find(userFilter)

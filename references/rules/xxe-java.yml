@@ -89,3 +89,9 @@ rule:
   - pattern: '$READER.parse($XML_INPUT)'
   - pattern: '$VALIDATOR.validate($XML_INPUT)'
   - pattern: '$TRANSFORMER.transform($XML_INPUT, $$$)'
+  - kind: method_invocation
+    pattern: 'XMLInputFactory.newInstance().createXMLStreamReader($XML)'
+  - kind: method_invocation
+    pattern: '$RESTTEMPLATE.exchange($URL, $METHOD, $ENTITY, $XML_CLASS)'
+  - kind: method_invocation
+    pattern: 'SchemaFactory.newInstance($X).newSchema($Y).newValidator()'

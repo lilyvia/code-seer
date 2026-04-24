@@ -96,3 +96,9 @@ type UserDB struct{}
 func (u *UserDB) FindByID(id string) (*User, error) {
 	return nil, nil
 }
+
+func registerInsecureAdminRoutes(r *Router, app *FiberApp) {
+	admin := r.Group("/admin")
+	admin.Delete("/users/:id", deleteAdminUser)
+	app.Delete("/admin/users/:id", deleteAdminUser)
+}

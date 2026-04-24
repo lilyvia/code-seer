@@ -33,3 +33,11 @@ rule:
     - all:
         - pattern: file_get_contents($URL)
         - regex: 'file_get_contents\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)'
+
+    # false-negative coverage expansion - additional HTTP client sinks
+    - pattern: '$CLIENT->request($METHOD, $USER_URL)'
+    - pattern: '$CLIENT->get($USER_URL)'
+    - pattern: '$CLIENT->post($USER_URL, $$$ARGS)'
+    - pattern: 'HttpClient::create()->request($METHOD, $USER_URL)'
+    - pattern: 'HttpClient::create()->get($USER_URL)'
+    - pattern: 'HttpClient::create()->post($USER_URL, $$$ARGS)'

@@ -40,3 +40,7 @@ function test_xmlreader_open($xmlPath) {
     $reader = new XMLReader();
     $reader->open($xmlPath);
 }
+
+function test_simplexml_load_string_default($xml) {
+    simplexml_load_string($xml);
+}

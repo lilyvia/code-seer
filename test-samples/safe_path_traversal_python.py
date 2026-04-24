@@ -19,3 +19,12 @@ def safe_read(base_dir, usr_path):
         raise ValueError("Invalid path")
     with open(full, 'r') as f:
         return f.read()
+
+
+def safe_gzip_open(base_dir, user_path, gzip):
+    base = Path(base_dir).resolve()
+    target = (base / user_path).resolve()
+    if base != target and base not in target.parents:
+        raise ValueError("Path traversal detected")
+    gzip_open = gzip.open
+    return gzip_open(target, 'rb')

@@ -74,3 +74,5 @@ rule:
   - pattern: 'xmltodict.parse($XML_INPUT)'
   - pattern: 'etree.XMLParser(resolve_entities=True)'
   - pattern: 'ET.iterparse($XML_INPUT)'
+  - pattern: 'etree.HTMLParser(resolve_entities=True)'
+  - pattern: 'BeautifulSoup($XML, "lxml-xml")'

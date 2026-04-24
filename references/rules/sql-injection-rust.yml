@@ -25,3 +25,18 @@ rule:
   - kind: call_expression
     pattern: '$CONN.execute($QUERY, $$$)'
     regex: '(?i)(user|input|param|query|sql)'
+  - kind: call_expression
+    pattern: 'sqlx::query_as($QUERY)'
+    regex: '(?i)(user|input|param|query|sql)'
+  - kind: call_expression
+    pattern: 'sqlx::query_as_unchecked($QUERY)'
+    regex: '(?i)(user|input|param|query|sql)'
+  - kind: call_expression
+    pattern: '$CONN.execute($QUERY, $PARAMS)'
+    regex: '(?i)(rusqlite|rusqlite::Connection|format!|\+)'
+  - kind: call_expression
+    pattern: '$STMT.execute($PARAMS)'
+    regex: '(?i)(rusqlite|rusqlite::Statement)'
+  - kind: call_expression
+    pattern: '$CLIENT.query($QUERY, $PARAMS)'
+    regex: '(?i)(tokio_postgres|postgres::Client|format!|\+)'

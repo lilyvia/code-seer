@@ -23,5 +23,9 @@ public class HardcodedSecretsJava {
 
         // Match: String secretToken = "..."
         String secretToken = "d2hhdGV2ZXI6eW91OnR5cGU6aGVyZQ==";
+
+        String openAiToken = "sk-123456789012345678901234";
+        String googleApiKey = "AIza12345678901234567890123456789012345";
+        String mongoUri = "mongodb://appuser:apppass@localhost/appdb";
     }
 }

@@ -39,3 +39,21 @@ rule:
     - pattern: $FN($URL)
       kind: call_expression
     - regex: http\.Get\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)
+
+  # false-negative coverage expansion - additional HTTP client sinks
+  - all:
+    - kind: call_expression
+      pattern: 'fasthttp.Get($CLIENT, $URL)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'fasthttp.Do($REQ, $RESP)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'resty.New().R().Get($URL)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'resty.New().R().Post($URL)'
+    - regex: '(?i)(user|request|param|input|arg|query)'

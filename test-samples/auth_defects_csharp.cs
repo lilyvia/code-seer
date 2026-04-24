@@ -1,5 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
+[AllowAnonymous]
+public class AdminController : Controller
+{
+    [HttpDelete("admin/users/{id}")]
+    public IActionResult DeleteAdminUser(int id)
+    {
+        _service.DeleteUser(id);
+        return NoContent();
+    }
+}
+
+public class ManageController : Controller
+{
+    [HttpGet("manage")]
+    public IActionResult Index()
+    {
+        return Ok();
+    }
+}
 
 public class OrdersController : ControllerBase
 {

@@ -25,4 +25,10 @@ public class SafeAuthController {
     public void updateProduct(@PathVariable Long id, @RequestBody Product product) {
         productService.update(id, product);
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin")
+    public String adminDashboard() {
+        return "admin";
+    }
 }

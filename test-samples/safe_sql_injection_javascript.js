@@ -31,3 +31,8 @@ function safeKnexBuilder(knex, name) {
 function safePrismaOrm(prisma, input) {
     prisma.log.findMany({ where: { msg: input } });
 }
+
+function safeFalseNegativeExpansion(pool, input) {
+    // Safe: pg parameterized query separates SQL text from user data.
+    return pool.query('SELECT * FROM users WHERE name = $1', [input]);
+}

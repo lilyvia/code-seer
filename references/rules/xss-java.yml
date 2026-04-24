@@ -20,3 +20,5 @@ rule:
   - pattern: '$RESPONSE.getOutputStream().write($USER_INPUT.getBytes())'
   - regex: 'th:utext=.*(user|input|param|request|query|body|payload)'
   - regex: '<%=.*(user|input|param|request|query|body|payload).*%>'
+  - regex: '<%=\s*request\.getParameter\s*\(.*?\)\s*%>'
+  - regex: "escapeXml\\s*=\\s*['\"]false['\"]"

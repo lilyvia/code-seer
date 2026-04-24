@@ -17,3 +17,5 @@ function false_negative_expansion_xss_php($userInput) {
     echo $userInput;
     print $userInput;
 }
+?>
+{!! $userInput !!}

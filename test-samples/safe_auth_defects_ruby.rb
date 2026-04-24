@@ -1,6 +1,7 @@
 # Safe: Require authentication and ownership check
 class OrdersController < ApplicationController
   before_action :authenticate_user!
+  before_action :authorize_order
 
   def show
     order_id = params[:id].to_i
