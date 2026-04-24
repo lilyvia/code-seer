@@ -23,3 +23,12 @@ function parent_ops($userPath) {
     include("../" . $userPath);
     unlink("../" . $userPath);
 }
+
+function false_negative_expansion_path_php($userPath, $tmp) {
+    copy($userPath, '/tmp/out');
+    rename($userPath, '/tmp/out');
+    move_uploaded_file($tmp, $userPath);
+    fopen($userPath, 'r');
+    readfile($userPath);
+    scandir($userPath);
+}

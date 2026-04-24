@@ -32,3 +32,10 @@ rule:
     - kind: object_creation_expression
       pattern: 'URI.create($URL)'
     - regex: URI\.create\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)
+
+  # false-negative coverage expansion
+  - pattern: 'new URL($USER_URL).openStream()'
+  - pattern: '$REST.getForObject($USER_URL, $$$)'
+  - pattern: '$WEBCLIENT.get().uri($USER_URL)'
+  - pattern: '$CLIENT.newCall($REQUEST)'
+    regex: '(?i)(user|input|param|request|query|url)'

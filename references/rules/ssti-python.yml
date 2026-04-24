@@ -15,3 +15,8 @@ rule:
     regex: '(user_|request|param|input|arg|query|template|source)'
   - pattern: Environment().from_string($TMPL).render($$$ARGS)
     regex: '(user_|request|param|input|arg|query|template|source)'
+
+  # false-negative coverage expansion
+  - pattern: 'mako.template.Template($TMPL).render($$$)'
+  - pattern: 'django.template.Template($TMPL).render($$$)'
+  - pattern: 'jinja2.Environment().from_string($TMPL)'

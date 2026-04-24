@@ -10,3 +10,12 @@ public class InsecureDeserializationCsharp
         return obj;
     }
 }
+
+class FalseNegativeExpansionDeserCSharp {
+    void FalseNegativeExpansion(Stream userData, string userJson) {
+        new BinaryFormatter().Deserialize(userData);
+        new SoapFormatter().Deserialize(userData);
+        new LosFormatter().Deserialize(userJson);
+        JsonConvert.DeserializeObject(userJson, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+    }
+}

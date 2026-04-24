@@ -27,3 +27,10 @@ func parseGobAndYaml(input []byte) error {
 
 	return nil
 }
+
+func false_negative_expansion_go_deser(reader io.Reader, userData []byte, out any) {
+    json.NewDecoder(reader).Decode(&out)
+    proto.Unmarshal(userData, &out)
+    xml.NewDecoder(reader).Decode(&out)
+    msgpack.Unmarshal(userData, &out)
+}

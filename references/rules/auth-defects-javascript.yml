@@ -205,3 +205,11 @@ rule:
     - pattern: 'await prisma.$MODEL.update({ where: { id: req.params.$ID }, data: req.body })'
     - pattern: 'await prisma.$MODEL.delete({ where: { id: req.params.$ID } })'
     - pattern: 'await prisma.$MODEL.create({ data: req.body })'
+
+    # false-negative coverage expansion
+    - pattern: 'app.patch($PATH, $HANDLER)'
+      regex: 'findById|findOne|update|delete|remove|destroy|prisma'
+    - pattern: 'router.patch($PATH, $HANDLER)'
+      regex: 'findById|findOne|update|delete|remove|destroy|prisma'
+    - pattern: 'server.route({ method: $METHOD, path: $PATH, handler: $HANDLER })'
+      regex: 'findById|findOne|update|delete|remove|destroy|prisma'

@@ -36,3 +36,12 @@ function pathBasedSSRF(req) {
     http.request({path: targetPath}, res => {});
     https.request({path: targetPath}, res => {});
 }
+
+function false_negative_expansion_ssrf_js(nodeFetch, undici, superagent, got, http, https, userUrl) {
+    nodeFetch(userUrl);
+    undici.request(userUrl);
+    superagent.get(userUrl);
+    got(userUrl);
+    http.get(userUrl);
+    https.get(userUrl);
+}

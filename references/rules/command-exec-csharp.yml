@@ -16,3 +16,8 @@ rule:
   - pattern: Process.Start($CMD)
   - pattern: Process.Start($FILE, $ARGS)
   - pattern: Process.Start(new ProcessStartInfo($$$ARGS))
+
+  # false-negative coverage expansion
+  - pattern: '$PSI.FileName = $CMD'
+  - pattern: '$PSI.Arguments = $ARGS'
+  - pattern: 'System.Diagnostics.Process.Start($CMD)'

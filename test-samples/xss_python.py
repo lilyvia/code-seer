@@ -27,3 +27,8 @@ def xss_django_fstring():
 def xss_markup():
     from markupsafe import Markup
     return Markup(user_input)
+
+def false_negative_expansion_xss_python(user_input):
+    mark_safe(user_input)
+    Response(user_input)
+    make_response(user_input)

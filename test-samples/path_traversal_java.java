@@ -28,3 +28,13 @@ public class path_traversal_java {
         FileOutputStream fos = new FileOutputStream("../" + rest);
     }
 }
+
+class FalseNegativeExpansionPathJava {
+    void false_negative_expansion(String userPath, MultipartFile file) throws Exception {
+        Files.readAllBytes(Paths.get(userPath));
+        Files.copy(Paths.get(userPath), Paths.get("/tmp/out"));
+        Files.move(Paths.get(userPath), Paths.get("/tmp/out"));
+        Files.delete(Paths.get(userPath));
+        file.transferTo(new File(userPath));
+    }
+}

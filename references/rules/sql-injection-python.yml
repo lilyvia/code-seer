@@ -75,3 +75,20 @@ rule:
   - pattern: '$CONN.execute($SQL % $VAR)'
   - pattern: '$CONN.execute($SQL.format($$$ARGS))'
   - pattern: '$CONN.execute($SQL + $VAR)'
+
+  # false-negative coverage expansion
+  - kind: call
+    pattern: 'pd.read_sql($QUERY, $$$)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call
+    pattern: 'pandas.read_sql($QUERY, $$$)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call
+    pattern: '$CONN.fetch($QUERY)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call
+    pattern: '$CONN.execute($QUERY)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: call
+    pattern: '$MODEL.raw($QUERY)'
+    regex: '(?i)(user|input|param|request|query|sql)'

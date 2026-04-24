@@ -21,3 +21,10 @@ rule:
   - pattern: module_eval($CODE)
   - pattern: Kernel.eval($CODE)
   - pattern: '`$CMD`'
+
+  # false-negative coverage expansion
+  - pattern: 'Open3.pipeline($CMD)'
+  - pattern: 'Open3.pipeline_start($CMD)'
+  - pattern: 'spawn($CMD)'
+  - kind: program
+    regex: '%x\{.*(user|input|param|cmd|command).*\}'

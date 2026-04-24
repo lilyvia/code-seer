@@ -68,3 +68,9 @@ rule:
   - pattern: 'etree.XMLParser(no_network=False)
 
       '
+
+  # false-negative coverage expansion
+  - pattern: 'xml.sax.make_parser().parse($XML_INPUT)'
+  - pattern: 'xmltodict.parse($XML_INPUT)'
+  - pattern: 'etree.XMLParser(resolve_entities=True)'
+  - pattern: 'ET.iterparse($XML_INPUT)'

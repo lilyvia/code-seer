@@ -16,3 +16,9 @@ rule:
   - pattern: 'return HttpResponse(f"<$$$HTML>{$USER_INPUT}</$$$HTML>")'
   - pattern: 'Markup($USER_INPUT)'
   - pattern: 'markupsafe.Markup($USER_INPUT)'
+
+  # false-negative coverage expansion
+  - pattern: 'mark_safe($USER_INPUT)'
+  - pattern: 'Response($USER_INPUT)'
+  - pattern: 'make_response($USER_INPUT)'
+  - pattern: '$SELF.write($USER_INPUT)'

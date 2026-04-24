@@ -22,3 +22,10 @@ rule:
   - pattern: eval($USER_CODE)
   - pattern: exec($USER_CODE)
   - pattern: compile($USER_CODE, $FILENAME, $MODE)
+
+  # false-negative coverage expansion
+  - pattern: 'asyncio.create_subprocess_shell($CMD)'
+  - pattern: 'asyncio.create_subprocess_exec("sh", "-c", $CMD)'
+  - pattern: 'pexpect.spawn($CMD)'
+  - pattern: '$SSH.exec_command($CMD)'
+  - pattern: '$CONN.run($CMD)'

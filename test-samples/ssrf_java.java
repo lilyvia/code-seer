@@ -16,3 +16,11 @@ public class SsrfJava {
         new URL("http://169.254.169.254/latest/meta-data/").openConnection();
     }
 }
+
+class FalseNegativeExpansionSsrfJava {
+    void false_negative_expansion(String userUrl, RestTemplate rest, WebClient webClient) throws Exception {
+        new URL(userUrl).openStream();
+        rest.getForObject(userUrl, String.class);
+        webClient.get().uri(userUrl);
+    }
+}

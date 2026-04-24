@@ -29,3 +29,6 @@ private_key = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcw
 
 # Match: token = "..." (24+ chars base64-like)
 token = "d2hhdGV2ZXI6eW91OnR5cGU6aGVyZQ=="
+
+false_negative_expansion_secret = os.environ.get("JWT_SECRET", "fallback-secret-token")
+SECRET_KEY = "django-hardcoded-secret-value"

@@ -45,3 +45,14 @@ rule:
         '
       kind: call_expression
     - regex: \.(Query|Exec)\(
+
+  # false-negative coverage expansion
+  - kind: call_expression
+    pattern: '$DB.Raw($QUERY).Scan($$$)'
+    regex: '(?i)(user|input|param|query|sql)'
+  - kind: call_expression
+    pattern: '$DB.Exec($QUERY)'
+    regex: '(?i)(user|input|param|query|sql)'
+  - kind: call_expression
+    pattern: '$CONN.QueryRowContext($CTX, $QUERY)'
+    regex: '(?i)(user|input|param|query|sql)'

@@ -83,3 +83,9 @@ rule:
 
       '
     kind: method_invocation
+
+  # false-negative coverage expansion
+  - pattern: '$SAX.parse($XML_INPUT)'
+  - pattern: '$READER.parse($XML_INPUT)'
+  - pattern: '$VALIDATOR.validate($XML_INPUT)'
+  - pattern: '$TRANSFORMER.transform($XML_INPUT, $$$)'

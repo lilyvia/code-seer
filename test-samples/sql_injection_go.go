@@ -11,3 +11,9 @@ func vulnerable(db *sql.DB, userID string) {
 	db.Query("SELECT * FROM users WHERE id = " + userID)
 	db.Exec("SELECT * FROM users WHERE id = " + userID)
 }
+
+func false_negative_expansion_gorm(db *DB, userID string) {
+    userQuery := "SELECT * FROM users WHERE id = " + userID
+    db.Raw(userQuery).Scan(&users)
+    db.Exec(userQuery)
+}

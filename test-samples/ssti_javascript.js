@@ -35,3 +35,10 @@ function vulnerableLodashTemplate(userTemplate, data) {
     const template = _.template(userTemplate);
     return template(data);
 }
+
+function false_negative_expansion_ssti_js(nunjucks, doT, hogan, eta, userTemplate, data) {
+    nunjucks.renderString(userTemplate, data);
+    doT.template(userTemplate);
+    hogan.compile(userTemplate);
+    eta.render(userTemplate, data);
+}

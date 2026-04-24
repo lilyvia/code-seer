@@ -100,3 +100,16 @@ rule:
     kind: annotation
   - pattern: '@Query(nativeQuery = true, value = $SQL.concat($VAR))'
     kind: annotation
+
+  # false-negative coverage expansion
+  - kind: method_invocation
+    pattern: '$SESSION.createSQLQuery($SQL + $VAR)'
+  - kind: method_invocation
+    pattern: '$TEMPLATE.queryForObject($SQL + $VAR, $$$)'
+  - kind: method_invocation
+    pattern: '$TEMPLATE.queryForList($SQL + $VAR, $$$)'
+  - kind: method_invocation
+    pattern: '$TEMPLATE.batchUpdate($SQL + $VAR)'
+  - kind: method_invocation
+    pattern: '$SQLSESSION.selectOne($ID, $PARAM)'
+    regex: '(?i)(mybatis|sqlSession|selectOne|selectList|user|param|input)'

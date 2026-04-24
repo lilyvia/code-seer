@@ -33,3 +33,10 @@ rule:
   - all:
     - pattern: 'File.delete($USER_INPUT)'
     - regex: '(user_|request|param|input|arg|query|params)'
+
+  # false-negative coverage expansion
+  - pattern: 'FileUtils.cp($USER_INPUT, $$$)'
+  - pattern: 'FileUtils.mv($USER_INPUT, $$$)'
+  - pattern: 'FileUtils.mkdir_p($USER_INPUT)'
+  - pattern: 'IO.read($USER_INPUT)'
+  - pattern: 'Dir.entries($USER_INPUT)'

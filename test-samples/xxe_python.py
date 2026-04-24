@@ -46,3 +46,9 @@ def test_etree_XMLParser_load_dtd():
 
 def test_etree_XMLParser_no_network():
     parser = etree.XMLParser(no_network=False)
+
+def false_negative_expansion_xxe_python(user_xml, xmltodict):
+    xml.sax.make_parser().parse(user_xml)
+    xmltodict.parse(user_xml)
+    etree.XMLParser(resolve_entities=True)
+    ET.iterparse(user_xml)

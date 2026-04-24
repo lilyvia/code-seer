@@ -15,3 +15,10 @@ class_eval(code)
 module_eval(code)
 Kernel.eval(code)
 `#{cmd}`
+
+def false_negative_expansion_ruby_command(user_cmd)
+  Open3.pipeline(user_cmd)
+  Open3.pipeline_start(user_cmd)
+  spawn(user_cmd)
+  %x{#{user_cmd}}
+end

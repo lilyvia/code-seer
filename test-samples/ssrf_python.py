@@ -87,3 +87,8 @@ def vulnerable(user_url):
     aiohttp.ClientSession().patch(user_url, data={"key": "value"})
     aiohttp.ClientSession().delete(user_url)
     aiohttp.ClientSession().request("GET", user_url)
+
+def false_negative_expansion_ssrf_python(user_url, user_host, httpx, urllib, http):
+    urllib.request.urlopen(user_url)
+    httpx.get(user_url)
+    http.client.HTTPConnection(user_host)

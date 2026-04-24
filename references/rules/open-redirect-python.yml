@@ -35,3 +35,11 @@ rule:
     regex: '(user_|request|param|input|arg|query)'
   - pattern: HttpResponsePermanentRedirect($USER_URL)
     regex: '(user_|request|param|input|arg|query)'
+
+  # false-negative coverage expansion
+  - pattern: 'RedirectResponse($USER_URL)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: 'web.HTTPFound($USER_URL)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'
+  - pattern: '$SELF.redirect($USER_URL)'
+    regex: '(user_|request|param|input|arg|query|body|payload)'

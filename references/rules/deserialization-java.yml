@@ -49,3 +49,12 @@ rule:
 
       '
     kind: method_invocation
+
+  # false-negative coverage expansion
+  - pattern: '$XSTREAM.fromXML($DATA)'
+  - pattern: '$YAML.load($DATA)'
+  - pattern: '$JSON.parseObject($DATA)'
+  - pattern: '$OIS.readUnshared()'
+  - pattern: '$MAPPER.enableDefaultTyping()'
+  - pattern: '$MAPPER.readValue($DATA, Object.class)'
+  - pattern: '$HESSIAN.readObject()'

@@ -24,3 +24,13 @@ function vulnerablePathTraversalMore(userPath, uploadPath) {
     fs.openSync(userPath, 'r');
     path.resolve('/app/uploads', userPath);
 }
+
+function false_negative_expansion_path_js(fs, userPath, destPath) {
+    fs.copyFile(userPath, destPath, () => {});
+    fs.rename(userPath, destPath, () => {});
+    fs.mkdir(userPath, () => {});
+    fs.readdir(userPath, () => {});
+    fs.stat(userPath, () => {});
+    fs.access(userPath, () => {});
+    fs.rm(userPath, { recursive: true }, () => {});
+}

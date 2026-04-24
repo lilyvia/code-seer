@@ -16,3 +16,8 @@ rule:
   - pattern: system($CMD)
   - pattern: shell_exec($CMD)
   - pattern: passthru($CMD)
+
+  # false-negative coverage expansion
+  - pattern: 'proc_open($CMD, $$$)'
+  - pattern: 'popen($CMD, $MODE)'
+  - pattern: 'pcntl_exec($CMD, $$$)'

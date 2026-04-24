@@ -36,3 +36,11 @@ rule:
   kind: invocation_expression
   any:
   - pattern: $FORMATTER.Deserialize($DATA)
+
+  # false-negative coverage expansion
+  - pattern: 'new BinaryFormatter().Deserialize($DATA)'
+  - pattern: 'new SoapFormatter().Deserialize($DATA)'
+  - pattern: 'new LosFormatter().Deserialize($DATA)'
+  - pattern: 'new DataContractSerializer($TYPE).ReadObject($DATA)'
+  - pattern: 'JsonConvert.DeserializeObject($DATA, $SETTINGS)'
+    regex: 'TypeNameHandling'

@@ -73,3 +73,11 @@ rule:
     pattern: 'http.request({path: $USER_PATH}, $$$)'
   - kind: call_expression
     pattern: 'https.request({path: $USER_PATH}, $$$)'
+
+  # false-negative coverage expansion
+  - pattern: 'nodeFetch($USER_URL)'
+  - pattern: 'undici.request($USER_URL)'
+  - pattern: 'superagent.get($USER_URL)'
+  - pattern: 'got($USER_URL)'
+  - pattern: 'http.get($USER_URL)'
+  - pattern: 'https.get($USER_URL)'

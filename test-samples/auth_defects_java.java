@@ -70,3 +70,10 @@ public class AuthDefectsController {
         return "ok";
     }
 }
+
+class FalseNegativeExpansionAuthJava {
+    @PostMapping("/products")
+    public Product false_negative_expansion_create(@RequestBody Product product) { return repo.save(product); }
+    @PatchMapping("/products/{id}")
+    public Product false_negative_expansion_patch(@PathVariable Long id, @RequestBody Product product) { return repo.save(product); }
+}

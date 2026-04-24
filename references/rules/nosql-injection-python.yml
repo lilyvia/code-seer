@@ -61,3 +61,7 @@ rule:
       pattern: '$COLL.find(json.loads($JSON))'
     - kind: call
       pattern: '$COLL.find_one(json.loads($JSON))'
+
+    # false-negative coverage expansion
+    - pattern: '$COLLECTION.aggregate($PIPELINE)'
+      regex: '(?i)(user|input|param|request|query|body|payload|\$where|\$expr)'

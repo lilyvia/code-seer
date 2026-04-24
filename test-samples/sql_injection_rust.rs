@@ -14,3 +14,9 @@ fn test_sqli(user_input: &str, user_id: i32) {
 
     conn.execute(format!("INSERT INTO logs VALUES ('{}')", user_input));
 }
+
+fn false_negative_expansion_diesel(client: Client, user_id: String) {
+    let user_sql = format!("SELECT * FROM users WHERE id = {}", user_id);
+    diesel::sql_query(user_sql.clone());
+    client.query(&user_sql, &[]);
+}

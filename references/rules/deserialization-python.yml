@@ -55,3 +55,11 @@ rule:
   - pattern: marshal.loads($USER_DATA)
   - pattern: marshal.load($USER_DATA)
   - pattern: jsonpickle.decode($USER_DATA)
+
+  # false-negative coverage expansion
+  - pattern: 'yaml.unsafe_load($USER_DATA)'
+  - pattern: 'pandas.read_pickle($USER_DATA)'
+  - pattern: 'pd.read_pickle($USER_DATA)'
+  - pattern: 'joblib.load($USER_DATA)'
+  - pattern: 'numpy.load($USER_DATA, allow_pickle=True)'
+  - pattern: 'shelve.open($USER_DATA)'

@@ -38,3 +38,13 @@ rule:
   - pattern: 'eval($USER_CODE)
 
       '
+
+  # false-negative coverage expansion
+  - pattern: 'require("child_process").execSync($USER_CMD)'
+  - pattern: 'require("child_process").spawn($USER_CMD, $$$)'
+  - pattern: 'child_process.fork($USER_CMD)'
+  - pattern: '$CP.execSync($USER_CMD)'
+  - pattern: '$CP.fork($USER_CMD)'
+  - pattern: '$VM.runInThisContext($USER_CODE)'
+  - pattern: '$VM.runInNewContext($USER_CODE, $$$)'
+  - pattern: 'new $VM.Script($USER_CODE)'

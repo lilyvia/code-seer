@@ -60,3 +60,11 @@ rule:
   - pattern: '$ELEMENT.html($USER_INPUT)
 
       '
+
+  # false-negative coverage expansion
+  - pattern: '$ELEMENT.outerHTML = $USER_INPUT'
+  - pattern: '$ELEMENT.setAttribute("href", $USER_INPUT)'
+  - pattern: '$SCE.trustAsHtml($USER_INPUT)'
+  - pattern: 'React.createElement($TAG, { dangerouslySetInnerHTML: { __html: $USER_INPUT } })'
+  - kind: program
+    regex: 'x-html=.*(user|input|param|request|query|body|payload)'

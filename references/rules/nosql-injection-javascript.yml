@@ -62,3 +62,10 @@ rule:
     - kind: call_expression
       pattern: '$COLL.aggregate($PIPELINE)'
       regex: 'aggregate\(.*\)'
+
+    # false-negative coverage expansion
+    - pattern: '$MODEL.aggregate($PIPELINE)'
+      regex: '(?i)(user|input|param|request|query|body|payload|\$where|\$expr|\$function)'
+    - pattern: '$DB.collection($NAME).aggregate($PIPELINE)'
+      regex: '(?i)(user|input|param|request|query|body|payload|\$where|\$expr|\$function)'
+    - pattern: '$FILTER = { ...$USER_INPUT }'

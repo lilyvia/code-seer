@@ -30,3 +30,6 @@ rule:
     kind: method_invocation
   - pattern: NamingManager.getURLContext($SCHEME, $ENV).lookup($NAME)
     kind: method_invocation
+
+  # false-negative coverage expansion
+  - pattern: '$DIR.search($BASE, $FILTER, $$$)'

@@ -10,3 +10,8 @@ ERB.new(user_input).result(binding)
 response.write(user_input)
 content_tag(:div, raw(user_input))
 raw(user_input)
+
+def false_negative_expansion_xss_ruby(user_input)
+  raw(user_input)
+  user_input.html_safe
+end

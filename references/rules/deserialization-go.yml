@@ -15,3 +15,9 @@ rule:
     kind: call_expression
   - pattern: yaml.Unmarshal($DATA, $OUT)
     kind: call_expression
+
+  # false-negative coverage expansion
+  - pattern: 'json.NewDecoder($READER).Decode($OBJ)'
+  - pattern: 'proto.Unmarshal($DATA, $OBJ)'
+  - pattern: 'xml.NewDecoder($READER).Decode($OBJ)'
+  - pattern: 'msgpack.Unmarshal($DATA, $OBJ)'

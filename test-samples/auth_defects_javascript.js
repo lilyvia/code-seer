@@ -195,3 +195,8 @@ app.get('/prisma/orders/:id', async (req, res) => {
     const order = await prisma.order.findFirst({ where: { id: req.params.id } });
     res.json(order);
 });
+
+function false_negative_expansion_auth_js(app, router, User, req, res) {
+    app.patch('/users/:id', async (req, res) => res.json(await User.findByIdAndUpdate(req.params.id, req.body)));
+    router.patch('/users/:id', async (req, res) => res.json(await User.findOne({ _id: req.params.id })));
+}

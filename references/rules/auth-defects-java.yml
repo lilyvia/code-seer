@@ -74,3 +74,14 @@ rule:
         public $RET $METHOD($$$PARAMS) {
           return $REPO.findById($REQUEST.getParameter($PARAM));
         }
+
+    # false-negative coverage expansion
+    - pattern: |
+        @PostMapping($PATH)
+        public $RET $METHOD($$$) { $$$ }
+    - pattern: |
+        @PatchMapping($PATH)
+        public $RET $METHOD($$$) { $$$ }
+    - pattern: |
+        @RequestMapping($PATH)
+        public $RET $METHOD($$$) { $$$ }

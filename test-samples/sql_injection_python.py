@@ -71,3 +71,11 @@ def vulnerable(user_id, user_name):
     engine.execute(text("SELECT * FROM audit_logs WHERE id = " + user_id))
     conn.execute(f"SELECT * FROM users WHERE name = {user_name}")
     conn.execute("SELECT * FROM users WHERE id = %s" % user_id)
+
+def false_negative_expansion_pandas(pd, conn, user_id):
+    user_sql = f"SELECT * FROM users WHERE id = {user_id}"
+    return pd.read_sql(user_sql, conn)
+
+async def false_negative_expansion_asyncpg(conn, user_id):
+    user_query = f"SELECT * FROM users WHERE id = {user_id}"
+    return await conn.fetch(user_query)

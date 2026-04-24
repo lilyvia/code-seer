@@ -134,3 +134,9 @@ rule:
     - pattern: aiohttp.ClientSession().request($METHOD, $URL)
 
     - regex: '(user_|param|input|arg|query)'
+
+  # false-negative coverage expansion
+  - pattern: 'urllib.request.urlopen($USER_URL)'
+  - pattern: 'httpx.get($USER_URL)'
+  - pattern: 'aiohttp.ClientSession().get($USER_URL)'
+  - pattern: 'http.client.HTTPConnection($USER_HOST)'

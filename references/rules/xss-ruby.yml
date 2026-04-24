@@ -35,3 +35,9 @@ rule:
   - pattern: 'raw($INPUT)
 
       '
+
+  # false-negative coverage expansion
+  - pattern: 'raw($USER_INPUT)'
+  - pattern: '$USER_INPUT.html_safe'
+  - kind: program
+    regex: '<%==.*(user|input|param|request|query|body|payload).*%>'

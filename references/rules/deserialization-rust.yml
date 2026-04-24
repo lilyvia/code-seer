@@ -38,3 +38,9 @@ rule:
   - pattern: rmp_serde::from_slice($DATA)
   - pattern: serde_yaml::from_str($DATA)
   - pattern: toml::from_str($DATA)
+
+  # false-negative coverage expansion
+  - pattern: 'serde_json::from_reader($DATA)'
+  - pattern: 'serde_pickle::from_slice($DATA)'
+  - pattern: 'ron::de::from_str($DATA)'
+  - pattern: 'ciborium::from_reader($DATA)'

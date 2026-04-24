@@ -27,3 +27,8 @@ rule:
   - pattern: 'std::process::Command::new($CMD).args($$$).output()'
   - pattern: 'std::process::Command::new($CMD).args($$$).spawn()'
   - pattern: 'std::process::Command::new($CMD).args($$$).status()'
+
+  # false-negative coverage expansion
+  - pattern: 'tokio::process::Command::new($CMD).spawn()'
+  - pattern: 'tokio::process::Command::new($CMD).output()'
+  - pattern: 'Command::new("sh").arg("-c").arg($CMD).output()'

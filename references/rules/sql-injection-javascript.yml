@@ -99,3 +99,22 @@ rule:
   - kind: call_expression
     pattern: '$PRISMA.$executeRawUnsafe($QUERY)'
     regex: 'executeRawUnsafe\(sql\)'
+
+  # false-negative coverage expansion
+  - kind: call_expression
+    pattern: '$REPO.query($SQL + $VAR)'
+  - kind: call_expression
+    pattern: '$REPO.query(`$SQL ${$VAR}`)'
+  - kind: call_expression
+    pattern: '$POOL.execute($SQL + $VAR)'
+  - kind: call_expression
+    pattern: '$POOL.execute(`$SQL ${$VAR}`)'
+  - kind: call_expression
+    pattern: '$RUNNER.query($QUERY)'
+    regex: '(?i)(typeorm|queryRunner|manager|mysql2|pool|client).*query\(.*(user|input|param|request|body|query|sql)'
+  - kind: call_expression
+    pattern: '$KNEX.whereRaw($QUERY)'
+  - kind: call_expression
+    pattern: '$KNEX.fromRaw($QUERY)'
+  - kind: call_expression
+    pattern: '$OBJECTION.raw($QUERY)'

@@ -48,3 +48,9 @@ rule:
   - all:
     - pattern: 'fs::write($USER_INPUT, $$$)'
     - regex: '(user_|request|param|input|arg|query)'
+
+  # false-negative coverage expansion
+  - pattern: 'fs::copy($USER_INPUT, $$$)'
+  - pattern: 'fs::rename($USER_INPUT, $$$)'
+  - pattern: 'fs::create_dir_all($USER_INPUT)'
+  - pattern: 'tokio::fs::read_dir($USER_INPUT)'

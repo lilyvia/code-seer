@@ -14,3 +14,14 @@ rule:
   - pattern: '$OBJ.query($Q, $$$)'
   - pattern: '$CONN.execute($Q)'
   - pattern: 'Statement::from($Q)'
+
+  # false-negative coverage expansion
+  - kind: call_expression
+    pattern: 'diesel::sql_query($QUERY)'
+    regex: '(?i)(user|input|param|query|sql)'
+  - kind: call_expression
+    pattern: '$CLIENT.query($QUERY, $$$)'
+    regex: '(?i)(user|input|param|query|sql)'
+  - kind: call_expression
+    pattern: '$CONN.execute($QUERY, $$$)'
+    regex: '(?i)(user|input|param|query|sql)'

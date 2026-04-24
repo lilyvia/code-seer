@@ -39,3 +39,12 @@ class JndiInjectionJava {
         return javax.naming.InitialContext.doLookup(userControlledName);
     }
 }
+
+class FalseNegativeExpansionJndiJava {
+    void false_negative_expansion(JndiTemplate template, JndiLocatorDelegate delegate, DirContext dir, String userName) throws Exception {
+        template.lookup(userName);
+        delegate.lookup(userName);
+        dir.search("dc=example", userName, null);
+        NamingManager.getURLContext(userName, null);
+    }
+}

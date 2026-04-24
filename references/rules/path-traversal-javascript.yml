@@ -73,3 +73,26 @@ rule:
   - kind: call_expression
     pattern: 'path.resolve($BASE_DIR, $USER_PATH)'
     regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
+
+  # false-negative coverage expansion
+  - kind: call_expression
+    pattern: 'fs.copyFile($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
+  - kind: call_expression
+    pattern: 'fs.rename($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
+  - kind: call_expression
+    pattern: 'fs.mkdir($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
+  - kind: call_expression
+    pattern: 'fs.readdir($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
+  - kind: call_expression
+    pattern: 'fs.stat($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
+  - kind: call_expression
+    pattern: 'fs.access($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'
+  - kind: call_expression
+    pattern: 'fs.rm($USER_PATH, $$$)'
+    regex: '(user_|userPath|userInput|request|param|input|arg|query|body|payload)'

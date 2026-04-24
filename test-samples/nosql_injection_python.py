@@ -39,3 +39,7 @@ def vulnerable_json_parse(collection):
     filter_str = request.args.get("filter")
     filter_obj = json.loads(filter_str)
     collection.find(filter_obj)
+
+def false_negative_expansion_nosql_python(collection, request):
+    collection.aggregate([{ '$match': request.json }])
+    collection.find(request.args)

@@ -39,3 +39,17 @@ rule:
   - pattern: 'mysqli_query($CONN, sprintf($FMT, $$$ARGS))
 
       '
+
+  # false-negative coverage expansion
+  - kind: function_call_expression
+    pattern: 'DB::raw($SQL)'
+    regex: '(?i)(user|input|param|request|query|sql|_GET|_POST)'
+  - kind: member_call_expression
+    pattern: '$PDO->query($SQL)'
+    regex: '(?i)(user|input|param|request|query|sql|_GET|_POST)'
+  - kind: member_call_expression
+    pattern: '$PDO->exec($SQL)'
+    regex: '(?i)(user|input|param|request|query|sql|_GET|_POST)'
+  - kind: member_call_expression
+    pattern: '$CONN->executeQuery($SQL)'
+    regex: '(?i)(user|input|param|request|query|sql|_GET|_POST)'

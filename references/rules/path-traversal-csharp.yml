@@ -42,3 +42,10 @@ rule:
   - pattern: 'File.Delete("../" + $USER_PATH)
 
       '
+
+  # false-negative coverage expansion
+  - pattern: 'new FileStream($USER_PATH, $MODE)'
+  - pattern: 'File.Copy($USER_PATH, $$$)'
+  - pattern: 'File.Move($USER_PATH, $$$)'
+  - pattern: 'File.Open($USER_PATH, $$$)'
+  - pattern: 'Directory.EnumerateFiles($USER_PATH)'

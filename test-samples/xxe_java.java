@@ -38,3 +38,11 @@ public class XXEJavaSample {
         factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true);
     }
 }
+
+class FalseNegativeExpansionXxeJava {
+    void false_negative_expansion(SAXParser sax, XMLReader reader, Validator validator, Source userXml) throws Exception {
+        sax.parse(userXml.toString(), null);
+        reader.parse(userXml.toString());
+        validator.validate(userXml);
+    }
+}

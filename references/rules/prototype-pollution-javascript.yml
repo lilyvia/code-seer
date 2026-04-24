@@ -37,3 +37,13 @@ rule:
     - kind: assignment_expression
       pattern: '$OBJ[$KEY] = $VALUE'
       regex: '\[(req\.|request\.|ctx\.|input|payload|body|user)'
+
+    # false-negative coverage expansion
+    - pattern: 'Object.setPrototypeOf($TARGET, $SOURCE)'
+      regex: '(req\.|request\.|ctx\.|input|payload|body|user)'
+    - pattern: '_.set($TARGET, $PATH, $VALUE)'
+      regex: '(req\.|request\.|ctx\.|input|payload|body|user)'
+    - pattern: '$TARGET = { ...$SOURCE }'
+      regex: '(req\.|request\.|ctx\.|input|payload|body|user)'
+    - pattern: 'Object.defineProperty($TARGET, $KEY, $DESC)'
+      regex: '(req\.|request\.|ctx\.|input|payload|body|user)'

@@ -20,3 +20,11 @@ rule:
     kind: call_expression
   - pattern: exec.Command("cmd", "/c", $CMD).Run()
     kind: call_expression
+
+  # false-negative coverage expansion
+  - kind: call_expression
+    pattern: 'exec.CommandContext($CTX, $CMD).Run()'
+  - kind: call_expression
+    pattern: 'os.StartProcess($CMD, $$$)'
+  - kind: call_expression
+    pattern: 'syscall.Exec($CMD, $$$)'

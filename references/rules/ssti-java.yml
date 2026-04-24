@@ -37,3 +37,8 @@ rule:
     pattern: 'Velocity.evaluate($CTX, $WRITER, $LOG, $TMPL)'
   - kind: method_invocation
     pattern: '$VELOCITY.mergeTemplate($NAME, $ENC, $CTX, $WRITER)'
+
+  # false-negative coverage expansion
+  - pattern: '$JINJAVA.render($TMPL, $DATA)'
+  - pattern: '$HANDLEBARS.compileInline($TMPL)'
+  - pattern: '$VELOCITY.evaluate($CTX, $WRITER, $LOG, $TMPL)'

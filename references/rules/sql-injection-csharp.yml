@@ -38,3 +38,14 @@ rule:
     - kind: object_creation_expression
       pattern: 'new SqlCommand($SQL, $CONN)'
     - regex: SqlCommand\(\$".*(SELECT|INSERT|UPDATE|DELETE).*
+
+  # false-negative coverage expansion
+  - kind: invocation_expression
+    pattern: '$CONN.Query<$TYPE>($SQL)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: invocation_expression
+    pattern: '$DB.FromSqlRaw($SQL)'
+    regex: '(?i)(user|input|param|request|query|sql)'
+  - kind: invocation_expression
+    pattern: '$DB.ExecuteSqlRaw($SQL)'
+    regex: '(?i)(user|input|param|request|query|sql)'

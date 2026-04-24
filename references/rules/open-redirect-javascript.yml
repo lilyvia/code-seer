@@ -50,3 +50,13 @@ rule:
   - kind: call_expression
     pattern: 'window.location.replace($USER_URL)'
     regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
+
+  # false-negative coverage expansion
+  - pattern: 'window.location = $USER_URL'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
+  - pattern: 'window.location.assign($USER_URL)'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
+  - pattern: '$RES.setHeader("Location", $USER_URL)'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'
+  - pattern: '$CTX.redirect($USER_URL)'
+    regex: '(user_|userUrl|userInput|request|param|input|arg|query|body|payload)'

@@ -15,3 +15,8 @@ rule:
   - pattern: 'response.getWriter().write($USER_INPUT);'
   - pattern: 'out.print($USER_INPUT);'
   - pattern: 'model.addAttribute("$KEY", $USER_INPUT);'
+
+  # false-negative coverage expansion
+  - pattern: '$RESPONSE.getOutputStream().write($USER_INPUT.getBytes())'
+  - regex: 'th:utext=.*(user|input|param|request|query|body|payload)'
+  - regex: '<%=.*(user|input|param|request|query|body|payload).*%>'

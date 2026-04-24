@@ -31,3 +31,11 @@ func parentPath(userPath string) {
 func parentJoin(baseDir, userPath string) string {
 	return filepath.Join(baseDir, "../"+userPath)
 }
+
+func false_negative_expansion_path_go(userPath string) {
+    os.Rename(userPath, "/tmp/out")
+    os.ReadDir(userPath)
+    os.MkdirAll(userPath, 0755)
+    os.Stat(userPath)
+    filepath.Walk(userPath, nil)
+}

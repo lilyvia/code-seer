@@ -28,3 +28,10 @@ rule:
     pattern: 'serialize.unserialize($USER_DATA)'
   - kind: call_expression
     pattern: 'nodeSerialize.unserialize($USER_DATA)'
+
+  # false-negative coverage expansion
+  - pattern: '$VM.runInNewContext($DATA, $$$)'
+  - pattern: '$VM.runInThisContext($DATA)'
+  - pattern: '$V8.deserialize($DATA)'
+  - pattern: '$BSON.deserialize($DATA)'
+  - pattern: '$MSGPACK.decode($DATA)'

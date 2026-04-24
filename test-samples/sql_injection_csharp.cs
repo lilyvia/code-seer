@@ -9,3 +9,12 @@ public class SqliCsharp {
         var cmd2 = new SqlCommand($"SELECT * FROM Users WHERE Id = {userId}", conn);
     }
 }
+
+class FalseNegativeExpansionSqlCSharp {
+    void FalseNegativeExpansion(dynamic conn, dynamic context, string userId) {
+        var userSql = $"SELECT * FROM Users WHERE Id = {userId}";
+        conn.Query<User>(userSql);
+        context.Users.FromSqlRaw(userSql);
+        context.Database.ExecuteSqlRaw(userSql);
+    }
+}

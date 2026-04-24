@@ -44,3 +44,12 @@ rule:
 
         '
     - regex: '(user_|request|param|input|arg|query)'
+
+  # false-negative coverage expansion
+  - pattern: 'Path($USER_INPUT).read_text()'
+  - pattern: 'Path($USER_INPUT).write_text($CONTENT)'
+  - pattern: 'shutil.copy($USER_INPUT, $$$)'
+  - pattern: 'shutil.move($USER_INPUT, $$$)'
+  - pattern: 'shutil.rmtree($USER_INPUT)'
+  - pattern: '$ZIP.extractall($USER_INPUT)'
+  - pattern: '$TAR.extractall($USER_INPUT)'

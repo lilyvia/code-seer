@@ -49,3 +49,10 @@ def load_user_payload(user_data):
     obj7 = dill.load(user_data)
     obj8 = marshal.load(user_data)
     return obj1, obj2, obj3, obj4, obj5, obj6, obj7, obj8
+
+def false_negative_expansion_python_deser(user_data, pd, joblib, numpy, shelve, yaml):
+    yaml.unsafe_load(user_data)
+    pd.read_pickle(user_data)
+    joblib.load(user_data)
+    numpy.load(user_data, allow_pickle=True)
+    shelve.open(user_data)

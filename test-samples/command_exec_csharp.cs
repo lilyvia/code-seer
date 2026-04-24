@@ -23,3 +23,12 @@ public class CSharpCmdExecSample
         }
     }
 }
+
+class FalseNegativeExpansionCommandCSharp {
+    void FalseNegativeExpansion(string userCmd, string userArgs) {
+        var psi = new ProcessStartInfo();
+        psi.FileName = userCmd;
+        psi.Arguments = userArgs;
+        System.Diagnostics.Process.Start(userCmd);
+    }
+}

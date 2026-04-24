@@ -36,3 +36,6 @@ def get_profile_django(request):
 def get_profile_flask():
     profile = Profile.query.filter_by(user_id=request.args.get('uid')).first()
     return jsonify(profile.to_dict())
+
+def false_negative_expansion_auth_python(request, User):
+    return User.objects.get(id=request.GET['id'])

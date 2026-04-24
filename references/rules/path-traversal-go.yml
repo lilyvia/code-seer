@@ -51,3 +51,10 @@ rule:
 
       '
     kind: call_expression
+
+  # false-negative coverage expansion
+  - pattern: 'os.Rename($USER_INPUT, $$$)'
+  - pattern: 'os.ReadDir($USER_INPUT)'
+  - pattern: 'os.MkdirAll($USER_INPUT, $$$)'
+  - pattern: 'os.Stat($USER_INPUT)'
+  - pattern: 'filepath.Walk($USER_INPUT, $$$)'

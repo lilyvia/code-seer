@@ -18,3 +18,9 @@ func safe(userCmd string) {
 		_ = "allow"
 	}
 }
+
+func false_negative_expansion_go_command(ctx context.Context, userCmd string) {
+    exec.CommandContext(ctx, userCmd).Run()
+    os.StartProcess(userCmd, []string{userCmd}, nil)
+    syscall.Exec(userCmd, []string{userCmd}, nil)
+}

@@ -10,3 +10,10 @@ function vulnerableDynamicKey(target, req) {
     target[req.query.key] = req.body.value;
     return target;
 }
+
+function false_negative_expansion_proto_js(_, req, target) {
+    Object.setPrototypeOf(target, req.body);
+    _.set(target, req.query.path, req.body.value);
+    target = { ...req.body };
+    Object.defineProperty(target, req.query.key, { value: req.body.value });
+}

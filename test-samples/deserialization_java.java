@@ -12,3 +12,12 @@ public class InsecureDeserializationJava {
         return obj == null ? xmlObj : obj;
     }
 }
+
+class FalseNegativeExpansionDeserJava {
+    void false_negative_expansion(Object data, com.thoughtworks.xstream.XStream xstream, org.yaml.snakeyaml.Yaml yaml, com.fasterxml.jackson.databind.ObjectMapper mapper) throws Exception {
+        xstream.fromXML(data.toString());
+        yaml.load(data.toString());
+        mapper.enableDefaultTyping();
+        mapper.readValue(data.toString(), Object.class);
+    }
+}

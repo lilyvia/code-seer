@@ -45,3 +45,11 @@ rule:
       pattern: include("../" . $USER_PATH)
     - kind: function_call_expression
       pattern: unlink("../" . $USER_PATH)
+
+    # false-negative coverage expansion
+    - pattern: 'copy($USER_PATH, $$$)'
+    - pattern: 'rename($USER_PATH, $$$)'
+    - pattern: 'move_uploaded_file($TMP, $USER_PATH)'
+    - pattern: 'fopen($USER_PATH, $MODE)'
+    - pattern: 'readfile($USER_PATH)'
+    - pattern: 'scandir($USER_PATH)'

@@ -44,3 +44,9 @@ rule:
   - kind: call_expression
     pattern: '_.template($TMPL)'
     regex: '(user_|request|param|input|arg|query|template|source)'
+
+  # false-negative coverage expansion
+  - pattern: 'nunjucks.renderString($TMPL, $DATA)'
+  - pattern: 'doT.template($TMPL)'
+  - pattern: 'hogan.compile($TMPL)'
+  - pattern: 'eta.render($TMPL, $DATA)'

@@ -20,3 +20,12 @@ def vulnerable_exec(user_code):
 
 def safe_usage():
     subprocess.run(["ls", "-la"], check=True, capture_output=True, text=True)
+
+async def false_negative_expansion_async_command(asyncio, user_cmd):
+    await asyncio.create_subprocess_shell(user_cmd)
+    await asyncio.create_subprocess_exec("sh", "-c", user_cmd)
+
+def false_negative_expansion_ssh(ssh, conn, pexpect, user_cmd):
+    ssh.exec_command(user_cmd)
+    conn.run(user_cmd)
+    pexpect.spawn(user_cmd)

@@ -47,3 +47,17 @@ function vulnerablePrismaExecuteRawVar(prisma, input) {
     const sql = "DELETE FROM tokens WHERE id = " + input;
     prisma.$executeRawUnsafe(sql);
 }
+
+function false_negative_expansion_typeorm(repo, userId) {
+    const userSql = `SELECT * FROM users WHERE id = ${userId}`;
+    repo.query(userSql);
+}
+
+function false_negative_expansion_mysql2(pool, input) {
+    pool.execute("SELECT * FROM users WHERE name = '" + input + "'");
+}
+
+function false_negative_expansion_knex(knex, input) {
+    knex.whereRaw(`name = ${input}`);
+    knex.fromRaw("users where id = " + input);
+}

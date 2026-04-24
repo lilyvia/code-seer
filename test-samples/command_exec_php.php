@@ -19,3 +19,9 @@ function safe($userCmd) {
     }
     return '';
 }
+
+function false_negative_expansion_php_command($userCmd) {
+    proc_open($userCmd, [], $pipes);
+    popen($userCmd, 'r');
+    pcntl_exec($userCmd, []);
+}

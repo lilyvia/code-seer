@@ -28,3 +28,8 @@ def render_user_template(user_template, context):
     html2 = Template(user_template).render(context)
     html3 = Environment().from_string(user_template).render(context)
     return html1, html2, html3
+
+def false_negative_expansion_ssti_python(user_template):
+    mako.template.Template(user_template).render()
+    django.template.Template(user_template).render(Context({}))
+    jinja2.Environment().from_string(user_template)

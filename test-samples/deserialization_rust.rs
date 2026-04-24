@@ -11,3 +11,9 @@ fn test_deserialization(user_data: &str, bytes: &[u8]) {
 fn safe_deserialization(user_data: &str) {
     let obj: User = serde_json::from_str(user_data).unwrap();
 }
+
+fn false_negative_expansion_rust_deser<R: std::io::Read>(reader: R, user_data: &[u8], user_str: &str) {
+    serde_json::from_reader(reader);
+    serde_pickle::from_slice(user_data, Default::default());
+    ron::de::from_str(user_str);
+}

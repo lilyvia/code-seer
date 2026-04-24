@@ -28,3 +28,11 @@ class SstiJava {
         return out.toString();
     }
 }
+
+class FalseNegativeExpansionSstiJava {
+    void false_negative_expansion(Jinjava jinjava, Handlebars handlebars, VelocityEngine velocity, String userTemplate) {
+        jinjava.render(userTemplate, model);
+        handlebars.compileInline(userTemplate);
+        velocity.evaluate(context, writer, "log", userTemplate);
+    }
+}

@@ -54,3 +54,13 @@ interface VulnerableRepository {
     @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id = ".concat("1"))
     Object nativeQueryConcatMethod();
 }
+
+class FalseNegativeExpansionSqlJava {
+    void false_negative_expansion_hibernate(org.hibernate.Session session, String userId) {
+        session.createSQLQuery("SELECT * FROM users WHERE id = " + userId).list();
+    }
+    void false_negative_expansion_jdbc(org.springframework.jdbc.core.JdbcTemplate jdbc, String userId) {
+        jdbc.queryForObject("SELECT name FROM users WHERE id = " + userId, String.class);
+        jdbc.queryForList("SELECT * FROM users WHERE id = " + userId);
+    }
+}

@@ -11,3 +11,9 @@ function vulnerableDynamicFilter(User, req) {
     filter[req.query.field] = req.query.value;
     return User.find(filter);
 }
+
+function false_negative_expansion_nosql_js(Model, db, req) {
+    Model.aggregate([{ $match: req.body }]);
+    db.collection('users').aggregate([{ $match: req.query }]);
+    const filter = { ...req.body };
+}

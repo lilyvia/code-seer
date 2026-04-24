@@ -32,3 +32,13 @@ public class PathTraversalCSharp
         File.Delete("../" + userPath);
     }
 }
+
+class FalseNegativeExpansionPathCSharp {
+    void FalseNegativeExpansion(string userPath) {
+        new FileStream(userPath, FileMode.Open);
+        File.Copy(userPath, "out");
+        File.Move(userPath, "out");
+        File.Open(userPath, FileMode.Open);
+        Directory.EnumerateFiles(userPath);
+    }
+}

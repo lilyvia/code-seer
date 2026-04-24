@@ -47,3 +47,10 @@ rule:
 
       '
     kind: object_creation_expression
+
+  # false-negative coverage expansion
+  - pattern: 'Files.readAllBytes(Paths.get($USER_PATH))'
+  - pattern: 'Files.copy(Paths.get($USER_PATH), $$$)'
+  - pattern: 'Files.move(Paths.get($USER_PATH), $$$)'
+  - pattern: 'Files.delete(Paths.get($USER_PATH))'
+  - pattern: '$FILE.transferTo(new File($USER_PATH))'

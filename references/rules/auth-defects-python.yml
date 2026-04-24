@@ -46,3 +46,6 @@ rule:
       regex: request|args|kwargs|GET|POST|input
     - pattern: $MODEL.query.filter_by($$$ARGS).delete()
       regex: request|args|kwargs|GET|POST|input
+
+    # false-negative coverage expansion
+    - pattern: '$MODEL.objects.get(id=request.GET[$KEY])'
