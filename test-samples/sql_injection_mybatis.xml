@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.UserMapper">
+
+    <!-- 正样本1: WHERE条件值使用${}拼接 - 高危 -->
+    <select id="findByName" resultType="User">
+        SELECT * FROM users WHERE name = '${name}'
+    </select>
+
+    <!-- 正样本2: LIKE模糊查询${}拼接 - 高危 -->
+    <select id="searchUsers" resultType="User">
+        SELECT * FROM users WHERE name LIKE '%${keyword}%'
+    </select>
+
+    <!-- 正样本3: 另一种LIKE写法 - 高危 -->
+    <select id="searchUsers2" resultType="User">
+        SELECT * FROM users WHERE name LIKE '%' || '${keyword}' || '%'
+    </select>
+
+    <!-- 正样本4: IN子句使用${}拼接 - 高危 -->
+    <select id="findByIds" resultType="User">
+        SELECT * FROM users WHERE id IN (${idList})
+    </select>
+
+    <!-- 正样本5: ORDER BY动态排序 - 高危（除非有白名单） -->
+    <select id="getSortedUsers" resultType="User">
+        SELECT * FROM users ORDER BY ${orderBy}
+    </select>
+
+    <!-- 正样本6: GROUP BY动态分组 - 高危 -->
+    <select id="groupUsers" resultType="User">
+        SELECT ${columns}, COUNT(*) as cnt FROM users GROUP BY ${groupBy}
+    </select>
+
+    <!-- 正样本7: 动态表名 - 高危 -->
+    <select id="queryTable" resultType="Map">
+        SELECT * FROM ${tableName} WHERE id = #{id}
+    </select>
+
+    <!-- 正样本8: 动态列名 - 高危 -->
+    <select id="selectColumn" resultType="User">
+        SELECT ${column} FROM users WHERE id = #{id}
+    </select>
+
+    <!-- 正样本9: <bind>标签中使用${} - 高危 -->
+    <select id="searchWithBind" resultType="User">
+        <bind name="pattern" value="'%${keyword}%'"/>
+        SELECT * FROM users WHERE name LIKE #{pattern}
+    </select>
+
+    <!-- 正样本10: <if>条件中使用${} - 高危 -->
+    <select id="dynamicQuery" resultType="User">
+        SELECT * FROM users
+        <where>
+            <if test="name != null">
+                AND name = '${name}'
+            </if>
+        </where>
+    </select>
+
+    <!-- 正样本11: 动态WHERE条件 - 高危 -->
+    <select id="advancedSearch" resultType="User">
+        SELECT * FROM users ${whereClause}
+    </select>
+
+    <!-- 正样本12: 混合注入点 - 高危 -->
+    <select id="complexQuery" resultType="User">
+        SELECT ${columns} FROM ${tableName}
+        WHERE name = '${name}' AND id IN (${ids})
+        ORDER BY ${orderBy}
+    </select>
+
+    <!-- 正样本13: UPDATE语句使用${} - 高危 -->
+    <update id="updateUser">
+        UPDATE users SET name = '${name}' WHERE id = ${userId}
+    </update>
+
+    <!-- 正样本14: INSERT语句使用${} - 高危 -->
+    <insert id="insertUser">
+        INSERT INTO ${tableName} (name, email) VALUES ('${name}', '${email}')
+    </insert>
+
+    <!-- 正样本15: DELETE语句使用${} - 高危 -->
+    <delete id="deleteUsers">
+        DELETE FROM users WHERE id IN (${ids})
+    </delete>
+
+    <!-- 正样本16: <include>引用中使用${} - 高危 -->
+    <sql id="whereCondition">
+        WHERE ${condition}
+    </sql>
+
+    <select id="findWithInclude" resultType="User">
+        SELECT * FROM users
+        <include refid="whereCondition"/>
+    </select>
+
+    <!-- 正样本17: 嵌套${}使用 - 高危 -->
+    <select id="nestedInjection" resultType="User">
+        SELECT * FROM ${prefix}_users WHERE ${column} = '${value}'
+    </select>
+
+    <!-- 正样本18: HAVING子句使用${} - 高危 -->
+    <select id="havingQuery" resultType="Map">
+        SELECT ${column}, COUNT(*) as cnt FROM users
+        GROUP BY ${column}
+        HAVING ${condition}
+    </select>
+
+    <!-- 正样本19: LIMIT/OFFSET使用${} - 高危 -->
+    <select id="paginateQuery" resultType="User">
+        SELECT * FROM users LIMIT ${limit} OFFSET ${offset}
+    </select>
+
+</mapper>

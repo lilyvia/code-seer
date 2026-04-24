@@ -172,17 +172,96 @@ public User GetUserSafe(string username)
 }
 ```
 
+#### MyBatis Mapper XML修复
+
+```xml
+<!-- 不安全的代码 ❌ -->
+<select id="getUserByName" resultType="User">
+    SELECT * FROM users WHERE name = '${name}'
+</select>
+
+<!-- 安全的代码 ✅ - 使用 #{} 参数绑定 -->
+<select id="getUserByName" resultType="User">
+    SELECT * FROM users WHERE name = #{name}
+</select>
+
+<!-- 不安全的LIKE查询 ❌ -->
+<select id="searchUsers" resultType="User">
+    SELECT * FROM users WHERE name LIKE '%${keyword}%'
+</select>
+
+<!-- 安全的LIKE查询 ✅ - 使用CONCAT函数 -->
+<select id="searchUsers" resultType="User">
+    SELECT * FROM users WHERE name LIKE CONCAT('%', #{keyword}, '%')
+</select>
+
+<!-- 或使用bind标签 ✅ -->
+<select id="searchUsers" resultType="User">
+    <bind name="pattern" value="'%' + keyword + '%'"/>
+    SELECT * FROM users WHERE name LIKE #{pattern}
+</select>
+
+<!-- 不安全的IN子句 ❌ -->
+<select id="findByIds" resultType="User">
+    SELECT * FROM users WHERE id IN (${idList})
+</select>
+
+<!-- 安全的IN子句 ✅ - 使用foreach + #{} -->
+<select id="findByIds" resultType="User">
+    SELECT * FROM users WHERE id IN
+    <foreach collection="idList" item="id" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+</select>
+
+<!-- 不安全的动态排序 ❌ -->
+<select id="getSortedUsers" resultType="User">
+    SELECT * FROM users ORDER BY ${orderBy}
+</select>
+
+<!-- 安全的动态排序 ✅ - 使用choose标签实现白名单 -->
+<select id="getSortedUsers" resultType="User">
+    SELECT * FROM users
+    <choose>
+        <when test="orderBy == 'id'">ORDER BY id</when>
+        <when test="orderBy == 'name'">ORDER BY name</when>
+        <when test="orderBy == 'createTime'">ORDER BY create_time</when>
+        <otherwise>ORDER BY id DESC</otherwise>
+    </choose>
+</select>
+
+<!-- 或在Java层白名单校验后使用${safeOrder} ✅ -->
+```
+
+**Java层白名单校验示例**：
+```java
+public class UserService {
+    private static final Set<String> ALLOWED_COLUMNS = 
+        Set.of("id", "name", "email", "create_time");
+    
+    public List<User> getUsers(String orderBy) {
+        // 白名单校验
+        if (!ALLOWED_COLUMNS.contains(orderBy)) {
+            orderBy = "id";  // 使用默认值
+        }
+        return userMapper.getUsers(orderBy);  // 传入安全的orderBy
+    }
+}
+```
+
 ### 最佳实践
 
 - 始终使用参数化查询,即使在LIKE子句中
 - 对动态排序字段使用白名单验证
 - 避免在存储过程中拼接SQL
+- **MyBatis XML中：将 `${}` 替换为 `#{}`，仅在表名/列名等元数据场景保留 `${}` 并配合白名单**
 - 定期进行SQL注入扫描测试
 
 ### 参考资源
 
 - [OWASP SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html) - SQL注入防护速查表
 - [OWASP Query Parameterization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Query_Parameterization_Cheat_Sheet.html) - 查询参数化速查表
+- [MyBatis官方文档 - String Substitution](https://mybatis.org/mybatis-3/sqlmap-xml.html) - MyBatis `${}` 与 `#{}` 区别
 
 ---
 

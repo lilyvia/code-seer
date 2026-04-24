@@ -1,0 +1,59 @@
+id: sql-injection-mybatis-xml
+language: html
+severity: error
+message: 'MyBatis XML SQL注入 (CWE-89)'
+name: MyBatis XML SQL注入
+description: |
+  MyBatis XML中使用${}进行字符串替换会导致SQL注入。${}直接将参数值拼接到SQL语句中，
+  而#{}使用PreparedStatement参数绑定。应优先使用#{}，仅在必要时（如表名、列名、排序字段）
+  使用${}并配合白名单校验。
+cwe: CWE-89
+remediation: |
+  修复方法：
+  
+  1. 将${}替换为#{}进行参数化查询（推荐）
+  
+  2. 如果必须使用${}（动态表名/列名），在Java层进行白名单校验：
+     ```java
+     private static final Set<String> ALLOWED_COLUMNS = Set.of("id", "name", "create_time");
+     
+     public List<User> getUsers(String orderBy) {
+         if (!ALLOWED_COLUMNS.contains(orderBy)) {
+             orderBy = "id";  // 默认值
+         }
+         return userMapper.getUsers(orderBy);
+     }
+     ```
+  
+  3. LIKE模糊查询使用CONCAT函数或<bind>标签：
+     ```xml
+     <!-- 安全写法 -->
+     <select id="searchUsers" resultType="User">
+       SELECT * FROM users WHERE name LIKE CONCAT('%', #{keyword}, '%')
+     </select>
+     
+     <!-- 或使用bind标签 -->
+     <select id="searchUsers" resultType="User">
+       <bind name="pattern" value="'%' + keyword + '%'"/>
+       SELECT * FROM users WHERE name LIKE #{pattern}
+     </select>
+     ```
+  
+  4. IN子句使用<foreach>标签：
+     ```xml
+     <select id="findByIds" resultType="User">
+       SELECT * FROM users WHERE id IN
+       <foreach collection="idList" item="id" open="(" separator="," close=")">
+         #{id}
+       </foreach>
+     </select>
+     ```
+rule:
+  any:
+    - pattern: '<select $$$>$BODY</select>'
+    - pattern: '<insert $$$>$BODY</insert>'
+    - pattern: '<update $$$>$BODY</update>'
+    - pattern: '<delete $$$>$BODY</delete>'
+    - pattern: '<sql $$$>$BODY</sql>'
+    - pattern: '<include $$$>$BODY</include>'
+  regex: '\$\{[^}]+\}'

@@ -56,6 +56,9 @@ find /path/to/project -type f | sed 's/.*\.//' | sort | uniq -c | sort -rn | hea
 | JavaScript/TypeScript | `.js`, `.ts`, `.tsx` | javascript | `*-javascript.yml` |
 | Ruby | `.rb` | ruby | `*-ruby.yml` |
 | Rust | `.rs` | rust | `*-rust.yml` |
+| MyBatis Mapper XML | `.xml` | html | `sql-injection-mybatis-xml.yml` |
+
+> **注意**：MyBatis Mapper XML 文件使用 `html` 语言标识扫描（ast-grep 无原生 XML 解析器，HTML 解析器可处理 XML-like 结构）。检测 SQL 注入时，需同时扫描 `.java` 和 `.xml` 文件以覆盖 Java 代码和 MyBatis XML 中的注入点。
 
 ### 按语言扫描命令
 
@@ -68,6 +71,7 @@ find "$PROJECT" -type f | grep -oE '\.(py|java|go|php|cs|js|ts|tsx|rb|rs)$' | se
 # Python示例：ast-grep scan -r references/rules/sql-injection-python.yml "$PROJECT" --json
 # Java示例：ast-grep scan -r references/rules/sql-injection-java.yml "$PROJECT" --json
 # JS/TS示例：ast-grep scan -r references/rules/xss-javascript.yml "$PROJECT" --json
+# MyBatis XML示例：ast-grep scan -r references/rules/sql-injection-mybatis-xml.yml "$PROJECT" --json
 ```
 
 ### 规则文件

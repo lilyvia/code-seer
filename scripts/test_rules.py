@@ -16,6 +16,7 @@ SAMPLES_DIR = PROJECT_ROOT / "test-samples"
 RULE_SAMPLE_MAP = {
     "sql-injection-python.yml": "sql_injection_python.py",
     "sql-injection-java.yml": "sql_injection_java.java",
+    "sql-injection-mybatis-xml.yml": "sql_injection_mybatis.xml",
     "sql-injection-go.yml": "sql_injection_go.go",
     "sql-injection-php.yml": "sql_injection_php.php",
     "sql-injection-csharp.yml": "sql_injection_csharp.cs",

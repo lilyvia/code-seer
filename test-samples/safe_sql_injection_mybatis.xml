@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.UserMapper">
+
+    <!-- 负样本1: WHERE条件使用#{} - 安全 -->
+    <select id="findByName" resultType="User">
+        SELECT * FROM users WHERE name = #{name}
+    </select>
+
+    <!-- 负样本2: LIKE模糊查询使用CONCAT + #{} - 安全 -->
+    <select id="searchUsers" resultType="User">
+        SELECT * FROM users WHERE name LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+    <!-- 负样本3: 使用<bind>标签预处理LIKE - 安全 -->
+    <select id="searchWithBind" resultType="User">
+        <bind name="pattern" value="'%' + keyword + '%'"/>
+        SELECT * FROM users WHERE name LIKE #{pattern}
+    </select>
+
+    <!-- 负样本4: IN子句使用<foreach> + #{} - 安全 -->
+    <select id="findByIds" resultType="User">
+        SELECT * FROM users WHERE id IN
+        <foreach collection="idList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 负样本5: ORDER BY使用白名单校验（配合Java层校验） - 安全 -->
+    <!-- Java层代码:
+         private static final Set<String> ALLOWED_COLUMNS = Set.of("id", "name", "create_time");
+         if (!ALLOWED_COLUMNS.contains(orderBy)) orderBy = "id";
+    -->
+    <select id="getSortedUsers" resultType="User">
+        SELECT * FROM users ORDER BY ${safeOrderBy}
+        <!-- 注意：此处的safeOrderBy已经在Java层白名单校验过 -->
+    </select>
+
+    <!-- 负样本6: ORDER BY使用<choose>标签实现白名单 - 安全 -->
+    <select id="getSortedUsersSafe" resultType="User">
+        SELECT * FROM users
+        <choose>
+            <when test="orderBy == 'id'">ORDER BY id</when>
+            <when test="orderBy == 'name'">ORDER BY name</when>
+            <when test="orderBy == 'createTime'">ORDER BY create_time</when>
+            <otherwise>ORDER BY id DESC</otherwise>
+        </choose>
+    </select>
+
+    <!-- 负样本7: 固定表名 - 安全 -->
+    <select id="queryUsers" resultType="User">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+
+    <!-- 负样本8: 固定列名 - 安全 -->
+    <select id="selectBasicInfo" resultType="User">
+        SELECT id, name, email FROM users WHERE id = #{id}
+    </select>
+
+    <!-- 负样本9: <if>条件中使用#{} - 安全 -->
+    <select id="dynamicQuery" resultType="User">
+        SELECT * FROM users
+        <where>
+            <if test="name != null">
+                AND name = #{name}
+            </if>
+            <if test="email != null">
+                AND email = #{email}
+            </if>
+        </where>
+    </select>
+
+    <!-- 负样本10: UPDATE语句使用#{} - 安全 -->
+    <update id="updateUser">
+        UPDATE users SET name = #{name}, email = #{email} WHERE id = #{userId}
+    </update>
+
+    <!-- 负样本11: INSERT语句使用#{} - 安全 -->
+    <insert id="insertUser">
+        INSERT INTO users (name, email, create_time)
+        VALUES (#{name}, #{email}, #{createTime})
+    </insert>
+
+    <!-- 负样本12: DELETE语句使用#{} - 安全 -->
+    <delete id="deleteUser">
+        DELETE FROM users WHERE id = #{id}
+    </delete>
+
+    <!-- 负样本13: 批量删除使用<foreach> - 安全 -->
+    <delete id="deleteUsers">
+        DELETE FROM users WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 负样本14: 复杂查询全部使用#{} - 安全 -->
+    <select id="advancedSearch" resultType="User">
+        SELECT id, name, email FROM users
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="email != null and email != ''">
+                AND email = #{email}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        <choose>
+            <when test="sortField == 'name'">ORDER BY name</when>
+            <when test="sortField == 'createTime'">ORDER BY create_time</when>
+            <otherwise>ORDER BY id</otherwise>
+        </choose>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 负样本15: 分页查询使用#{} - 安全 -->
+    <select id="paginateQuery" resultType="User">
+        SELECT * FROM users LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 负样本16: GROUP BY使用固定列名 - 安全 -->
+    <select id="groupByStatus" resultType="Map">
+        SELECT status, COUNT(*) as cnt FROM users GROUP BY status
+    </select>
+
+    <!-- 负样本17: 使用MySQL日期函数 + #{} - 安全 -->
+    <select id="findByDateRange" resultType="User">
+        SELECT * FROM users WHERE create_time BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!-- 负样本18: 子查询使用#{} - 安全 -->
+    <select id="findWithSubquery" resultType="User">
+        SELECT * FROM users WHERE id IN (
+            SELECT user_id FROM orders WHERE order_no = #{orderNo}
+        )
+    </select>
+
+    <!-- 负样本19: JOIN查询使用#{} - 安全 -->
+    <select id="findWithJoin" resultType="UserOrder">
+        SELECT u.*, o.order_no, o.amount
+        FROM users u
+        LEFT JOIN orders o ON u.id = o.user_id
+        WHERE u.id = #{userId}
+    </select>
+
+</mapper>
