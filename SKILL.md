@@ -29,7 +29,7 @@ metadata:
 3. **LLM主动代码审查**：AI主动阅读源代码，基于安全知识挖掘漏洞
 4. **漏洞验证**：对可疑代码进行数据流分析、调用链追踪、上下文验证
 5. **误报自动确认**：对疑似误报进行深度复核，自动分析代码上下文和数据流
-6. **生成AI审计报告**：输出 `security_audit_report_YYYYMMDD.md`，包含6个必需字段。报告先列**确认的真实漏洞**，再单独列**疑似误报项**。如果目标是git仓库，报告需写明git commit hash
+6. **生成AI审计报告**：输出 `code_seer_report_YYYYMMDD.md`，包含6个必需字段。报告先列**确认的真实漏洞**，再单独列**疑似误报项**。如果目标是git仓库，报告需写明git commit hash
 
 ## 语言检测与ast-grep扫描规范
 
@@ -137,7 +137,7 @@ find "$PROJECT" -type f | grep -oE '\.(py|java|go|php|cs|js|ts|tsx|rb|rs)$' | se
 ## 输出要求
 
 - **输出语言**：中文
-- **报告文件**：`security_audit_report_YYYYMMDD.md`
+- **报告文件**：`code_seer_report_YYYYMMDD.md`
 - **Git信息**：如果目标是git仓库，报告头部必须包含 `Git Commit Hash: <hash>`
 - **报告结构**：
   1. **确认的真实漏洞**：按风险等级排序
@@ -219,4 +219,4 @@ ast-grep scan -r references/rules/command-exec-python.yml "$PROJECT" --json
 cd "$PROJECT" && git rev-parse HEAD
 ```
 
-**报告输出**：AI最终审计报告保存为 `security_audit_report_YYYYMMDD.md`。如果目标是git仓库，报告头部必须包含 `Git Commit Hash: <hash>`。
+**报告输出**：AI最终审计报告保存为 `code_seer_report_YYYYMMDD.md`。如果目标是git仓库，报告头部必须包含 `Git Commit Hash: <hash>`。
