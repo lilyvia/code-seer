@@ -3,7 +3,9 @@ language: csharp
 severity: warning
 message: '鉴权缺陷（C#） (CWE-287)'
 name: 鉴权缺陷（C#）
-description: ASP.NET 鉴权缺陷常发生在缺少身份验证或授权校验的 API 端点。
+description: |
+  ASP.NET 鉴权缺陷常发生在缺少身份验证或授权校验的 API 端点，
+  或 WebForms 的 PerformAction / switch-case 事务处理链中。
 cwe: CWE-287
 remediation: |
   对敏感控制器和动作方法增加认证与授权策略：
@@ -31,10 +33,10 @@ remediation: |
       return Ok(order);
   }
   ```
-  建议：
-  - 管理操作统一使用 Roles 或 Policy
-  - 查询接口必须验证资源归属
-  - 服务层保留权限校验，防止API层绕过
+  WebForms 事务处理建议：
+  - 在 switch-case / if 事务分支中执行敏感操作前调用权限检查方法
+  - 敏感操作包括：数据库修改、文件操作、网络请求、系统配置变更
+  - 权限检查方法如：InstCheckXSettings、IsSysAdmin、CheckPermission 等
 rule:
   any:
     - pattern: return Ok($CTX.$TABLE.Find($ID));
@@ -49,9 +51,15 @@ rule:
           kind: if_statement
           regex: IsAuthenticated
 
-    # false-negative coverage expansion
     - kind: attribute
       pattern: '[AllowAnonymous]'
     - kind: class_declaration
       pattern: 'class $NAME : Controller'
       regex: '(Admin|Manage|Api)'
+
+    - kind: if_statement
+      has:
+        kind: binary_expression
+        has:
+          kind: invocation_expression
+          pattern: 'Operators.CompareString(transaction, $$$)'
