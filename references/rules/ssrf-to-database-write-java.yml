@@ -1,0 +1,31 @@
+id: ssrf-to-database-write-java
+language: java
+severity: error
+message: 'SSRF 下载后写入数据库（Java） (CWE-918 + CWE-287)'
+name: SSRF 下载后写入数据库（Java）
+description: |
+  检测到从用户提供的 URL 下载 XML/文档，解析后直接写入数据库的代码模式。
+  这是一个高危组合漏洞：
+  1. SSRF：用户可控的 URL 被用于服务器端 HTTP 请求
+  2. XXE / 数据污染：下载的内容被解析后写入数据库
+  3. 权限绕过：可能缺少权限检查
+  
+  典型场景：
+  - SAML 元数据下载和导入
+  - WSDL / WS-Trust 元数据下载
+  - XML 配置文件远程导入
+cwe: CWE-918
+remediation: |
+  1. 对 URL 参数进行白名单校验（只允许 HTTPS）
+  2. 禁止访问内网地址和云元数据地址
+  3. 下载前执行权限检查
+  4. 对下载内容进行 Schema 校验，拒绝未知元素
+  5. 使用沙箱网络环境隔离下载请求
+rule:
+  kind: method_invocation
+  any:
+    - pattern: '$BUILDER.parse($URL)'
+    - pattern: '$DOC.load($URL)'
+    - pattern: '$CONN.getInputStream()'
+    - pattern: 'new URL($URL).openConnection()'
+    - pattern: '$CLIENT.execute($REQUEST)'

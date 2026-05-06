@@ -28,6 +28,7 @@ Code Seer - 基于 ast-grep 规则库与 LLM 深度分析的自动化源码安�
 | 反序列化漏洞 | CWE-502 | 严重 | `deserialization-{lang}.yml` |
 | 路径穿越 | CWE-22 | 高危 | `path-traversal-{lang}.yml` |
 | SSRF | CWE-918 | 高危 | `ssrf-{lang}.yml` |
+| SSRF-to-DB写入 | CWE-918 | 严重 | `ssrf-to-database-write-{lang}.yml` |
 | XXE | CWE-611 | 中危 | `xxe-{lang}.yml` |
 | 鉴权缺陷 | CWE-287/306 | 中危 | `auth-defects-{lang}.yml` |
 | 硬编码密钥 | CWE-798 | 高危 | `hardcoded-secrets-{lang}.yml` |
@@ -165,8 +166,9 @@ code-seer/
 │   │   ├── command-exec-*.yml
 │   │   ├── xss-*.yml
 │   │   ├── path-traversal-*.yml
-│   │   ├── ssrf-*.yml
-│   │   ├── xxe-*.yml
+  │   │   ├── ssrf-*.yml
+  │   │   ├── ssrf-to-database-write-*.yml
+  │   │   ├── xxe-*.yml
 │   │   ├── deserialization-*.yml
 │   │   ├── auth-defects-*.yml
 │   │   ├── hardcoded-secrets-*.yml

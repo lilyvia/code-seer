@@ -9,7 +9,7 @@ metadata:
   version: "0.0.1"
   languages: "Java, Go, Python, PHP, C#, JavaScript/TypeScript (JS rules cover TS codebases), Ruby, Rust"
   scan_modes: "静态分析, AST分析, LLM深度代码审查"
-  vulnerabilities: "SQL注入, XSS, 命令执行, 反序列化, 路径穿越, SSRF, XXE, 鉴权缺陷, 硬编码密钥, SSTI, NoSQL注入, 原型污染, JNDI注入, 开放重定向"
+  vulnerabilities: "SQL注入, XSS, 命令执行, 反序列化, 路径穿越, SSRF, SSRF-to-DB写入, XXE, 鉴权缺陷, 硬编码密钥, SSTI, NoSQL注入, 原型污染, JNDI注入, 开放重定向"
 ---
 
 # Code Seer - 源码安全审计
@@ -82,6 +82,7 @@ find "$PROJECT" -type f | grep -oE '\.(py|java|go|php|cs|js|ts|tsx|rb|rs)$' | se
 - `xss-{lang}.yml` - XSS
 - `path-traversal-{lang}.yml` - 路径穿越
 - `ssrf-{lang}.yml` - SSRF
+- `ssrf-to-database-write-{lang}.yml` - SSRF下载后写入数据库
 - `xxe-{lang}.yml` - XXE
 - `deserialization-{lang}.yml` - 反序列化
 - `auth-defects-{lang}.yml` - 鉴权缺陷
