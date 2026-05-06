@@ -51,3 +51,14 @@ rule:
     regex: '(?i)(user|input|param|request|query|url)'
   - kind: method_invocation
     pattern: '$CONN.setRequestProperty("Host", $USER_HOST)'
+
+  # ===== 云元数据地址检测 =====
+  - kind: method_invocation
+    pattern: 'new URL("http://metadata.google.internal$$$REST").openConnection()'
+  - kind: method_invocation
+    pattern: 'new URL("http://100.100.100.200$$$REST").openConnection()'
+  - all:
+      - kind: method_invocation
+        pattern: '$METHOD($URL)'
+      - regex: '(?i)(openConnection|execute|send|get|post|openStream)'
+      - regex: '(?i)("https?://(metadata\.google\.internal|100\.100\.100\.200))'

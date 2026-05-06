@@ -41,3 +41,12 @@ rule:
     - pattern: 'HttpClient::create()->request($METHOD, $USER_URL)'
     - pattern: 'HttpClient::create()->get($USER_URL)'
     - pattern: 'HttpClient::create()->post($USER_URL, $$$ARGS)'
+
+    # ===== 云元数据地址检测 =====
+    - pattern: file_get_contents("http://metadata.google.internal$$$REST")
+    - pattern: file_get_contents("http://100.100.100.200$$$REST")
+    - all:
+        - kind: function_call_expression
+          pattern: '$METHOD($URL)'
+        - regex: '(?i)(file_get_contents|curl_exec|fopen|request|get|post)'
+        - regex: '(?i)("https?://(metadata\.google\.internal|100\.100\.100\.200))'
