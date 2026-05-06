@@ -52,3 +52,13 @@ rule:
     - kind: call_expression
       pattern: 'hyper::Client::new().request($METHOD, $USER_URL)'
     - regex: '(?i)(user_|request|param|input|arg|query)'
+
+  # ===== 内部 IP / 云元数据硬编码检测 =====
+  - pattern: 'reqwest::get("http://10.$$$REST")'
+  - pattern: 'reqwest::get("http://192.168.$$$REST")'
+  - pattern: 'reqwest::get("http://172.$$$REST")'
+  - all:
+      - kind: call_expression
+        pattern: '$METHOD($URL)'
+      - regex: '(?i)(get|post|put|delete|request|send)'
+      - regex: '(?i)("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)|169\.254\.169\.254|metadata\.google\.internal|100\.100\.100\.200|localhost|127\.0\.0\.1)'

@@ -53,3 +53,16 @@ rule:
   - all:
     - pattern: 'Typhoeus.put($URL, $$$ARGS)'
     - regex: '(user_|request|param|input|arg|query|params)'
+
+  # ===== 内部 IP / 云元数据硬编码检测 =====
+  - pattern: 'Net::HTTP.get(URI("http://10.$$$REST"))'
+  - pattern: 'Net::HTTP.get(URI("http://192.168.$$$REST"))'
+  - pattern: 'Net::HTTP.get(URI("http://172.$$$REST"))'
+  - pattern: 'open("http://10.$$$REST")'
+  - pattern: 'open("http://192.168.$$$REST")'
+  - pattern: 'open("http://172.$$$REST")'
+  - all:
+      - kind: call
+        pattern: '$METHOD($URL)'
+      - regex: '(?i)(get|post|put|delete|head|open)'
+      - regex: '(?i)("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)|169\.254\.169\.254|metadata\.google\.internal|100\.100\.100\.200|localhost|127\.0\.0\.1)'
