@@ -42,6 +42,28 @@ rule:
     - pattern: 'HttpClient::create()->get($USER_URL)'
     - pattern: 'HttpClient::create()->post($USER_URL, $$$ARGS)'
 
+    # ===== Guzzle sinks =====
+    - pattern: '$CLIENT = new GuzzleHttp\Client()'
+    - pattern: '$CLIENT->request($METHOD, $USER_URL)'
+    - pattern: '$CLIENT->get($USER_URL)'
+    - pattern: '$CLIENT->post($USER_URL, $$$ARGS)'
+    - pattern: '$CLIENT->put($USER_URL, $$$ARGS)'
+    - pattern: '$CLIENT->delete($USER_URL)'
+
+    # ===== WordPress HTTP API sinks =====
+    - pattern: 'wp_remote_get($USER_URL)'
+    - pattern: 'wp_remote_post($USER_URL, $$$ARGS)'
+    - pattern: 'wp_remote_request($USER_URL, $$$ARGS)'
+    - pattern: 'wp_safe_remote_get($USER_URL)'
+    - pattern: 'wp_safe_remote_post($USER_URL, $$$ARGS)'
+
+    # ===== CakePHP Http Client sinks =====
+    - pattern: '$CLIENT = new Cake\Http\Client()'
+    - pattern: '$CLIENT->get($USER_URL)'
+    - pattern: '$CLIENT->post($USER_URL, $$$ARGS)'
+    - pattern: '$CLIENT->put($USER_URL, $$$ARGS)'
+    - pattern: '$CLIENT->delete($USER_URL)'
+
     # ===== 云元数据地址检测 =====
     - pattern: file_get_contents("http://metadata.google.internal$$$REST")
     - pattern: file_get_contents("http://100.100.100.200$$$REST")

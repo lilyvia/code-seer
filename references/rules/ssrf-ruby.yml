@@ -54,6 +54,28 @@ rule:
     - pattern: 'Typhoeus.put($URL, $$$ARGS)'
     - regex: '(user_|request|param|input|arg|query|params)'
 
+  # ===== Mechanize / Excon sinks =====
+  - all:
+    - pattern: 'Mechanize.new.get($URL)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'Mechanize.new.post($URL, $$$ARGS)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'Excon.get($URL)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'Excon.post($URL, $$$ARGS)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+
+  # ===== Net::HTTP 更多方法 =====
+  - all:
+    - pattern: 'Net::HTTP.new($HOST).start'
+    - regex: '(user_|request|param|input|arg|query|params)'
+  - all:
+    - pattern: 'Net::HTTP.start($HOST)'
+    - regex: '(user_|request|param|input|arg|query|params)'
+
   # ===== 内部 IP / 云元数据硬编码检测 =====
   - pattern: 'Net::HTTP.get(URI("http://10.$$$REST"))'
   - pattern: 'Net::HTTP.get(URI("http://192.168.$$$REST"))'

@@ -53,6 +53,58 @@ rule:
       pattern: 'hyper::Client::new().request($METHOD, $USER_URL)'
     - regex: '(?i)(user_|request|param|input|arg|query)'
 
+  # ===== reqwest 更多方法 =====
+  - all:
+    - kind: call_expression
+      pattern: 'reqwest::post($USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'reqwest::put($USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'reqwest::delete($USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'
+
+  # ===== ureq 更多方法 =====
+  - all:
+    - kind: call_expression
+      pattern: 'ureq::post($USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'ureq::put($USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'ureq::delete($USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'
+
+  # ===== isahc 更多方法 =====
+  - all:
+    - kind: call_expression
+      pattern: 'isahc::post($USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'isahc::put($USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'isahc::delete($USER_URL)'
+    - regex: '(?i)(user_|request|param|input|arg|query)'
+
+  # ===== awc (Actix Web Client) sinks =====
+  - all:
+    - kind: call_expression
+      pattern: '$CLIENT.get($USER_URL).send()'
+    - regex: '(?i)(awc|actix)'
+  - all:
+    - kind: call_expression
+      pattern: '$CLIENT.post($USER_URL).send()'
+    - regex: '(?i)(awc|actix)'
+
   # ===== 内部 IP / 云元数据硬编码检测 =====
   - pattern: 'reqwest::get("http://10.$$$REST")'
   - pattern: 'reqwest::get("http://192.168.$$$REST")'

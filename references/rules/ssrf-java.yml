@@ -52,6 +52,43 @@ rule:
   - kind: method_invocation
     pattern: '$CONN.setRequestProperty("Host", $USER_HOST)'
 
+  # ===== WebSocket sinks =====
+  - kind: method_invocation
+    pattern: '$WEBSOCKET_BUILD.buildAsync($URI, $LISTENER)'
+  - kind: method_invocation
+    pattern: 'WebSocket.newBuilder($URI, $$$).buildAsync($$$)'
+
+  # ===== SOAP / JAX-WS sinks =====
+  - kind: method_invocation
+    pattern: '$SERVICE.getPort($PORT, $CLASS)'
+    regex: '(?i)(soap|wsdl|service|port)'
+  - kind: method_invocation
+    pattern: '$SOAP_CONN.call($MESSAGE, $ENDPOINT)'
+
+  # ===== FTP sinks =====
+  - kind: method_invocation
+    pattern: '$FTP.connect($HOST, $PORT)'
+    regex: '(?i)(ftp|apache)'
+
+  # ===== XML Parser sinks =====
+  - kind: method_invocation
+    pattern: '$BUILDER.parse($URL)'
+    regex: '(?i)(documentbuilder|saxparser|xml)'
+  - kind: method_invocation
+    pattern: '$READER.read($URL)'
+    regex: '(?i)(xmlreader|saxreader)'
+
+  # ===== Spring RestTemplate sinks =====
+  - kind: method_invocation
+    pattern: '$REST.getForObject($URL, $$$)'
+    regex: '(?i)(resttemplate|webclient)'
+  - kind: method_invocation
+    pattern: '$REST.postForObject($URL, $$$)'
+    regex: '(?i)(resttemplate|webclient)'
+  - kind: method_invocation
+    pattern: '$REST.exchange($URL, $METHOD, $$$)'
+    regex: '(?i)(resttemplate|webclient)'
+
   # ===== 云元数据地址检测 =====
   - kind: method_invocation
     pattern: 'new URL("http://metadata.google.internal$$$REST").openConnection()'

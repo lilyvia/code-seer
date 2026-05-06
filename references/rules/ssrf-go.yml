@@ -58,6 +58,48 @@ rule:
       pattern: 'resty.New().R().Post($URL)'
     - regex: '(?i)(user|request|param|input|arg|query)'
 
+  # ===== colly / goquery sinks =====
+  - all:
+    - kind: call_expression
+      pattern: '$COLL.Visit($URL)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: '$COLL.Post($URL, $$$)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'goquery.NewDocument($URL)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+
+  # ===== sling / gorequest sinks =====
+  - all:
+    - kind: call_expression
+      pattern: 'sling.New().Get($URL)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'sling.New().Post($URL)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'gorequest.New().Get($URL)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: 'gorequest.New().Post($URL)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+
+  # ===== net/http Client sinks =====
+  - all:
+    - kind: call_expression
+      pattern: '$CLIENT.Do($REQ)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+  - all:
+    - kind: call_expression
+      pattern: '$CLIENT.PostForm($URL, $$$)'
+    - regex: '(?i)(user|request|param|input|arg|query)'
+
   # ===== 云元数据地址检测 =====
   - all:
       - kind: call_expression
