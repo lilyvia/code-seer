@@ -3,33 +3,128 @@ language: csharp
 severity: warning
 message: 'SSRF服务器端请求伪造（C#） (CWE-918)'
 name: SSRF服务器端请求伪造（C#）
-description: 在 .NET 中使用 HttpClient、WebRequest 访问外部 URL 时，若 URL 来自用户输入可能触发 SSRF 攻击。
+description: |
+  在 .NET 中使用 HttpClient、WebRequest、XmlUrlResolver 等访问外部 URL 时，
+  若 URL 来自用户输入可能触发 SSRF 攻击。
 cwe: CWE-918
-remediation: "不要信任外部输入的URL，使用白名单域名并限制可访问网络范围。\n```csharp\n// 不安全的代码 ❌\nawait client.GetAsync(userUrl);\n\
-  // 安全的代码 ✅\nvar uri = new Uri(userUrl);\nif (uri.Scheme == Uri.UriSchemeHttps && uri.Host == \"api.example.com\"\
-  )\n{\n    await client.GetAsync(uri);\n}\n```\n"
+remediation: |
+  不要信任外部输入的URL，使用白名单域名并限制可访问网络范围。
+  ```csharp
+  // 不安全的代码 ❌
+  await client.GetAsync(userUrl);
+  // 安全的代码 ✅
+  var uri = new Uri(userUrl);
+  if (uri.Scheme == Uri.UriSchemeHttps && uri.Host == "api.example.com")
+  {
+      await client.GetAsync(uri);
+  }
+  ```
 rule:
   kind: invocation_expression
   any:
-  - pattern: $CLIENT.GetAsync($USER_URL)
-  - pattern: $CLIENT.PostAsync($USER_URL, $CONTENT)
-  - pattern: new HttpClient().GetAsync($USER_URL)
-  - pattern: WebRequest.Create($USER_URL)
-  - pattern: HttpWebRequest.Create($USER_URL)
-  - pattern: WebRequest.Create("http://localhost$$$REST")
-  - pattern: WebRequest.Create("http://127.0.0.1$$$REST")
-  - pattern: WebRequest.Create("http://169.254.169.254$$$REST")
-  - all:
-    - pattern: $CLIENT.GetAsync($URL)
-    - regex: GetAsync\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)
+    # ===== 原有 HTTP 客户端 sinks =====
+    - pattern: $CLIENT.GetAsync($USER_URL)
+    - pattern: $CLIENT.PostAsync($USER_URL, $CONTENT)
+    - pattern: $CLIENT.PutAsync($USER_URL, $CONTENT)
+    - pattern: $CLIENT.DeleteAsync($USER_URL)
+    - pattern: $CLIENT.SendAsync($REQUEST, $$$)
+    - pattern: new HttpClient().GetAsync($USER_URL)
+    - pattern: new HttpClient().PostAsync($USER_URL, $CONTENT)
+    - pattern: WebRequest.Create($USER_URL)
+    - pattern: HttpWebRequest.Create($USER_URL)
+    - pattern: WebRequest.CreateHttp($USER_URL)
+    - pattern: WebRequest.Create("http://localhost$$$REST")
+    - pattern: WebRequest.Create("http://127.0.0.1$$$REST")
+    - pattern: WebRequest.Create("http://169.254.169.254$$$REST")
+    - all:
+        - pattern: $CLIENT.GetAsync($URL)
+        - regex: 'GetAsync\("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)'
 
-  # false-negative coverage expansion - additional HTTP client sinks
-  - kind: invocation_expression
-    pattern: 'new WebClient().DownloadString($USER_URL)'
-  - kind: invocation_expression
-    pattern: 'new WebClient().DownloadFile($USER_URL, $$$)'
-  - kind: invocation_expression
-    pattern: 'new RestClient($USER_URL).Execute($REQUEST)'
-  - kind: invocation_expression
-    pattern: 'new RestClient($BASE_URL).Execute($REQUEST)'
-    regex: '(?i)(user|request|param|input|arg|query|url)'
+    # ===== WebClient sinks =====
+    - kind: invocation_expression
+      pattern: 'new WebClient().DownloadString($USER_URL)'
+    - kind: invocation_expression
+      pattern: 'new WebClient().DownloadStringAsync($USER_URL)'
+    - kind: invocation_expression
+      pattern: 'new WebClient().DownloadData($USER_URL)'
+    - kind: invocation_expression
+      pattern: 'new WebClient().DownloadFile($USER_URL, $$$)'
+    - kind: invocation_expression
+      pattern: 'new WebClient().OpenRead($USER_URL)'
+    - kind: invocation_expression
+      pattern: 'new WebClient().OpenReadAsync($USER_URL)'
+    - kind: invocation_expression
+      pattern: 'new WebClient().UploadString($USER_URL, $$$)'
+    - kind: invocation_expression
+      pattern: 'new WebClient().UploadData($USER_URL, $$$)'
+    - kind: invocation_expression
+      pattern: 'new WebClient().UploadFile($USER_URL, $$$)'
+
+    # ===== RestSharp sinks =====
+    - kind: invocation_expression
+      pattern: 'new RestClient($USER_URL).Execute($REQUEST)'
+    - kind: invocation_expression
+      pattern: 'new RestClient($USER_URL).ExecuteAsync($REQUEST)'
+    - all:
+        - kind: invocation_expression
+          pattern: 'new RestClient($BASE_URL).Execute($REQUEST)'
+        - regex: '(?i)(user|request|param|input|arg|query|url)'
+
+    # ===== XmlUrlResolver sinks (MOVEit 漏洞核心) =====
+    - kind: invocation_expression
+      pattern: '$RESOLVER.GetEntity($URL, $$$)'
+      regex: '(?i)(resolver|urlresolver|xmlurlresolver)'
+    - kind: invocation_expression
+      pattern: 'new XmlUrlResolver().GetEntity($URL, $$$)'
+    - kind: invocation_expression
+      pattern: '$RESOLVER.ResolveUri($$$, $URL)'
+      regex: '(?i)(resolver|urlresolver|xmlurlresolver)'
+
+    # ===== XmlReader / XmlDocument sinks =====
+    - all:
+        - kind: invocation_expression
+          pattern: 'XmlReader.Create($URL, $$$)'
+        - regex: '(?i)(http|https|ftp|file|url|uri)'
+    - all:
+        - kind: invocation_expression
+          pattern: 'new XmlDocument().Load($URL)'
+        - regex: '(?i)(http|https|ftp|file|url|uri)'
+    - all:
+        - kind: invocation_expression
+          pattern: 'XDocument.Load($URL)'
+        - regex: '(?i)(http|https|ftp|file|url|uri)'
+
+    # ===== SOAP / WCF sinks =====
+    - kind: invocation_expression
+      pattern: 'new ChannelFactory<$$$>($URL).CreateChannel()'
+
+    # ===== NetworkStream / TcpClient sinks =====
+    - all:
+        - kind: invocation_expression
+          pattern: 'new TcpClient($HOST, $PORT)'
+        - regex: '(?i)(user|request|param|input|arg|query|host)'
+    - all:
+        - kind: invocation_expression
+          pattern: '$CLIENT.Connect($HOST, $PORT)'
+        - regex: '(?i)(user|request|param|input|arg|query|host)'
+
+    # ===== WebSocket sinks =====
+    - kind: invocation_expression
+      pattern: 'new ClientWebSocket().ConnectAsync($URL, $$$)'
+
+    # ===== HttpListener / WebRequest 响应流 =====
+    - all:
+        - kind: invocation_expression
+          pattern: '$REQUEST.GetResponse()'
+        - regex: '(?i)(http|https|ftp|webrequest|httpwebrequest)'
+    - all:
+        - kind: invocation_expression
+          pattern: '$REQUEST.GetResponseStream()'
+        - regex: '(?i)(http|https|ftp|webrequest|httpwebrequest)'
+
+    # ===== 内部 IP / 云元数据硬编码检测 =====
+    - all:
+        - kind: invocation_expression
+          pattern: '$METHOD($URL)'
+        - regex: '(?i)(GetEntity|GetAsync|PostAsync|DownloadString|OpenRead|Load|Create|ConnectAsync|GetResponse)'
+        - regex: '(?i)("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)|169\.254\.169\.254|metadata\.google\.internal|localhost|127\.0\.0\.1)'
