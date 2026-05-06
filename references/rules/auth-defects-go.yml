@@ -44,4 +44,39 @@ rule:
     - pattern: |
         $CTX.JSON($CODE, $DB.Find($CTX.Param($KEY)))
 
+    # ===== Gin 框架鉴权缺失 =====
+    - pattern: |
+        $ROUTER.GET($PATH, $HANDLER)
+    - pattern: |
+        $ROUTER.DELETE($PATH, $HANDLER)
+    - pattern: |
+        $ROUTER.PUT($PATH, $HANDLER)
+    - pattern: |
+        $ROUTER.POST($PATH, $HANDLER)
+    - pattern: |
+        $GROUP := $ROUTER.Group($PATH)
+        $GROUP.GET($PATH2, $HANDLER)
+      not:
+        has:
+          pattern: '$GROUP.Use($$$)'
+
+    # ===== Echo 框架鉴权缺失 =====
+    - pattern: |
+        $ECHO.GET($PATH, $HANDLER)
+    - pattern: |
+        $ECHO.DELETE($PATH, $HANDLER)
+    - pattern: |
+        $ECHO.PUT($PATH, $HANDLER)
+    - pattern: |
+        $ECHO.POST($PATH, $HANDLER)
+
+    # ===== Fiber 框架鉴权缺失 =====
+    - pattern: |
+        $APP.Get($PATH, $HANDLER)
+    - pattern: |
+        $APP.Delete($PATH, $HANDLER)
+    - pattern: |
+        $APP.Put($PATH, $HANDLER)
+    - pattern: |
+        $APP.Post($PATH, $HANDLER)
 

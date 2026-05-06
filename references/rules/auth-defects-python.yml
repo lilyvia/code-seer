@@ -53,3 +53,58 @@ rule:
     # false-negative coverage expansion - framework auth checks
     - kind: decorator
       pattern: '@app.delete($PATH)'
+
+    # ===== FastAPI 鉴权缺失 =====
+    - pattern: 'async def $FUNC($REQ: Request, $$$):'
+      regex: 'fastapi|Request'
+    - pattern: 'async def $FUNC($$$) -> $RET:'
+      regex: 'Depends\(get_current_user\)'
+      not:
+        has:
+          pattern: 'Depends\(get_current_user\)'
+    - pattern: |
+        @app.get($PATH)
+        def $FUNC($REQ: Request):
+          $$$BODY
+      not:
+        has:
+          pattern: 'Depends\(get_current_user\)'
+    - pattern: |
+        @app.delete($PATH)
+        def $FUNC($REQ: Request):
+          $$$BODY
+      not:
+        has:
+          pattern: 'Depends\(get_current_user\)'
+    - pattern: |
+        @app.put($PATH)
+        def $FUNC($REQ: Request):
+          $$$BODY
+      not:
+        has:
+          pattern: 'Depends\(get_current_user\)'
+
+    # ===== Tornado 鉴权缺失 =====
+    - pattern: |
+        class $NAME(tornado.web.RequestHandler):
+          def get(self):
+            $$$BODY
+      not:
+        has:
+          pattern: 'get_current_user'
+    - pattern: |
+        class $NAME(tornado.web.RequestHandler):
+          def post(self):
+            $$$BODY
+      not:
+        has:
+          pattern: 'get_current_user'
+
+    # ===== Bottle 鉴权缺失 =====
+    - pattern: |
+        @bottle.route($PATH)
+        def $FUNC():
+          $$$BODY
+      not:
+        has:
+          pattern: 'auth_basic'

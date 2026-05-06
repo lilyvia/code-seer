@@ -48,3 +48,31 @@ rule:
   # false-negative coverage expansion
   - kind: call
     pattern: 'skip_before_action :authenticate_user!'
+
+  # ===== Sinatra / Hanami 鉴权缺失 =====
+  - pattern: |
+      get $PATH do
+        $MODEL.find($PARAMS)
+      end
+    regex: 'params\[:id\]|:id\]|:user_id\]|:order_id\]|:post_id\]'
+  - pattern: |
+      post $PATH do
+        $MODEL.create($PARAMS)
+      end
+    regex: 'params\[:id\]|:id\]|:user_id\]|:order_id\]|:post_id\]'
+  - pattern: |
+      delete $PATH do
+        $MODEL.where($PARAMS).delete
+      end
+    regex: 'params\[:id\]|:id\]|:user_id\]|:order_id\]|:post_id\]'
+  - pattern: |
+      put $PATH do
+        $MODEL.where($PARAMS).update($$$)
+      end
+    regex: 'params\[:id\]|:id\]|:user_id\]|:order_id\]|:post_id\]'
+  - kind: call
+    pattern: 'before do'
+    regex: '(?i)(authenticate|authorize|check)'
+    not:
+      has:
+        pattern: 'authenticate'

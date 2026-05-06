@@ -94,3 +94,33 @@ rule:
     - kind: annotation
       pattern: '@GetMapping($PATH)'
       regex: '(admin|delete|remove|configure)'
+
+    # ===== Servlet / JSP / Struts 鉴权缺失 =====
+    - pattern: |
+        public void doGet(HttpServletRequest $REQ, HttpServletResponse $RESP) {
+          $$$BODY
+        }
+      not:
+        has:
+          pattern: 'isAuthenticated()'
+    - pattern: |
+        public void doPost(HttpServletRequest $REQ, HttpServletResponse $RESP) {
+          $$$BODY
+        }
+      not:
+        has:
+          pattern: 'isAuthenticated()'
+    - pattern: |
+        public void doDelete(HttpServletRequest $REQ, HttpServletResponse $RESP) {
+          $$$BODY
+        }
+    - pattern: |
+        public void doPut(HttpServletRequest $REQ, HttpServletResponse $RESP) {
+          $$$BODY
+        }
+    - kind: method_invocation
+      pattern: '$REQ.getSession().getAttribute($KEY)'
+      regex: '(?i)(user|admin|role|permission)'
+    - kind: method_invocation
+      pattern: 'request.getParameter($PARAM)'
+      regex: '(?i)(admin|delete|remove|userId|role)'

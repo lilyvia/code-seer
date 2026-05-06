@@ -48,3 +48,29 @@ rule:
   - kind: call_expression
     pattern: 'Router::new().route($PATH, $METHOD($HANDLER))'
     regex: '(admin|delete|remove)'
+
+  # ===== Axum Extension / Rocket / Warp 鉴权缺失 =====
+  - pattern: |
+      async fn $NAME(Path($ID): Path<$TYPE>, Extension($DB): Extension<$DB_TYPE>) -> $RET {
+        $$$BODY
+      }
+    regex: 'sqlx|query'
+    not:
+      has:
+        pattern: 'Claims|Auth|User'
+  - pattern: |
+      #[rocket::get($PATH)]
+      fn $NAME($$$PARAMS) -> $RET {
+        $$$BODY
+      }
+    not:
+      has:
+        pattern: '#\[rocket::route'
+  - pattern: |
+      async fn $NAME($$$PARAMS) -> $RET {
+        $$$BODY
+      }
+    regex: 'warp|Filter|path'
+    not:
+      has:
+        pattern: 'and_then|Auth'
