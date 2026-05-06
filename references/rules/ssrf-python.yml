@@ -133,7 +133,20 @@ rule:
   - all:
     - pattern: aiohttp.ClientSession().request($METHOD, $URL)
 
-    - regex: '(user_|param|input|arg|query)'
+    - regex: '(user_|request|param|input|arg|query)'
+
+  # ===== 内部 IP / 云元数据硬编码检测 =====
+  - pattern: requests.get("http://10.$$$REST")
+  - pattern: requests.get("http://192.168.$$$REST")
+  - pattern: requests.get("http://172.$$$REST")
+  - pattern: urllib.request.urlopen("http://10.$$$REST")
+  - pattern: urllib.request.urlopen("http://192.168.$$$REST")
+  - pattern: urllib.request.urlopen("http://172.$$$REST")
+  - all:
+      - kind: call
+        pattern: '$METHOD($URL)'
+      - regex: '(?i)(get|post|put|delete|patch|head|request|urlopen)'
+      - regex: '(?i)("https?://(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)|169\.254\.169\.254|metadata\.google\.internal|100\.100\.100\.200|localhost|127\.0\.0\.1)'
 
   # false-negative coverage expansion
   - pattern: 'urllib.request.urlopen($USER_URL)'
