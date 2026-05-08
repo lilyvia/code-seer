@@ -32,3 +32,11 @@ rule:
   - kind: call
     pattern: 'ldap.initialize($URL).search_s($BASE, $SCOPE, $FILTER)'
     regex: '(user_|request|param|input|arg|query)'
+
+    # false-negative coverage expansion
+  - kind: string
+    pattern: 'f"(uid={$VAR})"'
+  - kind: string
+    pattern: 'f"(cn={$VAR})"'
+  - kind: string
+    pattern: 'f"(dn={$VAR})"'

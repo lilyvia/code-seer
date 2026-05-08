@@ -56,3 +56,13 @@ rule:
     # 从 JSON 解析为查询对象
     - pattern: '$COLL->find(json_decode($JSON, true))'
     - pattern: '$COLL->findOne(json_decode($JSON, true))'
+
+    # false-negative coverage expansion
+    - pattern: '$COLL->find([$KEY => $EXPR])'
+      regex: '\$where'
+    - pattern: '$COLL->findOne([$KEY => $EXPR])'
+      regex: '\$where'
+    - pattern: '$COLL->countDocuments([$KEY => $EXPR])'
+      regex: '\$where'
+    - pattern: '$COLL->find([$$$ARGS])'
+      regex: '\$_GET|\$_POST'

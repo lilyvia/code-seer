@@ -29,3 +29,9 @@ rule:
     pattern: '$SEARCHER.Filter = $FILTER'
   - kind: invocation_expression
     pattern: '$ENTRY.Children.Find($NAME, $SCHEMA)'
+
+    # false-negative coverage expansion
+  - kind: invocation_expression
+    pattern: '$SEARCHER.FindAll()'
+  - kind: invocation_expression
+    pattern: '$ENTRY.RefreshCache()'

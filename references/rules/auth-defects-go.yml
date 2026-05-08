@@ -29,54 +29,71 @@ remediation: |
   - 关键操作在Service层进行二次权限校验
 rule:
   any:
-    - pattern: |
-        $VAR, $ERR := $REPO.$METHOD($REQ.URL.Query().Get($KEY))
-    - pattern: |
-        $VAR, $ERR := $DB.$METHOD($CTX.Param($KEY))
-    - pattern: |
-        if $USERID != "" {
-            $REPO.DeleteUser($TARGET)
-        }
-    - pattern: |
-        $RESULT := $DB.First($$$, $CTX.Query($KEY))
-    - pattern: |
-        $DB.Where($$$, $CTX.Param($KEY)).$METHOD($$$)
-    - pattern: |
-        $CTX.JSON($CODE, $DB.Find($CTX.Param($KEY)))
+    - kind: short_var_declaration
+      pattern: '$VAR, $ERR := $REPO.$METHOD($REQ.URL.Query().Get($KEY))'
+    - kind: short_var_declaration
+      pattern: '$VAR, $ERR := $DB.$METHOD($CTX.Param($KEY))'
+    - kind: if_statement
+      pattern: 'if $USERID != "" { $REPO.DeleteUser($TARGET) }'
+    - kind: call_expression
+      pattern: '$DB.First($$$, $CTX.Query($KEY))'
+    - kind: call_expression
+      pattern: '$DB.Where($$$, $CTX.Param($KEY)).$METHOD($$$)'
+    - kind: call_expression
+      pattern: '$CTX.JSON($CODE, $DB.Find($CTX.Param($KEY)))'
 
     # ===== Gin 框架鉴权缺失 =====
-    - pattern: |
-        $ROUTER.GET($PATH, $HANDLER)
-    - pattern: |
-        $ROUTER.DELETE($PATH, $HANDLER)
-    - pattern: |
-        $ROUTER.PUT($PATH, $HANDLER)
-    - pattern: |
-        $ROUTER.POST($PATH, $HANDLER)
-    - pattern: |
-        $GROUP := $ROUTER.Group($PATH)
-        $GROUP.GET($PATH2, $HANDLER)
+    - kind: call_expression
+      pattern: '$ROUTER.Group($PATH)'
+      regex: '(?i)"/admin"'
       not:
-        has:
-          pattern: '$GROUP.Use($$$)'
+        regex: 'AuthMiddleware|RequireRole|RequireAuth'
+    - kind: call_expression
+      pattern: '$ROUTER.GET($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
+    - kind: call_expression
+      pattern: '$ROUTER.DELETE($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
+    - kind: call_expression
+      pattern: '$ROUTER.PUT($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
+    - kind: call_expression
+      pattern: '$ROUTER.POST($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
 
     # ===== Echo 框架鉴权缺失 =====
-    - pattern: |
-        $ECHO.GET($PATH, $HANDLER)
-    - pattern: |
-        $ECHO.DELETE($PATH, $HANDLER)
-    - pattern: |
-        $ECHO.PUT($PATH, $HANDLER)
-    - pattern: |
-        $ECHO.POST($PATH, $HANDLER)
+    - kind: call_expression
+      pattern: '$ECHO.GET($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
+    - kind: call_expression
+      pattern: '$ECHO.DELETE($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
+    - kind: call_expression
+      pattern: '$ECHO.PUT($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
+    - kind: call_expression
+      pattern: '$ECHO.POST($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
 
     # ===== Fiber 框架鉴权缺失 =====
-    - pattern: |
-        $APP.Get($PATH, $HANDLER)
-    - pattern: |
-        $APP.Delete($PATH, $HANDLER)
-    - pattern: |
-        $APP.Put($PATH, $HANDLER)
-    - pattern: |
-        $APP.Post($PATH, $HANDLER)
+    - kind: call_expression
+      pattern: '$APP.Get($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
+      not:
+        regex: '(?i)(secure|auth|safe)'
+    - kind: call_expression
+      pattern: '$APP.Delete($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
+      not:
+        regex: '(?i)(secure|auth|safe)'
+    - kind: call_expression
+      pattern: '$APP.Put($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
+      not:
+        regex: '(?i)(secure|auth|safe)'
+    - kind: call_expression
+      pattern: '$APP.Post($PATH, $HANDLER)'
+      regex: '(?i)("/admin"|"/manage"|"/api/users"|"/api/orders")'
+      not:
+        regex: '(?i)(secure|auth|safe)'
 

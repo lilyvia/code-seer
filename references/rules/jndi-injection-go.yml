@@ -29,3 +29,7 @@ rule:
     regex: '(user_|request|param|input|arg|query)'
   - pattern: 'fmt.Sprintf($FMT, $ARG)'
     regex: 'ldap|uid|cn|dn|ou|dc'
+
+  # false-negative coverage expansion
+  - pattern: 'ldap.NewSearchRequest($BASE, $SCOPE, $DEREF, $SIZE, $TIME, $TYPES, $FILTER, $ATTRS, $CTRLS)'
+  - pattern: '$CONN.Bind($USER, $PWD)'

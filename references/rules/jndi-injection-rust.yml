@@ -19,8 +19,20 @@ remediation: |
   let search = ldap.search("dc=example,dc=com", Scope::Subtree, &filter, vec![]).await?;
   ```
 rule:
-  kind: call_expression
   any:
-  - pattern: '$LDAP.search($BASE, $SCOPE, $FILTER, $ATTRS)'
-  - pattern: '$LDAP.bind($USER, $PWD).await'
-  - pattern: 'format!("(uid={})", $INPUT)'
+  - kind: call_expression
+    pattern: '$LDAP.search($BASE, $SCOPE, $FILTER, $ATTRS)'
+  - kind: call_expression
+    pattern: '$LDAP.bind($USER, $PWD).await'
+  - kind: call_expression
+    pattern: 'format!("(uid={})", $INPUT)'
+
+    # false-negative coverage expansion
+  - kind: try_expression
+    pattern: '$LDAP.bind($USER, $PWD)?'
+  - kind: macro_invocation
+    pattern: 'format!("(uid={})", $INPUT)'
+  - kind: macro_invocation
+    pattern: 'format!("(cn={})", $INPUT)'
+  - kind: macro_invocation
+    pattern: 'format!("(dn={})", $INPUT)'

@@ -31,3 +31,11 @@ rule:
     pattern: '$CLIENT.bind($USER, $PWD, $CB)'
   - kind: call_expression
     pattern: 'ldap.createClient($URL).search($BASE, $OPTS)'
+
+    # false-negative coverage expansion
+  - kind: template_string
+    pattern: '`(uid=${$VAR})`'
+  - kind: template_string
+    pattern: '`(cn=${$VAR})`'
+  - kind: template_string
+    pattern: '`(dn=${$VAR})`'

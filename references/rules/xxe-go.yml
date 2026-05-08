@@ -12,3 +12,6 @@ rule:
   - pattern: 'xml.Unmarshal($XML_INPUT, $OBJ)'
   - pattern: 'xml.NewDecoder($READER).Decode($OBJ)'
   - pattern: 'encoding/xml.Unmarshal($XML_INPUT, $OBJ)'
+
+    # false-negative coverage expansion
+  - regex: '\.Decode\('

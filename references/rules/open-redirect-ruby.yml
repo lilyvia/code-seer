@@ -44,3 +44,15 @@ rule:
     - not:
         pattern: 'response.redirect $FUNC($$$)'
     - regex: '(user_|request|param|input|arg|query|body|payload)'
+
+    # false-negative coverage expansion
+  - all:
+    - pattern: 'redirect_back(fallback_location: $USER_URL)'
+    - not:
+        pattern: 'redirect_back(fallback_location: $FUNC($$$))'
+    - regex: '(user_|request|param|input|arg|query|body|payload)'
+  - all:
+    - pattern: 'redirect $USER_URL'
+    - not:
+        pattern: 'redirect $FUNC($$$)'
+    - regex: '(user_|request|param|input|arg|query|body|payload)'

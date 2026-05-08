@@ -44,29 +44,22 @@ rule:
         }
 
     # false-negative coverage expansion
-    - pattern: 'Route::$METHOD($PATH, $HANDLER)'
+    - kind: function_call_expression
+      pattern: 'Route::$METHOD($PATH, $HANDLER)'
       regex: '(admin|api|users|orders)'
 
     # ===== 原生 PHP / Symfony / CodeIgniter 鉴权缺失 =====
-    - pattern: |
-        if ($_SESSION['user_id']) {
-          $MODEL::where($$$)->delete();
-        }
-    - pattern: |
-        if (isset($_SESSION['admin'])) {
-          $MODEL::where($$$)->delete();
-        }
-    - pattern: |
-        if ($this->session->userdata('admin')) {
-          $MODEL::where($$$)->delete();
-        }
-    - pattern: |
-        if ($this->session->get('admin')) {
-          $MODEL::where($$$)->delete();
-        }
-    - kind: method_invocation
+    - kind: if_statement
+      pattern: "if ($_SESSION['user_id']) { $MODEL::where($$$)->delete(); }"
+    - kind: if_statement
+      pattern: "if (isset($_SESSION['admin'])) { $MODEL::where($$$)->delete(); }"
+    - kind: if_statement
+      pattern: "if ($this->session->userdata('admin')) { $MODEL::where($$$)->delete(); }"
+    - kind: if_statement
+      pattern: "if ($this->session->get('admin')) { $MODEL::where($$$)->delete(); }"
+    - kind: function_call_expression
       pattern: '$REQUEST->getSession()->get($KEY)'
       regex: '(?i)(admin|user|role|permission)'
-    - kind: method_invocation
+    - kind: function_call_expression
       pattern: '$SECURITY->isGranted($ROLE)'
       regex: '(?i)(ROLE_|IS_|ADMIN)'

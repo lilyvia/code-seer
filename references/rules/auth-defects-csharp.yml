@@ -51,15 +51,15 @@ rule:
           kind: if_statement
           regex: IsAuthenticated
 
-    - kind: attribute
-      pattern: '[AllowAnonymous]'
-    - kind: class_declaration
-      pattern: 'class $NAME : Controller'
-      regex: '(Admin|Manage|Api)'
-
     - kind: if_statement
       has:
         kind: binary_expression
         has:
           kind: invocation_expression
           pattern: 'Operators.CompareString(transaction, $$$)'
+
+    # false-negative coverage expansion
+    - kind: attribute
+      regex: 'AllowAnonymous'
+    - kind: class_declaration
+      regex: 'class\s+\w*(Admin|Manage|Api)\w*\s*:\s*Controller'

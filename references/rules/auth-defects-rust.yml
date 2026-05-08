@@ -50,7 +50,8 @@ rule:
     regex: '(admin|delete|remove)'
 
   # ===== Axum Extension / Rocket / Warp 鉴权缺失 =====
-  - pattern: |
+  - kind: function_item
+    pattern: |
       async fn $NAME(Path($ID): Path<$TYPE>, Extension($DB): Extension<$DB_TYPE>) -> $RET {
         $$$BODY
       }
@@ -58,15 +59,13 @@ rule:
     not:
       has:
         pattern: 'Claims|Auth|User'
-  - pattern: |
-      #[rocket::get($PATH)]
-      fn $NAME($$$PARAMS) -> $RET {
-        $$$BODY
-      }
+  - kind: attribute_item
+    pattern: '#[rocket::get($PATH)]'
     not:
       has:
-        pattern: '#\[rocket::route'
-  - pattern: |
+        pattern: '#[rocket::route'
+  - kind: function_item
+    pattern: |
       async fn $NAME($$$PARAMS) -> $RET {
         $$$BODY
       }

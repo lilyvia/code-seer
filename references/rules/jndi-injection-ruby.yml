@@ -19,13 +19,24 @@ remediation: |
   ldap.search(base: "dc=example,dc=com", filter: filter)
   ```
 rule:
-  kind: call
   any:
-  - pattern: '$LDAP.search($$$ARGS)'
+  - kind: call
+    pattern: '$LDAP.search($$$ARGS)'
     regex: '(user_|request|param|input|arg|query)'
-  - pattern: '$LDAP.bind($$$ARGS)'
+  - kind: call
+    pattern: '$LDAP.bind($$$ARGS)'
     regex: '(user_|request|param|input|arg|query)'
-  - pattern: 'Net::LDAP.new($$$).search($$$ARGS)'
+  - kind: call
+    pattern: 'Net::LDAP.new($$$).search($$$ARGS)'
     regex: '(user_|request|param|input|arg|query)'
-  - pattern: 'Net::LDAP::Filter.construct($FILTER)'
+  - kind: call
+    pattern: 'Net::LDAP::Filter.construct($FILTER)'
     regex: '(user_|request|param|input|arg|query)'
+
+    # false-negative coverage expansion
+  - kind: string
+    pattern: '"(uid=#{$VAR})"'
+  - kind: string
+    pattern: '"(cn=#{$VAR})"'
+  - kind: string
+    pattern: '"(dn=#{$VAR})"'

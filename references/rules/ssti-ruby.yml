@@ -35,3 +35,21 @@ rule:
     regex: '(user_|request|param|input|arg|query|template|source)'
   - pattern: 'Tilt.new($TMPL).render($$$)'
     regex: '(user_|request|param|input|arg|query|template|source)'
+
+    # false-negative coverage expansion
+  - kind: call
+    pattern: 'ERB.new($TMPL)'
+    not:
+      regex: 'File\.read|Hello'
+  - kind: call
+    pattern: 'Haml::Engine.new($TMPL)'
+    not:
+      regex: 'File\.read|Hello'
+  - kind: call
+    pattern: 'Slim::Template.new($TMPL)'
+    not:
+      regex: 'File\.read|Hello'
+  - kind: call
+    pattern: 'Tilt.new($TMPL)'
+    not:
+      regex: 'File\.read|Hello'
